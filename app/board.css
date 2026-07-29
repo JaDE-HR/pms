@@ -131,11 +131,10 @@ a:hover{text-decoration:underline}
 .mm-h b{font-size:20px;font-weight:600;letter-spacing:-0.6px}
 .mm-h span{font-size:11.5px;color:var(--muted48)}
 .mm-h .tag{margin-left:auto}
-/* 영역은 고정. 항목이 많으면 잘라내지 않고 그 영역 안에서 세로로 스크롤한다. */
-.mm-sec{min-height:0;overflow-y:auto;scrollbar-width:thin}
-.mm-sec::-webkit-scrollbar{width:6px}
-.mm-sec::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:3px}
-.mm-sec::-webkit-scrollbar-track{background:transparent}
+/* 영역은 고정. 항목이 많으면 잘라내지 않고 그 영역 안에서 세로로 스크롤한다.
+   스크롤바는 숨기고(지저분함 방지) 휠·터치 스크롤 기능만 남긴다. */
+.mm-sec{min-height:0;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+.mm-sec::-webkit-scrollbar{width:0;height:0;display:none}
 .mm-sec.dv-sec{border-top:1px solid var(--hairline);padding-top:12px;margin-top:2px}
 .mm-s{font-size:11px;font-weight:600;color:var(--muted48);margin-bottom:7px}
 .mm ul{margin:0;padding:0;list-style:none}

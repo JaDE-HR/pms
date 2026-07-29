@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.4.2';
+var VER = '1.4.3';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -64,6 +64,15 @@ function safeUrl(u){
 function parseYmd(s){
   var a=String(s).split('-').map(Number);
   return new Date(a[0], a[1]-1, a[2]);
+}
+
+/* 고객 로고 크기/위치 미세조정 — window.BOARD 의 logoH(높이 px), logoDy(위로 올리려면 음수) */
+function logoStyleAttr(gate){
+  var s='';
+  var h = CFG.logoH ? (gate ? Math.round(CFG.logoH*1.15) : CFG.logoH) : 0;
+  if(h) s += 'height:'+h+'px;';
+  if(CFG.logoDy) s += 'transform:translateY('+(gate ? Math.round(CFG.logoDy*1.15) : CFG.logoDy)+'px);';
+  return s ? ' style="'+s+'"' : '';
 }
 
 /* ── 셸 ───────────────────────────────────────── */
@@ -132,7 +141,7 @@ function buildShell(tabs){
   /* 로그인 화면 로고 = 프로젝트 index.html 의 window.BOARD 에서 온다 (데이터 로드 전이므로).
      예) window.BOARD = { client:'BYN', logo:'./ci.svg' } */
   var clogo = safeUrl(CFG.logo);
-  var gateBrand = clogo ? '<img class="cl" src="'+clogo+'"'+(CFG.logoH?' style="height:'+Math.round(CFG.logoH*1.15)+'px"':'')+' alt="'+esc(CFG.client||'')+'">'
+  var gateBrand = clogo ? '<img class="cl" src="'+clogo+'"'+logoStyleAttr(true)+' alt="'+esc(CFG.client||'')+'">'
                 : (CFG.client ? '<b>'+esc(CFG.client)+'</b>' : '');
 
   return ''
@@ -559,7 +568,7 @@ function render(DATA, warn){
   }
   var logo = safeUrl(P.logo);
   $('brand').innerHTML =
-    (logo ? '<img class="cl" src="'+logo+'"'+(CFG.logoH?' style="height:'+CFG.logoH+'px"':'')+' alt="'+esc(P.client||P.name)+'">'
+    (logo ? '<img class="cl" src="'+logo+'"'+logoStyleAttr(false)+' alt="'+esc(P.client||P.name)+'">'
           : (P.client ? '<b>'+esc(P.client)+'</b>' : ''))
     + '<em></em><img class="hcg" src="'+HCG_LOGO+'" alt="'+esc(P.vendor)+'">';
 
@@ -615,7 +624,7 @@ function render(DATA, warn){
     var buckets=months.map(function(){ return []; });
     msl.forEach(function(x,i){
       var cls = x.d<today ? ' done' : (i===nextIdx ? ' next' : '');
-      buckets[colOf(x.d)].push('<span class="ms-c'+cls+'"><em>'+ymd(x.d).slice(2)+'</em><b>'+esc(x.n)+'</b></span>');
+      buckets[colOf(x.d)].push('<span class="ms-c'+cls+'" title="'+esc(x.n)+' · '+ymd(x.d)+'"><em>'+ymd(x.d).slice(2)+'</em><b>'+esc(x.n)+'</b></span>');
     });
 
     var html=months.map(function(m, mi){
