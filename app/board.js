@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.3.0';
+var VER = '1.4.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -47,8 +47,12 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ ret
 
 /* 서식용 최소 태그만 되살린다. 속성은 어떤 것도 통과하지 못한다. */
 function rich(s){
-  return esc(s).replace(/&lt;(\/?)(b|strong|i|em|u|br)\s*\/?&gt;/gi,
-    function(m,sl,tag){ return '<'+sl+tag.toLowerCase()+'>'; });
+  return esc(s)
+    .replace(/&lt;(\/?)(b|strong|i|em|u|br)\s*\/?&gt;/gi,
+      function(m,sl,tag){ return '<'+sl+tag.toLowerCase()+'>'; })
+    /* 데이터 안 빨간 강조: <red>…</red> → 고정 클래스 span (속성 자유입력 없음 = 안전) */
+    .replace(/&lt;red&gt;/gi, '<span class="rt">')
+    .replace(/&lt;\/red&gt;/gi, '</span>');
 }
 
 /* href 로 나갈 값. javascript: 등은 버린다. */
