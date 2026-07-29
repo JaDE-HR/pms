@@ -96,17 +96,48 @@ curl -sS -o /dev/null -w '%{size_download}\n' https://jade-hr.github.io/pms/<프
 
 ---
 
-## 처음 받았을 때
+## 셋업 — 사용자가 “셋업해줘” 라고 하면 이 순서로 한다
 
+사용자에게 명령어를 시키지 말고 **직접 실행**한다. 사람이 해야만 하는 것은 2번의 토큰 발급뿐이다.
+
+**① 파이썬 패키지**
 ```bash
-pip install -r _tools/requirements.txt      # cryptography · openpyxl
+pip install -r _tools/requirements.txt
+```
+실패하면 `python --version` 으로 파이썬 설치 여부부터 확인한다.
+
+**② 푸시 권한 (토큰)** — 클론은 Public 이라 인증 없이 되지만 **push 에는 토큰이 필요**하다.
+클로드코드는 브라우저 로그인을 대신할 수 없으므로, 사용자에게 이렇게 안내한다:
+
+> https://github.com/settings/tokens → **Tokens (classic)** → **Generate new token (classic)**
+> · 권한은 **`repo`** 하나만 체크 (gh CLI 도 쓸 거면 `read:org` 추가)
+> · 만료는 90일 권장
+> · 🔴 **발급된 토큰을 대화창에 붙여넣지 마세요.** 메모장에 저장해 `D:\token.txt` 처럼 두고 **경로만** 알려주세요.
+
+경로를 받으면 — **토큰을 화면에 출력하지 않는다:**
+```bash
+TOK=$(tr -d ' \t\r\n' < <경로>)
+printf 'protocol=https\nhost=github.com\nusername=<깃허브ID>\npassword=%s\n\n' "$TOK" | git credential approve
+rm -f <경로>          # 저장 후 즉시 삭제
+```
+이후 push 는 자격 증명 관리자가 처리하므로 토큰을 다시 묻지 않는다.
+
+**③ 검증**
+```bash
+git ls-remote origin >/dev/null && echo "원격 접근 OK"
+python _tools/pack.py            # 사용법이 출력되면 정상
 ```
 
-**기존 프로젝트는 클론만으로 갱신할 수 없다.** 평문 `data.xlsx` 가 저장소에 없기 때문이다.
-인계받으려면 담당자에게 `data.xlsx` 와 비밀번호를 함께 받아야 한다.
-**새 프로젝트를 만드는 것은 클론만으로 바로 된다.**
+**④ 사용자에게 알린다**
+- 새 프로젝트 만들기는 **지금 바로** 가능하다.
+- **기존 프로젝트(아이센스 등)는 갱신할 수 없다** — 평문 `data.xlsx` 가 저장소에 없다.
+  인계받으려면 담당자에게 **`data.xlsx` 와 비밀번호를 함께** 받아야 한다.
 
-로컬 미리보기는 `file://` 로 안 된다(브라우저가 파일도 못 읽고 복호화도 못 한다).
+---
+
+## 로컬 미리보기
+
+`file://` 로는 안 된다(브라우저가 파일도 못 읽고 복호화도 못 한다). `localhost` 는 된다.
 ```bash
 python -m http.server 8080     # → http://localhost:8080/<프로젝트키>/
 ```
