@@ -6,3 +6,8 @@ _tools/package-lock.json
 #    저장소가 Public 이므로 평문 엑셀이 올라가면 그대로 공개된다.
 #    커밋되는 것은 _tools/pack.py 가 만든 암호문(data.enc) 뿐이다.
 /*/data.xlsx
+
+# 🔴 열람 비밀번호 기록 — 절대 커밋 금지
+_passwords.local.md
+*.local.md
+*.local.json
