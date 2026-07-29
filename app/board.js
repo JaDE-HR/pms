@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.4.0';
+var VER = '1.4.1';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -132,7 +132,7 @@ function buildShell(tabs){
   /* 로그인 화면 로고 = 프로젝트 index.html 의 window.BOARD 에서 온다 (데이터 로드 전이므로).
      예) window.BOARD = { client:'BYN', logo:'./ci.svg' } */
   var clogo = safeUrl(CFG.logo);
-  var gateBrand = clogo ? '<img class="cl" src="'+clogo+'" alt="'+esc(CFG.client||'')+'">'
+  var gateBrand = clogo ? '<img class="cl" src="'+clogo+'"'+(CFG.logoH?' style="height:'+Math.round(CFG.logoH*1.15)+'px"':'')+' alt="'+esc(CFG.client||'')+'">'
                 : (CFG.client ? '<b>'+esc(CFG.client)+'</b>' : '');
 
   return ''
@@ -559,7 +559,7 @@ function render(DATA, warn){
   }
   var logo = safeUrl(P.logo);
   $('brand').innerHTML =
-    (logo ? '<img class="cl" src="'+logo+'" alt="'+esc(P.client||P.name)+'">'
+    (logo ? '<img class="cl" src="'+logo+'"'+(CFG.logoH?' style="height:'+CFG.logoH+'px"':'')+' alt="'+esc(P.client||P.name)+'">'
           : (P.client ? '<b>'+esc(P.client)+'</b>' : ''))
     + '<em></em><img class="hcg" src="'+HCG_LOGO+'" alt="'+esc(P.vendor)+'">';
 
