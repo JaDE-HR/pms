@@ -293,27 +293,39 @@ const ok = (cond, label, extra) => cond
     };
   }
 
-  const encFile = fs.readFileSync('D:/HCG/JaDE-PMS/isens/data.enc');
-  const encAb = encFile.buffer.slice(encFile.byteOffset, encFile.byteOffset + encFile.byteLength);
+  /* 비밀번호는 테스트에 하드코딩하지 않는다 (커밋되는 파일이므로).
+     로컬 기록(_passwords.local.md · gitignore)에서 읽고, 없으면 이 두 항목을 건너뛴다. */
+  const RECORD = 'D:/HCG/JaDE-PMS/_passwords.local.md';
+  const realPw = fs.existsSync(RECORD)
+    ? ((fs.readFileSync(RECORD, 'utf8').match(/^\|\s*isens\s*\|\s*(.+?)\s*\|/m) || [])[1] || null)
+    : null;
 
-  console.log('\n== M. [교차검증] pack.py 암호문 + 올바른 비밀번호 ==');
-  {
-    const r = await runGate(encAb, 'jade2026');
-    ok(r.before.gateVisible, '처음엔 잠금 화면이 떠 있음');
-    ok(!r.err, '오류 없이 복호화됨', r.err);
-    ok(r.errs.length === 0, 'JS 예외 없음', r.errs.join('|'));
-    ok(r.gateOff, '잠금 해제됨');
-    ok(r.rows > 0, '간트 렌더됨', String(r.rows));
-  }
+  if (!realPw) {
+    console.log('\n== M·N. 암호문 교차검증 — 건너뜀 ==');
+    console.log('  (_passwords.local.md 가 없습니다. pack.py 를 한 번 돌리면 이 검사가 켜집니다)');
+  } else {
+    const encFile = fs.readFileSync('D:/HCG/JaDE-PMS/isens/data.enc');
+    const encAb = encFile.buffer.slice(encFile.byteOffset, encFile.byteOffset + encFile.byteLength);
 
-  console.log('\n== N. [핵심] 틀린 비밀번호 -> 데이터가 새지 않음 ==');
-  {
-    const r = await runGate(encAb, 'wrong-password');
-    ok(!r.gateOff, '잠금 화면이 그대로 유지됨');
-    ok(/맞지 않습니다/.test(r.msg), '비밀번호 오류 안내', r.msg);
-    ok(!r.err, '안내(오류) 화면으로 빠지지 않음 — 다시 입력받음', r.err);
-    ok(r.rows === 0, '간트가 그려지지 않음', String(r.rows));
-    ok(!/프로젝트 준비|아이센스|킥오프/.test(r.html), '데이터가 DOM 어디에도 없음');
+    console.log('\n== M. [교차검증] pack.py 암호문 + 올바른 비밀번호 ==');
+    {
+      const r = await runGate(encAb, realPw);
+      ok(r.before.gateVisible, '처음엔 잠금 화면이 떠 있음');
+      ok(!r.err, '오류 없이 복호화됨', r.err);
+      ok(r.errs.length === 0, 'JS 예외 없음', r.errs.join('|'));
+      ok(r.gateOff, '잠금 해제됨');
+      ok(r.rows > 0, '간트 렌더됨', String(r.rows));
+    }
+
+    console.log('\n== N. [핵심] 틀린 비밀번호 -> 데이터가 새지 않음 ==');
+    {
+      const r = await runGate(encAb, realPw + '-wrong');
+      ok(!r.gateOff, '잠금 화면이 그대로 유지됨');
+      ok(/맞지 않습니다/.test(r.msg), '비밀번호 오류 안내', r.msg);
+      ok(!r.err, '안내(오류) 화면으로 빠지지 않음 — 다시 입력받음', r.err);
+      ok(r.rows === 0, '간트가 그려지지 않음', String(r.rows));
+      ok(!/프로젝트 준비|아이센스|킥오프/.test(r.html), '데이터가 DOM 어디에도 없음');
+    }
   }
 
   console.log(`\n=========== 통과 ${pass} / 실패 ${fail} ===========\n`);
