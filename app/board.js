@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.0.0';
+var VER = '1.1.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -135,7 +135,7 @@ function buildShell(tabs){
   +   '<p class="eyebrow">프로젝트 현황</p><h1 id="proj-name"></h1><p class="sub" id="sub"></p>'
   +   '</div><dl class="specs" id="specs"></dl></div></section>'
   + '<section class="wrap"><div class="card"><div class="ch"><h3>월별 진행 맵</h3></div>'
-  +   '<div class="cb"><div class="mmap" id="mmap"></div><div class="mstones" id="mstones"></div></div>'
+  +   '<div class="cb"><div class="mmap" id="mmap"></div></div>'
   + '</div></section>'
   + '<section class="wrap" style="margin-top:24px"><div class="band"><div class="band-in" id="scores"></div></div></section>'
   + '<nav class="tabs"><div class="wrap" role="tablist" aria-label="현황 보기">'+tabHtml+'</div></nav>'
@@ -527,13 +527,16 @@ function render(DATA, warn){
   try{ document.title=P.name+' / 프로젝트 현황'; }catch(e){}
   $('sub').textContent=P.vendor+' 수행 / '+P.solution+' / 전체 '+NW+'주';
 
+  /* 세 번째 값 = 컬럼 폭 가중치. 균등분할하면 「수행 기간」이 잘린다(날짜 두 개라 가장 길다). */
   var specs=[
-    ['수행 기간', ymd(START)+' - '+ymd(END)],
-    ['현재 주차', curWeek?curWeek+' / '+NW+'주':'착수 전'],
-    ['오픈 예정', ymd(OPEN)]
+    ['수행 기간', ymd(START)+' - '+ymd(END),                     '1.9fr'],
+    ['현재 주차', curWeek?curWeek+' / '+NW+'주':'착수 전',        '1fr'],
+    ['오픈 예정', ymd(OPEN),                                     '1.1fr']
   ];
-  if(P.devMD) specs.push(['추가개발', P.devMD+' M/D'+(P.devCount?' ('+P.devCount+'건)':'')]);
-  $('specs').style.setProperty('--spcols', specs.length);
+  if(P.devMD) specs.push(['추가개발',
+    P.devMD+' M/D'+(P.devCount?' ('+P.devCount+'건)':''), '1.25fr']);
+  $('specs').style.setProperty('--spgrid',
+    specs.map(function(r){ return r[2]; }).join(' '));
   $('specs').innerHTML=specs.map(function(r){
     return '<div class="spec"><dt>'+esc(r[0])+'</dt><dd>'+esc(r[1])+'</dd></div>'; }).join('');
 
@@ -550,40 +553,8 @@ function render(DATA, warn){
 
   (function(){
     function hit(it,m){ return it.s<=m.we && it.e>=m.ws; }
-    var html=months.map(function(m){
-      var gs=DATA.pkg.filter(function(g){ return g.items.some(function(it){ return hit(it,m); }); })
-                     .map(function(g){ return g.group; });
-      var ds=DATA.dev.filter(function(it){ return hit(it,m); }).map(function(it){ return it.n; });
-      /* 주차가 아니라 달력 월로 판정 (9/3 은 5주차지만 그 주는 8/31 시작) */
-      var cKey = weeks[m.ws-1].s.getFullYear()*12 + weeks[m.ws-1].s.getMonth();
-      var tKey = today.getFullYear()*12 + today.getMonth();
-      var isNow=(cKey===tKey), isPast=(cKey<tKey);
-      var tag = isNow?'<span class="tag blue">이번 달</span>'
-              : (isPast?'<span class="tag line">완료 구간</span>':'');
-      var li=function(a,c){ return a.length
-        ? a.map(function(t){ return '<li'+(c?' class="dv-i"':'')+'>'+esc(t)+'</li>'; }).join('')
-        : '<li class="none">없음</li>'; };
-      return '<div class="mm'+(hasDev?'':' solo')+(isNow?' now':'')+(isPast?' past':'')+'">'
-        +'<div class="mm-h"><b>'+m.label+'월</b><span>'+m.n+'주</span>'+tag+'</div>'
-        +'<div class="mm-sec"><div class="mm-s">'+(hasDev?'패키지 셋업':'진행 항목')+'</div><ul>'+li(gs,false)+'</ul></div>'
-        +(hasDev?'<div class="mm-sec dv-sec"><div class="mm-s">추가개발</div><ul>'+li(ds,true)+'</ul></div>':'')
-        +'</div>';
-    }).join('');
-    var mm=$('mmap');
-    mm.style.setProperty('--cols', Math.min(months.length,6));
-    mm.innerHTML=html;
-    var cards=mm.querySelectorAll('.mm');
-    for(var ci=0; ci<cards.length; ci++){
-      (function(el,ws){
-        el.setAttribute('role','button'); el.setAttribute('tabindex','0');
-        el.addEventListener('click', function(){ if(gotoWeek) gotoWeek(ws); });
-        el.addEventListener('keydown', function(ev){
-          if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); if(gotoWeek) gotoWeek(ws); }
-        });
-      })(cards[ci], months[ci].ws);
-    }
 
-    /* 마일스톤 : 월별 맵과 같은 컬럼에 정렬 */
+    /* 마일스톤을 월별로 담아둔다 — 카드와 같은 셀에 넣어야 줄바꿈해도 안 어긋난다 */
     var msl=(DATA.milestones||[]).map(function(x){ return {n:x.n,d:parseYmd(x.d)}; })
       .sort(function(a,b){ return a.d-b.d; });
     var nextIdx=-1;
@@ -599,11 +570,49 @@ function render(DATA, warn){
       var cls = x.d<today ? ' done' : (i===nextIdx ? ' next' : '');
       buckets[colOf(x.d)].push('<span class="ms-c'+cls+'"><em>'+ymd(x.d).slice(2)+'</em><b>'+esc(x.n)+'</b></span>');
     });
-    var msEl=$('mstones');
-    msEl.style.setProperty('--cols', Math.min(months.length,6));
-    msEl.innerHTML=msl.length ? buckets.map(function(b){
-      return '<div class="ms-col">'+(b.length?b.join(''):'<span class="ms-none">&mdash;</span>')+'</div>';
-    }).join('') : '';
+
+    var html=months.map(function(m, mi){
+      var gs=DATA.pkg.filter(function(g){ return g.items.some(function(it){ return hit(it,m); }); })
+                     .map(function(g){ return g.group; });
+      var ds=DATA.dev.filter(function(it){ return hit(it,m); }).map(function(it){ return it.n; });
+      /* 주차가 아니라 달력 월로 판정 (9/3 은 5주차지만 그 주는 8/31 시작) */
+      var cKey = weeks[m.ws-1].s.getFullYear()*12 + weeks[m.ws-1].s.getMonth();
+      var tKey = today.getFullYear()*12 + today.getMonth();
+      var isNow=(cKey===tKey), isPast=(cKey<tKey);
+      var tag = isNow?'<span class="tag blue">이번 달</span>'
+              : (isPast?'<span class="tag line">완료 구간</span>':'');
+      var li=function(a,c){ return a.length
+        ? a.map(function(t){ return '<li'+(c?' class="dv-i"':'')+'>'+esc(t)+'</li>'; }).join('')
+        : '<li class="none">없음</li>'; };
+      var chips=buckets[mi];
+      return '<div class="mm-cell">'
+        +'<div class="mm'+(hasDev?'':' solo')+(isNow?' now':'')+(isPast?' past':'')+'">'
+        +'<div class="mm-h"><b>'+m.label+'월</b><span>'+m.n+'주</span>'+tag+'</div>'
+        +'<div class="mm-sec"><div class="mm-s">'+(hasDev?'패키지 셋업':'진행 항목')+'</div><ul>'+li(gs,false)+'</ul></div>'
+        +(hasDev?'<div class="mm-sec dv-sec"><div class="mm-s">추가개발</div><ul>'+li(ds,true)+'</ul></div>':'')
+        +'</div>'
+        +(msl.length ? '<div class="ms-col">'
+            +(chips.length?chips.join(''):'<span class="ms-none">&mdash;</span>')+'</div>' : '')
+        +'</div>';
+    }).join('');
+    var mm=$('mmap');
+    /* 가능하면 한 줄에 다 넣는다. 칸이 많아지면 여백·글자를 줄여 버틴다.
+       좁은 화면에서는 CSS 미디어쿼리가 접는데, 칩이 카드와 같은 셀이라 접혀도 안 어긋난다. */
+    var n=months.length;
+    mm.style.setProperty('--cols', n);
+    mm.className = 'mmap' + (n>=7 ? ' tight' : '');
+    mm.innerHTML=html;
+    var cards=mm.querySelectorAll('.mm');
+    for(var ci=0; ci<cards.length; ci++){
+      (function(el,ws){
+        el.setAttribute('role','button'); el.setAttribute('tabindex','0');
+        el.addEventListener('click', function(){ if(gotoWeek) gotoWeek(ws); });
+        el.addEventListener('keydown', function(ev){
+          if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); if(gotoWeek) gotoWeek(ws); }
+        });
+      })(cards[ci], months[ci].ws);
+    }
+
   })();
 
   /* ── 스코어 패널 ── */
@@ -760,7 +769,7 @@ function render(DATA, warn){
       var body = has(w)
         ? (w.done&&w.done.length?'<h4>금주 실적</h4><ul>'+li(w.done)+'</ul>':'')
           +(w.next&&w.next.length?'<h4>차주 계획</h4><ul>'+li(w.next)+'</ul>':'')
-          +(w.req&&w.req.length?'<h4 class="req">요청사항</h4><ul class="req">'+li(w.req)+'</ul>':'')
+          +(w.req&&w.req.length?'<h4 class="req">고객사 준비사항</h4><ul class="req">'+li(w.req)+'</ul>':'')
         : '<div class="empty" style="padding:22px 0">아직 등록된 내용이 없습니다.</div>';
       return '<div class="wk"><div class="wk-l"><b>'+(w.week?w.week+'주차':'착수 전')+'</b>'
         +'<div class="pd">'+esc(w.period||'')+'</div>'

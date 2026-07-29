@@ -92,12 +92,15 @@ a:hover{text-decoration:underline}
 .eyebrow{font-size:13px;font-weight:600;color:var(--muted48);letter-spacing:-0.2px}
 .title-main h1{font-size:40px;font-weight:600;letter-spacing:-1px;margin-top:13px}
 .title-main .sub{font-size:17px;color:var(--muted48);margin-top:11px;font-weight:400}
-.specs{display:grid;grid-template-columns:repeat(var(--spcols,4),minmax(0,1fr));gap:14px;
+/* --spgrid = 항목별 폭 가중치 (board.js 가 넣는다). 균등분할하면 기간이 잘린다. */
+.specs{display:grid;grid-template-columns:var(--spgrid,repeat(4,minmax(0,1fr)));gap:14px;
   flex:1 1 560px;margin:0}
 .spec{background:var(--parchment);border-radius:18px;padding:16px 20px;min-width:0}
 .spec dt{font-size:13px;color:var(--muted48);font-weight:400}
 .spec dd{margin:8px 0 0;font-size:17px;font-weight:600;letter-spacing:-0.7px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 폭이 모자라면 잘라내기 전에 글자를 먼저 줄인다 */
+@media (max-width:1320px){ .spec dd{font-size:15.5px;letter-spacing:-0.5px} }
 
 /* ── 카드 ─────────────────────────────────────── */
 .card{background:var(--canvas);border:1px solid var(--hairline);border-radius:18px}
@@ -108,7 +111,12 @@ a:hover{text-decoration:underline}
 .cb{padding:18px 24px 22px}
 
 /* ── 월별 진행 맵 ─────────────────────────────── */
-.mmap{display:grid;grid-template-columns:repeat(var(--cols,6),1fr);gap:14px}
+/* 한 셀 = 그 달의 카드 + 그 달의 마일스톤 칩.
+   둘을 같은 셀에 두어야 줄바꿈이 생겨도 짝이 어긋나지 않는다.
+   (예전에는 카드와 칩이 별도 그리드라 7개월째가 2행으로 내려가면 섞였다) */
+.mmap{display:grid;grid-template-columns:repeat(var(--cols,6),minmax(0,1fr));
+  gap:16px 14px;align-items:start}
+.mm-cell{display:flex;flex-direction:column;gap:10px;min-width:0}
 .mm{background:var(--parchment);border-radius:12px;padding:16px 17px;position:relative;
   border:1px solid transparent;display:grid;grid-template-rows:auto 6fr 4fr;height:290px}
 .mm.solo{grid-template-rows:auto 1fr}
@@ -134,8 +142,16 @@ a:hover{text-decoration:underline}
 .mm li.none{color:var(--muted48);padding-left:0}
 .mm li.none::before{display:none}
 
-/* 마일스톤 칩 */
-.mstones{display:grid;grid-template-columns:repeat(var(--cols,6),1fr);gap:14px;margin-top:16px}
+/* 칸이 많을 때 (7개월 이상) — 한 줄을 유지하려고 여백과 글자를 줄인다 */
+.mmap.tight .mm{padding:14px 12px}
+.mmap.tight .mm-h b{font-size:18px}
+.mmap.tight .mm-h span{font-size:11px}
+.mmap.tight .mm-h .tag{font-size:10px;padding:3px 8px}
+.mmap.tight .mm li{font-size:12px;padding-left:10px}
+.mmap.tight .mm li::before{width:4px;height:4px;top:7px}
+.mmap.tight .ms-c{font-size:11.5px;padding:5px 10px;gap:6px}
+
+/* 마일스톤 칩 — 각 월 셀 안에 들어간다 */
 .ms-col{display:flex;flex-direction:column;gap:7px;min-width:0}
 .ms-none{font-size:12px;color:#c9c9ce;text-align:center;padding:6px 0}
 .ms-c{display:flex;align-items:baseline;gap:8px;background:var(--parchment);
@@ -308,11 +324,13 @@ table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:700px}
 .foot .ver{opacity:.7}
 
 @media (max-width:1180px){
-  .mmap,.mstones{grid-template-columns:repeat(3,1fr)}
+  .mmap{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .mmap.tight .mm{padding:16px 17px}
+  .mmap.tight .mm li{font-size:13px;padding-left:12px}
 }
 @media (max-width:900px){
   .wrap{padding:0 20px}
-  .mmap,.mstones{grid-template-columns:repeat(2,1fr)}
+  .mmap{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .mm{height:330px}
   .band-in{grid-template-columns:1fr}
   .sc{border-right:0;border-bottom:1px solid rgba(255,255,255,.12)}
