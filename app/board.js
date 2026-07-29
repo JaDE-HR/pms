@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.2.0';
+var VER = '1.3.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -125,16 +125,21 @@ function buildShell(tabs){
     return i===0 ? h.replace(' hidden>','>') : (h.indexOf(' hidden>')<0 ? h.replace('role="tabpanel">','role="tabpanel" hidden>') : h);
   }).join('');
 
+  /* 로그인 화면 로고 = 프로젝트 index.html 의 window.BOARD 에서 온다 (데이터 로드 전이므로).
+     예) window.BOARD = { client:'BYN', logo:'./ci.svg' } */
+  var clogo = safeUrl(CFG.logo);
+  var gateBrand = clogo ? '<img class="cl" src="'+clogo+'" alt="'+esc(CFG.client||'')+'">'
+                : (CFG.client ? '<b>'+esc(CFG.client)+'</b>' : '');
+
   return ''
   + '<div id="gate"><div class="gate-card" id="gate-card">'
-  +   '<div class="gate-logo"><b id="gate-cl">&nbsp;</b><i></i><img src="'+HCG_LOGO+'" alt="HCG"></div>'
+  +   '<div class="gate-logo">'+(gateBrand?gateBrand+'<i></i>':'')+'<img src="'+HCG_LOGO+'" alt="HCG"></div>'
   +   '<h1 id="gate-name">프로젝트 현황</h1>'
   +   '<p class="gs-sub" id="gate-sub">열람 비밀번호를 입력해 주세요</p>'
   +   '<div class="gate-form" id="gate-form">'
   +     '<input type="password" id="gate-pw" placeholder="비밀번호" autocomplete="off" aria-label="열람 비밀번호">'
   +     '<button id="gate-go" type="button">확인</button></div>'
   +   '<p id="gate-msg" role="status"></p>'
-  +   '<p class="gate-foot">휴먼컨설팅그룹 / 문의는 담당 PM에게 연락 주세요</p>'
   + '</div></div>'
   + '<div id="pvw"></div>'
   + '<header class="top"><div class="wrap">'
@@ -311,7 +316,7 @@ function pct(v){
 function build(t){
   var warn=[];
   var D={
-    project:{ name:'프로젝트', client:'', logo:'', vendor:'휴먼컨설팅그룹',
+    project:{ name:'프로젝트', client:(CFG.client||''), logo:(CFG.logo||''), vendor:'휴먼컨설팅그룹',
               solution:'JaDE HR Package', start:'', end:'', openDate:'', devMD:0, devCount:0 },
     weights:{ pkg:0.5, dev:0.5 },
     previewDate:null, hide:[],
@@ -948,10 +953,9 @@ function render(DATA, warn){
       t.setAttribute('aria-selected',on?'true':'false');
       var el=$(t.getAttribute('data-p')); if(el) el.hidden=!on;
     });
-    if(history.replaceState) history.replaceState(null,'','#'+id);
   }
   tabs.forEach(function(t){ t.addEventListener('click',function(){ show(t.getAttribute('data-p')); }); });
-  if(location.hash && $(location.hash.slice(1))) show(location.hash.slice(1));
+  /* 새로고침·재방문 시 항상 첫 탭(WBS 일정)에서 시작한다. 마지막 탭을 주소에 기억하지 않는다. */
 
   if(window.console && console.info){
     console.info('[현황판 v'+VER+'] 데이터 로드 완료 ('+(PLAIN?'평문':'암호문')+')');
@@ -983,9 +987,9 @@ function boot(password, onBadPw){
       {id:'p-pkg',  label:'패키지 진척', src:'패키지진척', on:(D.pkgSteps||[]).length>0},
       {id:'p-week', label:'주간 업무', src:'주간업무', on:D.weekly.length>0},
       {id:'p-dev',  label:'추가개발',  src:'WBS',    on:D.dev.length>0},
-      {id:'p-rec',  label:'녹화본',    src:'녹화본',  on:D.recordings.length>0, badge:true},
-      {id:'p-doc',  label:'산출물',    src:'산출물',  on:D.docs.length>0,       badge:true},
-      {id:'p-iss',  label:'이슈',      src:'이슈',    on:D.issues.length>0,     badge:true}
+      {id:'p-rec',  label:'녹화본',    src:'녹화본',  on:D.recordings.length>0},
+      {id:'p-doc',  label:'산출물',    src:'산출물',  on:D.docs.length>0},
+      {id:'p-iss',  label:'이슈',      src:'이슈',    on:D.issues.length>0}
     ];
     var tabs=TABDEF.filter(function(x){ return x.on && !hidden[x.src] && !hidden[x.label]; });
 
@@ -1064,6 +1068,8 @@ function gate(){
 }
 
 function start(){
+  /* 새로고침 시 브라우저가 이전 스크롤 위치를 복원하지 않게 한다 (항상 메인 상단에서 시작) */
+  if('scrollRestoration' in history){ try{ history.scrollRestoration='manual'; }catch(e){} }
   mount([{id:'p-wbs',label:'WBS 일정'}]);        /* 잠금 화면용 최소 셸 */
   if(typeof XLSX==='undefined'){
     fail('엑셀 리더가 로드되지 않았습니다.',
