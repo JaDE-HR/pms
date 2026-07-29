@@ -71,6 +71,24 @@ isens/
 
 ---
 
+## 처음 받았을 때 (설치)
+
+```
+git clone https://github.com/JaDE-HR/pms.git
+cd pms
+pip install -r _tools/requirements.txt
+```
+
+파이썬 패키지 두 개가 필요합니다 — `cryptography`(암호화) · `openpyxl`(템플릿 생성).
+설치 안 하면 `pack.py` 가 `ModuleNotFoundError` 로 멈춥니다.
+
+> 🔴 **받은 사람은 기존 프로젝트의 데이터를 고칠 수 없습니다.**
+> 평문 `data.xlsx` 는 커밋되지 않으므로 저장소에 없고, `data.enc` 는 비밀번호가 있어야 풀립니다.
+> **기존 프로젝트를 인계받으려면 담당자에게 `data.xlsx` 와 비밀번호를 함께 받으세요.**
+> 새 프로젝트를 만드는 것은 클론만으로 바로 됩니다.
+
+---
+
 ## 갱신 (매주 하는 일)
 
 ```

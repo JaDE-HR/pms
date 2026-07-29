@@ -1,0 +1,10 @@
+# 현황판 도구가 쓰는 파이썬 패키지
+#
+#   pip install -r _tools/requirements.txt
+#
+# cryptography : pack.py    데이터 엑셀 암호화 (AES-256-GCM)
+# openpyxl     : gen_template.py  빈 시트 템플릿 생성
+#                (new_project.py 는 표준 라이브러리만 씁니다)
+
+cryptography>=42.0
+openpyxl>=3.1
