@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+_tools/package-lock.json
+
+# 🔴 데이터 원본은 절대 커밋하지 않는다.
+#    저장소가 Public 이므로 평문 엑셀이 올라가면 그대로 공개된다.
+#    커밋되는 것은 _tools/pack.py 가 만든 암호문(data.enc) 뿐이다.
+/*/data.xlsx

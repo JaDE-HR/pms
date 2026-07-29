@@ -1,0 +1,7 @@
+{
+  "name": "jade-pms-tools",
+  "private": true,
+  "description": "표준 앱 회귀 테스트용. 배포에는 쓰이지 않습니다.",
+  "scripts": { "test": "node test.js" },
+  "devDependencies": { "jsdom": "^29.1.1", "xlsx": "^0.18.5" }
+}
