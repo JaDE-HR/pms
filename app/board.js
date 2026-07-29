@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.4.1';
+var VER = '1.4.2';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -572,7 +572,7 @@ function render(DATA, warn){
   $('proj-name').textContent=P.name;
   $('foot-l').textContent=P.vendor+' / '+P.name;
   try{ document.title=P.name+' / 프로젝트 현황'; }catch(e){}
-  $('sub').textContent=P.vendor+' 수행 / '+P.solution+' / 전체 '+NW+'주';
+  $('sub').textContent=P.vendor+' / '+P.solution+' / 전체 '+NW+'주';
 
   /* 세 번째 값 = 컬럼 폭 가중치. 균등분할하면 「수행 기간」이 잘린다(날짜 두 개라 가장 길다). */
   var specs=[

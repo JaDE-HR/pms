@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 14 138 54" role="img" aria-label="i-sens">
-  <text x="0" y="66" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="46" letter-spacing="-2.5" fill="#12237e">i-sens</text>
-  <circle cx="5" cy="24" r="7" fill="#6ab42f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 3 138 42" role="img" aria-label="i-sens">
+  <text x="0" y="40" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="46" letter-spacing="-2.5" fill="#12237e">i-sens</text>
+  <circle cx="5" cy="10" r="6" fill="#6ab42f"/>
 </svg>
