@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.4.3';
+var VER = '1.4.4';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -624,7 +624,7 @@ function render(DATA, warn){
     var buckets=months.map(function(){ return []; });
     msl.forEach(function(x,i){
       var cls = x.d<today ? ' done' : (i===nextIdx ? ' next' : '');
-      buckets[colOf(x.d)].push('<span class="ms-c'+cls+'" title="'+esc(x.n)+' · '+ymd(x.d)+'"><em>'+ymd(x.d).slice(2)+'</em><b>'+esc(x.n)+'</b></span>');
+      buckets[colOf(x.d)].push('<span class="ms-c'+cls+'" data-tip="'+esc(x.n)+' · '+ymd(x.d)+'"><em>'+ymd(x.d).slice(2)+'</em><b>'+esc(x.n)+'</b></span>');
     });
 
     var html=months.map(function(m, mi){

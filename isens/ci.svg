@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 3 138 42" role="img" aria-label="i-sens">
-  <text x="0" y="40" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="46" letter-spacing="-2.5" fill="#12237e">i-sens</text>
-  <circle cx="5" cy="10" r="6" fill="#6ab42f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 44" role="img" aria-label="i-sens">
+  <rect x="3" y="17" width="8" height="23" rx="1.5" fill="#12256f"/>
+  <circle cx="7" cy="8.5" r="6.2" fill="#5cb531"/>
+  <text x="15" y="40" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="46" letter-spacing="-2" fill="#12256f">sens</text>
 </svg>
