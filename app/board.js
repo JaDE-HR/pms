@@ -24,13 +24,13 @@
 (function(){
 'use strict';
 
-var VER = '1.1.0';
+var VER = '1.2.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
 
 /* 시트 탭 이름 = 표준 계약. 바꾸면 전 프로젝트가 깨집니다. */
-var SRC = ['설정','WBS','마일스톤','주간업무','녹화본','산출물','이슈','요건'];
+var SRC = ['설정','WBS','패키지진척','마일스톤','주간업무','녹화본','산출물','이슈','요건'];
 
 var PLAIN    = CFG.plain === true;
 var DATA_URL = CFG.data || (PLAIN ? './data.xlsx' : './data.enc');
@@ -71,6 +71,16 @@ var PANELS = {
     +'<button class="jump" id="jump" type="button">오늘 위치로</button></div>'
     +'<div class="cb"><div class="glg" id="g-lg"></div>'
     +'<div class="gs" id="gs"><div class="gantt" id="gantt"></div></div></div></div></section>',
+
+  'p-pkg': '<section class="panel" id="p-pkg" role="tabpanel" hidden>'
+    +'<div class="ph" style="max-width:none"><h1>패키지 진척</h1>'
+    +'<p class="sub">모듈마다 업무분석·기초셋업·교육·최종셋업·테스트·검수 여섯 단계를 거칩니다. '
+    +'완료된 단계만 진척으로 계산하며, 해당없음은 그 모듈의 단계 수에서 제외됩니다.</p></div>'
+    +'<div class="card"><div class="ch"><h3>모듈별 단계 현황</h3><span class="m" id="pkg-m"></span></div>'
+    +'<div class="cb"><div class="glg" style="gap:22px">'
+    +'<span><i class="stp done">완료</i></span><span><i class="stp doing">진행</i></span>'
+    +'<span><i class="stp todo">미착수</i></span><span><i class="stp na">해당없음</i></span></div>'
+    +'<div class="ts"><table class="t" id="pkgtbl"></table></div></div></div></section>',
 
   'p-week': '<section class="panel" id="p-week" role="tabpanel" hidden>'
     +'<div class="ph"><h1>주간 업무</h1>'
@@ -305,7 +315,7 @@ function build(t){
               solution:'JaDE HR Package', start:'', end:'', openDate:'', devMD:0, devCount:0 },
     weights:{ pkg:0.5, dev:0.5 },
     previewDate:null, hide:[],
-    pkg:[], dev:[], devSpan:null, devPct:null, pctPkg:null, pctAll:null,
+    pkg:[], pkgSteps:[], dev:[], devSpan:null, devPct:null, pctPkg:null, pctAll:null,
     milestones:[], weekly:[], recordings:[], docs:[], issues:[], devItems:[],
     issueSummary:''
   };
@@ -388,6 +398,16 @@ function build(t){
   });
   if(!pkg.length && !dev.length) return { err:'WBS 탭에서 읽을 수 있는 행이 없습니다. 주차 칸이 칠해져 있는지 확인해 주세요.' };
   D.pkg=pkg; D.dev=dev;
+
+  /* ── 패키지진척 : 모듈별 6단계 (업무분석·기초셋업·교육·최종셋업·테스트·검수) ── */
+  if(t['패키지진척']){
+    var PSTEP=['업무분석','기초셋업','교육','최종셋업','테스트','검수'];
+    D.pkgSteps = t['패키지진척'].map(function(r){
+      var mod=String(r['모듈']||'').trim(); if(!mod) return null;
+      var sv={}; PSTEP.forEach(function(k){ sv[k]=String(r[k]||'').trim(); });
+      return { mod:mod, w:num(r['가중치'],1), steps:sv };
+    }).filter(Boolean);
+  }
 
   /* ── 나머지 탭 : 없으면 없는 대로 (탭 자체가 화면에서 사라집니다) ── */
   if(t['마일스톤']) D.milestones = t['마일스톤']
@@ -498,7 +518,25 @@ function render(DATA, warn){
     return t?n/t:0;
   }
   var pkgItems=[]; DATA.pkg.forEach(function(g){ pkgItems=pkgItems.concat(g.items); });
-  var pPkg = DATA.pctPkg!==null ? DATA.pctPkg : progGroups(DATA.pkg);
+  /* 패키지진척 시트가 있으면 모듈별 6단계 완료율로 패키지 진척을 계산한다.
+     완료만 진척으로 세고, 해당없음은 분모에서 뺀다. */
+  var PSTEPS=['업무분석','기초셋업','교육','최종셋업','테스트','검수'];
+  function stepPct(p){
+    var den=0, n=0;
+    for(var i=0;i<PSTEPS.length;i++){
+      var v=p.steps[PSTEPS[i]];
+      if(v==='해당없음'||v==='없음'||v==='-') continue;
+      den++; if(v==='완료') n+=1;
+    }
+    return den ? n/den : 1;
+  }
+  var stepsPct=null;
+  if(DATA.pkgSteps && DATA.pkgSteps.length){
+    var sw=0, sa=0;
+    DATA.pkgSteps.forEach(function(p){ var w=(p.w>0?p.w:1); sw+=w; sa+=w*stepPct(p); });
+    if(sw) stepsPct=sa/sw;
+  }
+  var pPkg = DATA.pctPkg!==null ? DATA.pctPkg : (stepsPct!==null ? stepsPct : progGroups(DATA.pkg));
   var pDev = DATA.devPct!==null && DATA.devPct!==undefined ? DATA.devPct : prog(DATA.dev);
   var wSum = DATA.weights.pkg + DATA.weights.dev || 1;
   var pAll = DATA.pctAll!==null ? DATA.pctAll
@@ -733,6 +771,30 @@ function render(DATA, warn){
     } else if(jb) jb.style.display='none';
   })();
 
+  /* ── 패키지 진척 (모듈별 6단계) ── */
+  if($('p-pkg')) (function(){
+    var el=$('pkgtbl'); if(!el) return;
+    var L=DATA.pkgSteps||[];
+    var cell=function(v){
+      if(v==='완료') return '<span class="stp done">완료</span>';
+      if(v==='진행중'||v==='진행') return '<span class="stp doing">진행</span>';
+      if(v==='해당없음'||v==='없음'||v==='-') return '<span class="stp na">해당없음</span>';
+      return '<span class="stp todo">미착수</span>';
+    };
+    var doneMods=0;
+    var body=L.map(function(p){
+      var v=stepPct(p); if(v>=1) doneMods++;
+      return '<tr><td><b>'+esc(p.mod)+'</b></td>'
+        +PSTEPS.map(function(k){ return '<td class="ctr">'+cell(p.steps[k])+'</td>'; }).join('')
+        +'<td style="width:22%"><div class="mbar"><i style="width:'+pc(v)+'%"></i></div></td>'
+        +'<td class="r"><span class="mpct'+(v>0?' on':'')+'">'+pc(v)+'%</span></td></tr>';
+    }).join('');
+    el.innerHTML='<thead><tr><th>모듈</th>'
+      +PSTEPS.map(function(k){ return '<th class="ctr">'+esc(k)+'</th>'; }).join('')
+      +'<th>진척</th><th class="r">달성률</th></tr></thead><tbody>'+body+'</tbody>';
+    $('pkg-m').textContent=doneMods+' / '+L.length+'개 모듈 완료';
+  })();
+
   /* ── 주간 업무 ── */
   if($('p-week')) (function(){
     var byWk={}; (DATA.weekly||[]).forEach(function(w){ byWk[w.week]=w; });
@@ -918,6 +980,7 @@ function boot(password, onBadPw){
     var hidden={}; (D.hide||[]).forEach(function(x){ hidden[x]=1; });
     var TABDEF=[
       {id:'p-wbs',  label:'WBS 일정', src:'WBS',    on:true},
+      {id:'p-pkg',  label:'패키지 진척', src:'패키지진척', on:(D.pkgSteps||[]).length>0},
       {id:'p-week', label:'주간 업무', src:'주간업무', on:D.weekly.length>0},
       {id:'p-dev',  label:'추가개발',  src:'WBS',    on:D.dev.length>0},
       {id:'p-rec',  label:'녹화본',    src:'녹화본',  on:D.recordings.length>0, badge:true},
