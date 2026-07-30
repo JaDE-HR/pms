@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 44" role="img" aria-label="i-sens">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 44" role="img" aria-label="i-sens">
   <rect x="3" y="17" width="8" height="23" rx="1.5" fill="#12256f"/>
   <circle cx="7" cy="8.5" r="6.2" fill="#5cb531"/>
-  <text x="15" y="40" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="46" letter-spacing="-2" fill="#12256f">sens</text>
+  <circle cx="18.5" cy="30" r="4.4" fill="#5cb531"/>
+  <text x="26" y="40" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="46" letter-spacing="-2" fill="#12256f">sens</text>
 </svg>
