@@ -328,6 +328,57 @@ const ok = (cond, label, extra) => cond
     }
   }
 
+  /* ── 일정(방문·회의) ────────────────────────────────────────
+     기준일을 고정해야 D-N 이 매일 바뀌지 않는다. */
+  console.log('\n== O. 일정 탭 · 다가오는 일정 ==');
+  {
+    const cfg = [...FIX['설정'], ['미리보기기준일', '2026-08-03']];
+    const r = await run({ ...FIX, '설정': cfg,
+      '일정': [['일자', '시각', '구분', '제목', '장소', '참석자', '비고'],
+        ['2026-07-30', '10:00', '방문', '사전 미팅', '고객사', '홍길동', ''],
+        ['2026-08-07', '14:00', '회의', '인사/조직 모듈 교육', '본사 3층', 'PM 외 4명', '<b>자료 사전배포</b>'],
+        ['2026-08-20', '', '교육', '근태 사용자 교육', '', '', ''],
+      ] });
+    const chip = r.d.getElementById('nextsch');
+    const sec = r.d.getElementById('upnext-sec');
+    ok(!r.err, '오류화면 없음', r.err);
+    ok(r.errs.length === 0, 'JS 예외 없음', r.errs.join('|'));
+    ok(r.tabs.includes('방문·회의'), '방문·회의 탭 생김', r.tabs.join(','));
+    ok(r.tabs[1] === '방문·회의', 'WBS 바로 다음 자리', r.tabs.join(','));
+    ok(chip && !chip.hidden && /08\.07/.test(chip.textContent), '상단 칩에 다음 일정', chip && chip.textContent);
+    ok(/D-4/.test(chip.textContent), '기준일 대비 D-4 계산', chip.textContent);
+    ok(sec && !sec.hidden, '다가오는 일정 블록 표시');
+    ok(r.d.querySelectorAll('.un').length === 2, '지난 건은 빼고 예정 2건만', String(r.d.querySelectorAll('.un').length));
+    ok(!!r.d.querySelector('.un.first'), '가장 가까운 건만 강조');
+    ok(r.d.querySelectorAll('#schtbl tbody tr').length === 3, '일정표는 지난 건 포함 3행');
+    ok(!!r.d.querySelector('#schtbl tr.sch-past'), '지난 일정 흐리게 표시');
+    ok(!!r.d.querySelector('#schtbl tr.sch-next'), '다음 일정 줄 강조');
+    ok(/<b>자료 사전배포<\/b>/.test(r.html), '비고에 허용 서식 적용');
+  }
+
+  console.log('\n== P. 일정 시트가 없으면 흔적도 없다 ==');
+  {
+    const r = await run(FIX);                      /* FIX 에는 일정 시트가 없다 */
+    ok(!r.tabs.includes('방문·회의'), '탭 없음', r.tabs.join(','));
+    const sec = r.d.getElementById('upnext-sec');
+    ok(sec && sec.hidden, '다가오는 일정 블록 숨김');
+    const chip = r.d.getElementById('nextsch');
+    ok(chip && chip.hidden, '상단 칩 숨김');
+    ok(!r.d.getElementById('schtbl'), '일정표 패널 자체가 없음');
+  }
+
+  console.log('\n== Q. 일정 시트 XSS ==');
+  {
+    const r = await run({ ...FIX,
+      '일정': [['일자', '시각', '구분', '제목', '장소', '참석자', '비고'],
+        ['2030-01-01', '<img src=x onerror=alert(1)>', '회의',
+          '<script>alert(1)</script>', 'javascript:alert(1)', '<svg onload=alert(1)>', ''],
+      ] });
+    ok(r.d.querySelectorAll('script').length === 0, 'script 노드 0개');
+    ok(r.d.querySelectorAll('[onerror],[onload]').length === 0, '이벤트 핸들러 속성 0개');
+    ok(/&lt;script&gt;/.test(r.html), '<script> 는 글자로 표시됨');
+  }
+
   console.log(`\n=========== 통과 ${pass} / 실패 ${fail} ===========\n`);
   process.exit(fail ? 1 : 0);
 })();

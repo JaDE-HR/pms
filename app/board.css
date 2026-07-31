@@ -81,6 +81,13 @@ a:hover{text-decoration:underline}
 .tag.grey{background:#ececef;color:#555}
 .tag.line{background:var(--canvas);border:1px solid var(--hairline);color:var(--muted48)}
 
+/* 다음 방문·회의 칩 — 오픈 D-N(파랑)과 헷갈리지 않게 색을 나눈다 */
+.tag.next-sch{background:#e9f6ec;color:#1a7f37}
+
+/* 일정표 — 지난 일정은 흐리게, 바로 다음 일정은 줄째로 강조 */
+.sch-past td{opacity:.5}
+.sch-next td{background:#f2f8ff}
+
 /* 미리보기 기준일 경고 띠 — 지우는 것을 잊었을 때 눈에 띄게 */
 .pvw{background:#fff4d6;border-bottom:1px solid #f0d9a0;color:#7a5a00;
   font-size:12.5px;font-weight:600;text-align:center;padding:7px 16px;letter-spacing:-0.2px}
@@ -110,6 +117,27 @@ a:hover{text-decoration:underline}
 .ch .m{margin-left:auto;font-size:13px;color:var(--muted48)}
 .cb{padding:18px 24px 22px}
 
+/* ── 다가오는 일정 ─────────────────────────────
+   메인 상단. 일정 시트가 없거나 예정 건이 없으면 섹션째 나오지 않는다. */
+.upnext{margin-bottom:24px}
+.un-h{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+.un-h b{font-size:17px;font-weight:600;letter-spacing:-0.4px}
+.un-h span{font-size:13px;color:var(--muted48)}
+.un-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.un{display:flex;align-items:center;gap:14px;background:var(--parchment);
+  border:1px solid transparent;border-radius:14px;padding:14px 16px;min-width:0}
+/* 가장 가까운 건 하나만 색을 준다. 셋 다 강조하면 강조가 아니다. */
+.un.first{background:var(--canvas);border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(0,102,204,.10)}
+.un-d{flex-shrink:0;text-align:center;min-width:46px}
+.un-d b{display:block;font-size:19px;font-weight:600;letter-spacing:-0.6px;line-height:1.1}
+.un-d em{font-style:normal;font-size:11.5px;color:var(--muted48)}
+.un-b{flex:1;min-width:0}
+.un-t{font-size:14px;font-weight:600;letter-spacing:-0.3px;line-height:1.4}
+.un-m{font-size:12px;color:var(--muted48);margin-top:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.un .tag{flex-shrink:0;align-self:flex-start}
+
 /* ── 월별 진행 맵 ─────────────────────────────── */
 /* 한 셀 = 그 달의 카드 + 그 달의 마일스톤 칩.
    둘을 같은 셀에 두어야 줄바꿈이 생겨도 짝이 어긋나지 않는다.
@@ -117,9 +145,18 @@ a:hover{text-decoration:underline}
 .mmap{display:grid;grid-template-columns:repeat(var(--cols,6),minmax(0,1fr));
   gap:16px 14px;align-items:start}
 .mm-cell{display:flex;flex-direction:column;gap:10px;min-width:0}
+/* 두 트랙의 높이 배분 — 비율을 고정하지 않는다.
+   프로젝트마다 월당 항목 수가 다르고(패키지는 모듈 수, 추가개발은 병행 건수),
+   같은 프로젝트도 폭이 좁아지면 이름이 두 줄로 감겨 필요 높이가 달라진다.
+   ⇒ board.js 가 실제 렌더된 높이를 재서 --pkgh / --devh 로 넘긴다.
+      전 카드가 같은 값을 쓰므로 구분선이 가로로 맞고, 카드 높이는 데이터가 정한다.
+      (비율을 박아두면 한 프로젝트에 맞춘 값이 다른 프로젝트에서 반대로 작용한다) */
 .mm{background:var(--parchment);border-radius:12px;padding:16px 17px;position:relative;
-  border:1px solid transparent;display:grid;grid-template-rows:auto 6fr 4fr;height:290px}
-.mm.solo{grid-template-rows:auto 1fr}
+  border:1px solid transparent;display:grid;
+  grid-template-rows:auto var(--pkgh,110px) var(--devh,150px);min-height:230px}
+.mm.solo{grid-template-rows:auto var(--pkgh,110px)}
+/* 재는 동안만 자연 높이로 풀어둔다 (board.js 가 이 클래스를 붙였다 뗀다) */
+.mmap.measuring .mm{grid-template-rows:auto auto auto;min-height:0}
 .mm.past{opacity:.62}
 .mm.now{background:var(--canvas);border-color:var(--primary);
   box-shadow:0 0 0 3px rgba(0,102,204,.10)}
@@ -336,7 +373,6 @@ table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:700px}
 @media (max-width:900px){
   .wrap{padding:0 20px}
   .mmap{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .mm{height:330px}
   .band-in{grid-template-columns:1fr}
   .sc{border-right:0;border-bottom:1px solid rgba(255,255,255,.12)}
   .sc:last-child{border-bottom:0}

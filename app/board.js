@@ -24,13 +24,13 @@
 (function(){
 'use strict';
 
-var VER = '1.4.4';
+var VER = '1.5.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
 
 /* 시트 탭 이름 = 표준 계약. 바꾸면 전 프로젝트가 깨집니다. */
-var SRC = ['설정','WBS','패키지진척','마일스톤','주간업무','녹화본','산출물','이슈','요건'];
+var SRC = ['설정','WBS','패키지진척','마일스톤','일정','주간업무','녹화본','산출물','이슈','요건'];
 
 var PLAIN    = CFG.plain === true;
 var DATA_URL = CFG.data || (PLAIN ? './data.xlsx' : './data.enc');
@@ -95,6 +95,12 @@ var PANELS = {
     +'<span><i class="stp todo">미착수</i></span><span><i class="stp na">해당없음</i></span></div>'
     +'<div class="ts"><table class="t" id="pkgtbl"></table></div></div></div></section>',
 
+  'p-sch': '<section class="panel" id="p-sch" role="tabpanel" hidden>'
+    +'<div class="ph"><h1>방문 및 회의 일정</h1>'
+    +'<p class="sub">확정된 방문·회의·교육 일정입니다. 변경이 생기면 담당 PM이 사전에 안내드립니다.</p></div>'
+    +'<div class="card"><div class="ch"><h3>일정표</h3><span class="m" id="sch-m"></span></div>'
+    +'<div class="cb"><div class="ts"><table class="t" id="schtbl"></table></div></div></div></section>',
+
   'p-week': '<section class="panel" id="p-week" role="tabpanel" hidden>'
     +'<div class="ph"><h1>주간 업무</h1>'
     +'<p class="sub">매주 금요일 기준 금주 실적, 차주 계획, 요청사항입니다.</p></div>'
@@ -157,11 +163,13 @@ function buildShell(tabs){
   + '<div id="pvw"></div>'
   + '<header class="top"><div class="wrap">'
   +   '<span class="brand" id="brand"></span><span class="sp"></span>'
-  +   '<span class="stamp" id="stamp"></span><span class="tag" id="dday"></span>'
+  +   '<span class="stamp" id="stamp"></span>'
+  +   '<span class="tag next-sch" id="nextsch" hidden></span><span class="tag" id="dday"></span>'
   + '</div></header>'
   + '<section class="title"><div class="wrap"><div class="title-main">'
   +   '<p class="eyebrow">프로젝트 현황</p><h1 id="proj-name"></h1><p class="sub" id="sub"></p>'
   +   '</div><dl class="specs" id="specs"></dl></div></section>'
+  + '<section class="wrap" id="upnext-sec" hidden><div class="upnext" id="upnext"></div></section>'
   + '<section class="wrap"><div class="card"><div class="ch"><h3>월별 진행 맵</h3></div>'
   +   '<div class="cb"><div class="mmap" id="mmap"></div></div>'
   + '</div></section>'
@@ -334,7 +342,7 @@ function build(t){
     weights:{ pkg:0.5, dev:0.5 },
     previewDate:null, hide:[],
     pkg:[], pkgSteps:[], dev:[], devSpan:null, devPct:null, pctPkg:null, pctAll:null,
-    milestones:[], weekly:[], recordings:[], docs:[], issues:[], devItems:[],
+    milestones:[], schedule:[], weekly:[], recordings:[], docs:[], issues:[], devItems:[],
     issueSummary:''
   };
 
@@ -431,6 +439,15 @@ function build(t){
   if(t['마일스톤']) D.milestones = t['마일스톤']
     .map(function(r){ return { n:r['이름'], d:nd(r['일자']) }; })
     .filter(function(x){ return x.n && x.d; });
+
+  /* ── 일정 : 방문·회의·교육. 일자와 제목만 있으면 되고 나머지 칸은 비워도 된다 ── */
+  if(t['일정']) D.schedule = t['일정'].map(function(r){
+    return { d:nd(r['일자']), time:String(r['시각']||'').trim(),
+             kind:String(r['구분']||'').trim(), n:String(r['제목']||'').trim(),
+             place:String(r['장소']||'').trim(), who:String(r['참석자']||'').trim(),
+             memo:r['비고']||'' };
+  }).filter(function(x){ return x.d && x.n; })
+    .sort(function(a,b){ return a.d===b.d ? (a.time<b.time?-1:1) : (a.d<b.d?-1:1); });
 
   if(t['주간업무']){
     var wk={}, ord=[];
@@ -578,6 +595,38 @@ function render(DATA, warn){
   else if(OPEN>today){ dd.className='tag blue'; dd.textContent='오픈 D-'+Math.ceil((OPEN-today)/DAY); }
   else { dd.className='tag grey'; dd.textContent='오픈 완료'; }
 
+  /* 다음 방문·회의 — 상단 칩. 일정 시트가 없는 프로젝트에서는 칩 자체가 나오지 않는다. */
+  var DOW=['일','월','화','수','목','금','토'];
+  var nextSch=(DATA.schedule||[]).filter(function(x){ return parseYmd(x.d)>=today; })[0] || null;
+  if(nextSch){
+    var nsd=parseYmd(nextSch.d), gap=Math.round((nsd-today)/DAY);
+    var ns=$('nextsch');
+    ns.hidden=false;
+    ns.textContent='다음 일정 '+md(nsd)+'('+DOW[nsd.getDay()]+')'
+      +(nextSch.time?' '+nextSch.time:'')+' · '+(gap===0?'오늘':'D-'+gap);
+    ns.title=nextSch.n;
+  }
+
+  /* ── 다가오는 일정 — 메인 상단 블록. 가까운 순으로 최대 3건, 맨 앞을 크게 ── */
+  (function(){
+    var up=(DATA.schedule||[]).filter(function(x){ return parseYmd(x.d)>=today; });
+    if(!up.length) return;                       /* 예정이 없으면 블록째 나오지 않는다 */
+    var sec=$('upnext-sec'); if(!sec) return;
+    sec.hidden=false;
+    var cards=up.slice(0,3).map(function(x,i){
+      var dt=parseYmd(x.d), g=Math.round((dt-today)/DAY);
+      var meta=[x.time, x.kind, x.place].filter(Boolean).join(' · ');
+      return '<div class="un'+(i===0?' first':'')+'">'
+        +'<div class="un-d"><b>'+md(dt)+'</b><em>'+DOW[dt.getDay()]+'</em></div>'
+        +'<div class="un-b"><div class="un-t">'+esc(x.n)+'</div>'
+        +(meta?'<div class="un-m">'+esc(meta)+'</div>':'')
+        +(x.who?'<div class="un-m">'+esc(x.who)+'</div>':'')+'</div>'
+        +'<span class="tag '+(g===0?'red':'blue')+'">'+(g===0?'오늘':'D-'+g)+'</span></div>';
+    }).join('');
+    $('upnext').innerHTML='<div class="un-h"><b>다가오는 일정</b>'
+      +'<span>예정 '+up.length+'건</span></div><div class="un-list">'+cards+'</div>';
+  })();
+
   $('proj-name').textContent=P.name;
   $('foot-l').textContent=P.vendor+' / '+P.name;
   try{ document.title=P.name+' / 프로젝트 현황'; }catch(e){}
@@ -658,6 +707,34 @@ function render(DATA, warn){
     mm.style.setProperty('--cols', n);
     mm.className = 'mmap' + (n>=7 ? ' tight' : '');
     mm.innerHTML=html;
+
+    /* 두 트랙의 높이 배분 — 항목 수만으로는 정할 수 없다. 이름이 길면 두 줄로 감기고,
+       그건 카드 폭(=칸 수·화면 폭)에 따라 달라진다. 그래서 세지 않고 잰다.
+       자연 높이로 한 번 풀어 재고 가장 큰 값을 전 카드에 공통으로 준다.
+       ⇒ 프로젝트마다 필요한 만큼만 갖고(패키지가 많으면 패키지가 커진다), 구분선은 가로로 맞는다. */
+    function fitTracks(){
+      mm.classList.add('measuring');
+      var secs=mm.querySelectorAll('.mm-sec'), p=0, d=0, i, s, cs, h;
+      for(i=0;i<secs.length;i++){
+        s=secs[i]; cs=getComputedStyle(s);
+        /* 트랙이 품어야 할 높이 = 테두리까지 포함한 박스 + 위아래 마진.
+           scrollHeight 만 쓰면 추가개발 쪽 구분선(border 1 + margin 2)만큼 모자란다. */
+        h=Math.ceil(s.getBoundingClientRect().height
+          + (parseFloat(cs.marginTop)||0) + (parseFloat(cs.marginBottom)||0));
+        if(s.className.indexOf('dv-sec')>=0){ if(h>d) d=h; }
+        else if(h>p) p=h;
+      }
+      mm.classList.remove('measuring');
+      /* 상한 — 유난히 몰린 달이 있어도 카드가 화면을 넘기지 않게. 넘치면 영역 안에서 스크롤된다. */
+      mm.style.setProperty('--pkgh', Math.min(p,300)+'px');
+      mm.style.setProperty('--devh', Math.min(d,300)+'px');
+    }
+    fitTracks();
+    var fitT=null;                              /* 폭이 바뀌면 줄바꿈이 달라지므로 다시 잰다 */
+    window.addEventListener('resize', function(){
+      clearTimeout(fitT); fitT=setTimeout(fitTracks,150);
+    });
+
     var cards=mm.querySelectorAll('.mm');
     for(var ci=0; ci<cards.length; ci++){
       (function(el,ws){
@@ -811,6 +888,30 @@ function render(DATA, warn){
       +PSTEPS.map(function(k){ return '<th class="ctr">'+esc(k)+'</th>'; }).join('')
       +'<th>진척</th><th class="r">달성률</th></tr></thead><tbody>'+body+'</tbody>';
     $('pkg-m').textContent=doneMods+' / '+L.length+'개 모듈 완료';
+  })();
+
+  /* ── 방문 및 회의 일정 ── */
+  if($('p-sch')) (function(){
+    var L=DATA.schedule||[];
+    var KIND={'방문':'blue','회의':'blue','교육':'grey','온라인':'line'};
+    var rows=L.map(function(x){
+      var dt=parseYmd(x.d), past=dt<today, isNext=(x===nextSch);
+      return '<tr class="'+(past?'sch-past':(isNext?'sch-next':''))+'">'
+        +'<td class="mn"><b style="color:var(--ink)">'+ymd(dt)+'</b>('+DOW[dt.getDay()]+')</td>'
+        +'<td class="mn">'+esc(x.time||'—')+'</td>'
+        +'<td>'+(x.kind?'<span class="tag '+(KIND[x.kind]||'line')+'">'+esc(x.kind)+'</span>':'')+'</td>'
+        +'<td><b>'+esc(x.n)+'</b>'
+        +(x.memo?'<div class="dt" style="margin-top:5px">'+rich(x.memo)+'</div>':'')+'</td>'
+        +'<td class="mn">'+esc(x.place||'—')+'</td>'
+        +'<td class="mn">'+esc(x.who||'—')+'</td>'
+        +'<td>'+(past?'<span class="tag line">완료</span>'
+                     :(isNext?'<span class="tag blue">다음</span>':'<span class="tag line">예정</span>'))+'</td>'
+        +'</tr>';
+    }).join('');
+    $('schtbl').innerHTML='<thead><tr><th>일자</th><th>시각</th><th>구분</th><th>내용</th>'
+      +'<th>장소</th><th>참석자</th><th>상태</th></tr></thead><tbody>'+rows+'</tbody>';
+    var done=L.filter(function(x){ return parseYmd(x.d)<today; }).length;
+    $('sch-m').textContent='전체 '+L.length+'건 · 지난 일정 '+done+'건 · 예정 '+(L.length-done)+'건';
   })();
 
   /* ── 주간 업무 ── */
@@ -997,6 +1098,7 @@ function boot(password, onBadPw){
     var hidden={}; (D.hide||[]).forEach(function(x){ hidden[x]=1; });
     var TABDEF=[
       {id:'p-wbs',  label:'WBS 일정', src:'WBS',    on:true},
+      {id:'p-sch',  label:'방문·회의', src:'일정',   on:D.schedule.length>0},
       {id:'p-pkg',  label:'패키지 진척', src:'패키지진척', on:(D.pkgSteps||[]).length>0},
       {id:'p-week', label:'주간 업무', src:'주간업무', on:D.weekly.length>0},
       {id:'p-dev',  label:'추가개발',  src:'WBS',    on:D.dev.length>0},
