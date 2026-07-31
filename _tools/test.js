@@ -379,6 +379,41 @@ const ok = (cond, label, extra) => cond
     ok(/&lt;script&gt;/.test(r.html), '<script> 는 글자로 표시됨');
   }
 
+  console.log('\n== R. 요건 대장 검토서 링크 ==');
+  {
+    const cfg = [...FIX['설정'],
+      ['요건검토서URL', 'https://ex.com/review'],
+      ['요건검토서문구', '요구사항 검토서 (20건) 열기']];
+    const r = await run({ ...FIX, '설정': cfg });
+    const a = r.d.getElementById('dev-doc');
+    ok(a && !a.hidden, '버튼 노출됨');
+    ok(a.getAttribute('href') === 'https://ex.com/review', 'URL 연결', a && a.getAttribute('href'));
+    ok(/요구사항 검토서 \(20건\) 열기/.test(a.textContent), '문구 반영', a && a.textContent);
+    ok(a.getAttribute('target') === '_blank' && /noopener/.test(a.getAttribute('rel')), '새 탭 · noopener');
+  }
+  {
+    const r = await run(FIX);                      /* URL 없음 */
+    const a = r.d.getElementById('dev-doc');
+    ok(a && a.hidden, 'URL 없으면 버튼 숨김');
+  }
+  {
+    const cfg = [...FIX['설정'], ['요건검토서URL', 'javascript:alert(1)']];
+    const r = await run({ ...FIX, '설정': cfg });
+    const a = r.d.getElementById('dev-doc');
+    ok(a && a.hidden, 'javascript: 스킴은 버튼째 차단');
+  }
+
+  console.log('\n== S. 산출물 시트를 빼면 탭이 사라진다 ==');
+  {
+    const rest = { ...FIX };
+    delete rest['산출물'];
+    const r = await run(rest);
+    ok(!r.err, '오류화면 없음', r.err);
+    ok(!r.tabs.includes('산출물'), '산출물 탭 없음', r.tabs.join(','));
+    ok(!r.d.getElementById('docs'), '산출물 표 자체가 없음');
+    ok(r.tabs.includes('추가개발'), '나머지 탭은 그대로', r.tabs.join(','));
+  }
+
   console.log(`\n=========== 통과 ${pass} / 실패 ${fail} ===========\n`);
   process.exit(fail ? 1 : 0);
 })();

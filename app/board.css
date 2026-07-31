@@ -115,6 +115,13 @@ a:hover{text-decoration:underline}
 .ch{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:18px 24px 0}
 .ch h3{font-size:17px;font-weight:600}
 .ch .m{margin-left:auto;font-size:13px;color:var(--muted48)}
+/* 카드 헤더에서 바로 여는 링크 버튼 (요건 대장 → 요구사항 검토서 등) */
+/* 좁은 화면에서 글자가 세로로 찌그러지지 않게 줄바꿈을 막고 줄어들지 않게 한다 */
+.docbtn{display:inline-block;font-size:12.5px;font-weight:600;letter-spacing:-0.2px;
+  padding:6px 14px;border-radius:9999px;background:var(--primary);color:#fff;
+  white-space:nowrap;flex-shrink:0}
+.docbtn:hover{background:#0058b0;text-decoration:none}
+.docbtn[hidden]{display:none}
 .cb{padding:18px 24px 22px}
 
 /* ── 다가오는 일정 ─────────────────────────────

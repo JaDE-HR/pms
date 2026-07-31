@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.5.0';
+var VER = '1.6.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -113,7 +113,8 @@ var PANELS = {
     +'<div class="card"><div class="ch"><h3>단계별 진척</h3><span class="m" id="dev-m"></span></div>'
     +'<div class="cb"><div class="ts"><table class="t" id="dev-phase"></table></div></div></div>'
     +'<div class="card" id="dev-items-card"><div class="ch"><h3>요건 대장</h3>'
-    +'<span class="m" id="dev-im"></span></div>'
+    +'<span class="m" id="dev-im"></span>'
+    +'<a class="docbtn" id="dev-doc" target="_blank" rel="noopener" hidden></a></div>'
     +'<div class="cb"><div class="ts"><table class="t" id="dev-items"></table></div></div></div></section>',
 
   'p-rec': '<section class="panel" id="p-rec" role="tabpanel" hidden>'
@@ -343,7 +344,7 @@ function build(t){
     previewDate:null, hide:[],
     pkg:[], pkgSteps:[], dev:[], devSpan:null, devPct:null, pctPkg:null, pctAll:null,
     milestones:[], schedule:[], weekly:[], recordings:[], docs:[], issues:[], devItems:[],
-    issueSummary:''
+    issueSummary:'', devDocUrl:'', devDocText:''
   };
 
   /* ── 설정 ── */
@@ -376,6 +377,9 @@ function build(t){
   if(C('가중치_추가개발')) D.weights.dev=num(C('가중치_추가개발'),D.weights.dev);
   D.previewDate = nd(C('미리보기기준일')) || null;
   if(C('이슈요약')) D.issueSummary=C('이슈요약');
+  /* 요건 대장에서 바로 여는 문서·사이트 (요구사항 검토서 등). 비우면 버튼이 안 나온다. */
+  if(C('요건검토서URL'))  D.devDocUrl  = C('요건검토서URL');
+  if(C('요건검토서문구')) D.devDocText = C('요건검토서문구');
   if(C('숨김탭')) D.hide=String(C('숨김탭')).split(/[,;]/).map(function(x){ return x.trim(); }).filter(Boolean);
   D.pctAll=pct(C('진척률_전체')); D.pctPkg=pct(C('진척률_패키지'));
   var dp=pct(C('진척률_추가개발')); if(dp!==null) D.devPct=dp;
@@ -982,6 +986,15 @@ function render(DATA, warn){
 
     var di=DATA.devItems||[];
     if(!di.length){ $('dev-items-card').hidden=true; return; }   /* 요건 탭 없으면 카드 자체를 뺀다 */
+
+    /* 요구사항 검토서처럼 요건 전체를 다루는 문서·사이트를 여기서 바로 연다.
+       설정 시트에 URL 이 없으면 버튼 자체가 나오지 않는다. */
+    var ddu=safeUrl(DATA.devDocUrl), dd=$('dev-doc');
+    if(ddu && dd){
+      dd.href=ddu;
+      dd.textContent=(DATA.devDocText||'요구사항 검토서 열기');
+      dd.hidden=false;
+    }
     var dn=di.filter(function(x){ return x.st==='done'; });
     var sum=function(a){ return a.reduce(function(p,c){ return p+c.md; },0); };
     $('dev-items').innerHTML='<thead><tr><th class="r">No</th><th>구분</th><th>요건명</th>'
