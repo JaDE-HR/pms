@@ -76,6 +76,9 @@ a:hover{text-decoration:underline}
 .stamp{font-size:13px;color:var(--muted48)}
 .tag{display:inline-block;font-size:11px;font-weight:600;padding:4px 11px;
   border-radius:9999px;white-space:nowrap;letter-spacing:-0.2px}
+/* display 를 지정했으므로 hidden 을 다시 살려준다.
+   (안 하면 일정 시트가 없는 프로젝트에서 빈 칩이 그대로 보인다) */
+.tag[hidden]{display:none}
 .tag.blue{background:#e8f1fc;color:var(--primary)}
 .tag.red{background:#fdeceb;color:var(--over)}
 .tag.grey{background:#ececef;color:#555}
