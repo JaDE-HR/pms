@@ -139,6 +139,16 @@ a:hover{text-decoration:underline}
 /* 가장 가까운 건 하나만 색을 준다. 셋 다 강조하면 강조가 아니다. */
 .un.first{background:var(--canvas);border-color:var(--primary);
   box-shadow:0 0 0 3px rgba(0,102,204,.10)}
+/* 확정 일정 — 흰 배경 + 옅은 파란 테두리로 미정과 구분한다 */
+.un.conf{background:var(--canvas);border-color:#cfe0f5}
+/* 가장 가까운 확정 일정 — 링이 은은하게 커졌다 작아진다 */
+.un.conf.first{border-color:var(--primary);animation:unpulse 2.6s ease-in-out infinite}
+@keyframes unpulse{
+  0%,100%{box-shadow:0 0 0 3px rgba(0,102,204,.10)}
+  50%    {box-shadow:0 0 0 7px rgba(0,102,204,.18)}
+}
+/* 일자 미정 — 점선 테두리로 확정 일정과 확실히 구분 */
+.un.tbd{background:var(--parchment);border-style:dashed;border-color:#d3d3d8;box-shadow:none}
 .un-d{flex-shrink:0;text-align:center;min-width:46px}
 .un-d b{display:block;font-size:19px;font-weight:600;letter-spacing:-0.6px;line-height:1.1}
 .un-d em{font-style:normal;font-size:11.5px;color:var(--muted48)}

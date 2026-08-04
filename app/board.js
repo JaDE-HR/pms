@@ -634,12 +634,12 @@ function render(DATA, warn){
         +(meta?'<div class="un-m">'+esc(meta)+'</div>':'')
         +(x.who?'<div class="un-m">'+esc(x.who)+'</div>':'')+'</div>';
       if(x.tbd){                                 /* 일자 미정 — 날짜 자리에 「미정」 */
-        return '<div class="un'+(i===0?' first':'')+'">'
+        return '<div class="un tbd'+(i===0?' first':'')+'">'
           +'<div class="un-d"><b class="tbd">미정</b></div>'+body
           +'<span class="tag grey">미정</span></div>';
       }
       var dt=parseYmd(x.d), g=Math.round((dt-today)/DAY);
-      return '<div class="un'+(i===0?' first':'')+'">'
+      return '<div class="un conf'+(i===0?' first':'')+'">'
         +'<div class="un-d"><b>'+md(dt)+'</b><em>'+DOW[dt.getDay()]+'</em></div>'+body
         +'<span class="tag '+(g===0?'red':'blue')+'">'+(g===0?'오늘':'D-'+g)+'</span></div>';
     }).join('');
