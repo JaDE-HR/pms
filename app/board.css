@@ -81,6 +81,8 @@ a:hover{text-decoration:underline}
 .tag[hidden]{display:none}
 .tag.blue{background:#e8f1fc;color:var(--primary)}
 .tag.red{background:#fdeceb;color:var(--over)}
+/* 당일 일정 — 남은 날짜 배지 중 가장 강한 단계 */
+.tag.today{background:var(--over);color:#fff}
 .tag.grey{background:#ececef;color:#555}
 .tag.line{background:var(--canvas);border:1px solid var(--hairline);color:var(--muted48)}
 

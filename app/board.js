@@ -641,7 +641,8 @@ function render(DATA, warn){
       var dt=parseYmd(x.d), g=Math.round((dt-today)/DAY);
       return '<div class="un conf'+(i===0?' first':'')+'">'
         +'<div class="un-d"><b>'+md(dt)+'</b><em>'+DOW[dt.getDay()]+'</em></div>'+body
-        +'<span class="tag '+(g===0?'red':'blue')+'">'+(g===0?'오늘':'D-'+g)+'</span></div>';
+        /* 남은 날짜는 빨간 박스로 강조 — 당일은 꽉 찬 빨강, 그 외는 옅은 빨강 */
+        +'<span class="tag '+(g===0?'today':'red')+'">'+(g===0?'오늘':'D-'+g)+'</span></div>';
     }).join('');
     $('upnext').innerHTML='<div class="un-h"><b>다가오는 일정</b>'
       +'<span>예정 '+up.length+'건</span></div><div class="un-list">'+cards+'</div>';
