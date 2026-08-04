@@ -444,14 +444,22 @@ function build(t){
     .map(function(r){ return { n:r['이름'], d:nd(r['일자']) }; })
     .filter(function(x){ return x.n && x.d; });
 
-  /* ── 일정 : 방문·회의·교육. 일자와 제목만 있으면 되고 나머지 칸은 비워도 된다 ── */
+  /* ── 일정 : 방문·회의·교육. 일자와 제목만 있으면 되고 나머지 칸은 비워도 된다.
+     일자 칸에 「미정」(또는 추후·TBD)을 적으면 날짜 없이 미정으로 표시되고 항상 맨 뒤로 간다. ── */
   if(t['일정']) D.schedule = t['일정'].map(function(r){
-    return { d:nd(r['일자']), time:String(r['시각']||'').trim(),
+    var raw=String(r['일자']==null?'':r['일자']).trim();
+    var d=nd(r['일자']);
+    return { d:d, tbd:(!d && /^(미정|추후|미확정|TBD)/i.test(raw)),
+             time:String(r['시각']||'').trim(),
              kind:String(r['구분']||'').trim(), n:String(r['제목']||'').trim(),
              place:String(r['장소']||'').trim(), who:String(r['참석자']||'').trim(),
              memo:r['비고']||'' };
-  }).filter(function(x){ return x.d && x.n; })
-    .sort(function(a,b){ return a.d===b.d ? (a.time<b.time?-1:1) : (a.d<b.d?-1:1); });
+  }).filter(function(x){ return (x.d || x.tbd) && x.n; })
+    .sort(function(a,b){
+      if(a.tbd !== b.tbd) return a.tbd ? 1 : -1;         /* 미정은 항상 뒤 */
+      if(a.tbd) return 0;
+      return a.d===b.d ? (a.time<b.time?-1:1) : (a.d<b.d?-1:1);
+    });
 
   if(t['주간업무']){
     var wk={}, ord=[];
@@ -601,7 +609,7 @@ function render(DATA, warn){
 
   /* 다음 방문·회의 — 상단 칩. 일정 시트가 없는 프로젝트에서는 칩 자체가 나오지 않는다. */
   var DOW=['일','월','화','수','목','금','토'];
-  var nextSch=(DATA.schedule||[]).filter(function(x){ return parseYmd(x.d)>=today; })[0] || null;
+  var nextSch=(DATA.schedule||[]).filter(function(x){ return !x.tbd && parseYmd(x.d)>=today; })[0] || null;
   if(nextSch){
     var nsd=parseYmd(nextSch.d), gap=Math.round((nsd-today)/DAY);
     var ns=$('nextsch');
@@ -613,18 +621,23 @@ function render(DATA, warn){
 
   /* ── 다가오는 일정 — 메인 상단 블록. 가까운 순으로 최대 3건, 맨 앞을 크게 ── */
   (function(){
-    var up=(DATA.schedule||[]).filter(function(x){ return parseYmd(x.d)>=today; });
+    var up=(DATA.schedule||[]).filter(function(x){ return x.tbd || parseYmd(x.d)>=today; });
     if(!up.length) return;                       /* 예정이 없으면 블록째 나오지 않는다 */
     var sec=$('upnext-sec'); if(!sec) return;
     sec.hidden=false;
     var cards=up.slice(0,3).map(function(x,i){
-      var dt=parseYmd(x.d), g=Math.round((dt-today)/DAY);
       var meta=[x.time, x.kind, x.place].filter(Boolean).join(' · ');
-      return '<div class="un'+(i===0?' first':'')+'">'
-        +'<div class="un-d"><b>'+md(dt)+'</b><em>'+DOW[dt.getDay()]+'</em></div>'
-        +'<div class="un-b"><div class="un-t">'+esc(x.n)+'</div>'
+      var body='<div class="un-b"><div class="un-t">'+esc(x.n)+'</div>'
         +(meta?'<div class="un-m">'+esc(meta)+'</div>':'')
-        +(x.who?'<div class="un-m">'+esc(x.who)+'</div>':'')+'</div>'
+        +(x.who?'<div class="un-m">'+esc(x.who)+'</div>':'')+'</div>';
+      if(x.tbd){                                 /* 일자 미정 — 날짜 자리에 「미정」 */
+        return '<div class="un'+(i===0?' first':'')+'">'
+          +'<div class="un-d"><b class="tbd">미정</b></div>'+body
+          +'<span class="tag grey">미정</span></div>';
+      }
+      var dt=parseYmd(x.d), g=Math.round((dt-today)/DAY);
+      return '<div class="un'+(i===0?' first':'')+'">'
+        +'<div class="un-d"><b>'+md(dt)+'</b><em>'+DOW[dt.getDay()]+'</em></div>'+body
         +'<span class="tag '+(g===0?'red':'blue')+'">'+(g===0?'오늘':'D-'+g)+'</span></div>';
     }).join('');
     $('upnext').innerHTML='<div class="un-h"><b>다가오는 일정</b>'
@@ -899,22 +912,24 @@ function render(DATA, warn){
     var L=DATA.schedule||[];
     var KIND={'방문':'blue','회의':'blue','교육':'grey','온라인':'line'};
     var rows=L.map(function(x){
-      var dt=parseYmd(x.d), past=dt<today, isNext=(x===nextSch);
+      var dt=x.tbd?null:parseYmd(x.d), past=!x.tbd && dt<today, isNext=(x===nextSch);
       return '<tr class="'+(past?'sch-past':(isNext?'sch-next':''))+'">'
-        +'<td class="mn"><b style="color:var(--ink)">'+ymd(dt)+'</b>('+DOW[dt.getDay()]+')</td>'
+        +'<td class="mn">'+(x.tbd ? '<b style="color:var(--muted48)">미정</b>'
+            : '<b style="color:var(--ink)">'+ymd(dt)+'</b>('+DOW[dt.getDay()]+')')+'</td>'
         +'<td class="mn">'+esc(x.time||'—')+'</td>'
         +'<td>'+(x.kind?'<span class="tag '+(KIND[x.kind]||'line')+'">'+esc(x.kind)+'</span>':'')+'</td>'
         +'<td><b>'+esc(x.n)+'</b>'
         +(x.memo?'<div class="dt" style="margin-top:5px">'+rich(x.memo)+'</div>':'')+'</td>'
         +'<td class="mn">'+esc(x.place||'—')+'</td>'
         +'<td class="mn">'+esc(x.who||'—')+'</td>'
-        +'<td>'+(past?'<span class="tag line">완료</span>'
-                     :(isNext?'<span class="tag blue">다음</span>':'<span class="tag line">예정</span>'))+'</td>'
+        +'<td>'+(x.tbd?'<span class="tag grey">미정</span>'
+                     :(past?'<span class="tag line">완료</span>'
+                     :(isNext?'<span class="tag blue">다음</span>':'<span class="tag line">예정</span>')))+'</td>'
         +'</tr>';
     }).join('');
     $('schtbl').innerHTML='<thead><tr><th>일자</th><th>시각</th><th>구분</th><th>내용</th>'
       +'<th>장소</th><th>참석자</th><th>상태</th></tr></thead><tbody>'+rows+'</tbody>';
-    var done=L.filter(function(x){ return parseYmd(x.d)<today; }).length;
+    var done=L.filter(function(x){ return !x.tbd && parseYmd(x.d)<today; }).length;
     $('sch-m').textContent='전체 '+L.length+'건 · 지난 일정 '+done+'건 · 예정 '+(L.length-done)+'건';
   })();
 
