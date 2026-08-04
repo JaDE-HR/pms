@@ -954,7 +954,7 @@ function render(DATA, warn){
       var body = has(w)
         ? (w.done&&w.done.length?'<h4>금주 실적</h4><ul>'+li(w.done)+'</ul>':'')
           +(w.next&&w.next.length?'<h4>차주 계획</h4><ul>'+li(w.next)+'</ul>':'')
-          +(w.req&&w.req.length?'<h4 class="req">고객사 준비사항</h4><ul class="req">'+li(w.req)+'</ul>':'')
+          +(w.req&&w.req.length?'<h4 class="req">고객사 요청사항</h4><ul class="req">'+li(w.req)+'</ul>':'')
         : '<div class="empty" style="padding:22px 0">아직 등록된 내용이 없습니다.</div>';
       return '<div class="wk"><div class="wk-l"><b>'+(w.week?w.week+'주차':'착수 전')+'</b>'
         +'<div class="pd">'+esc(w.period||'')+'</div>'
