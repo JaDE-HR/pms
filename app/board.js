@@ -50,9 +50,12 @@ function rich(s){
   return esc(s)
     .replace(/&lt;(\/?)(b|strong|i|em|u|br)\s*\/?&gt;/gi,
       function(m,sl,tag){ return '<'+sl+tag.toLowerCase()+'>'; })
-    /* 데이터 안 빨간 강조: <red>…</red> → 고정 클래스 span (속성 자유입력 없음 = 안전) */
+    /* 데이터 안 색 강조: <red>…</red> 빨강(기한 등), <blue>…</blue> 파랑(고객사 회신 등)
+       → 고정 클래스 span (속성 자유입력이 없으므로 안전) */
     .replace(/&lt;red&gt;/gi, '<span class="rt">')
-    .replace(/&lt;\/red&gt;/gi, '</span>');
+    .replace(/&lt;\/red&gt;/gi, '</span>')
+    .replace(/&lt;blue&gt;/gi, '<span class="bt">')
+    .replace(/&lt;\/blue&gt;/gi, '</span>');
 }
 
 /* href 로 나갈 값. javascript: 등은 버린다. */

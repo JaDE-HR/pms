@@ -415,8 +415,9 @@ table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:700px}
 .mpct.on{color:var(--primary)}
 .t td.ctr,.t th.ctr{text-align:center}
 
-/* 데이터 안에서 빨간 강조: <red>08.10(월)까지</red> → 빨간 굵은 글씨 */
+/* 데이터 안에서 색 강조 — <red>기한</red> 빨강, <blue>고객사 회신</blue> 파랑 */
 .rt{color:var(--over);font-weight:700}
+.bt{color:var(--primary);font-weight:700}
 
 /* 마일스톤 hover 툴팁 — 기본 title 대신 즉시 뜨는 커스텀 말풍선 */
 .ms-col{overflow:visible}
