@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.7.0';
+var VER = '1.8.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -113,7 +113,7 @@ var PANELS = {
 
   'p-dev': '<section class="panel" id="p-dev" role="tabpanel" hidden>'
     +'<div class="ph"><h1>추가개발</h1><p class="sub" id="dev-sub"></p></div>'
-    +'<div class="card"><div class="ch"><h3>단계별 진척</h3><span class="m" id="dev-m"></span></div>'
+    +'<div class="card" id="dev-phase-card"><div class="ch"><h3>단계별 진척</h3><span class="m" id="dev-m"></span></div>'
     +'<div class="cb"><div class="ts"><table class="t" id="dev-phase"></table></div></div></div>'
     +'<div class="card" id="dev-items-card"><div class="ch"><h3>요건 대장</h3>'
     +'<span class="m" id="dev-im"></span>'
@@ -386,6 +386,10 @@ function build(t){
   if(C('숨김탭')) D.hide=String(C('숨김탭')).split(/[,;]/).map(function(x){ return x.trim(); }).filter(Boolean);
   D.pctAll=pct(C('진척률_전체')); D.pctPkg=pct(C('진척률_패키지'));
   var dp=pct(C('진척률_추가개발')); if(dp!==null) D.devPct=dp;
+  /* 단계별 진척(모듈 밴드) 표 = '숨김' 이면 카드째 뺀다.
+     요건 대장이 요건 단위로 같은 것을 이미 보여주는 프로젝트에서, 모듈 밴드는
+     요건 상태의 롤업일 뿐 독립 정보가 없어 「사람이 손으로 바꿔야 하는데 바뀌지 않는 칸」이 된다. */
+  D.hidePhase = String(C('단계별진척')||'').trim()==='숨김';
 
   /* ── WBS ── */
   if(!t['WBS'] || !t['WBS'].length) return { err:'WBS 탭을 읽지 못했습니다.' };
@@ -589,7 +593,18 @@ function render(DATA, warn){
     if(sw) stepsPct=sa/sw;
   }
   var pPkg = DATA.pctPkg!==null ? DATA.pctPkg : (stepsPct!==null ? stepsPct : progGroups(DATA.pkg));
-  var pDev = DATA.devPct!==null && DATA.devPct!==undefined ? DATA.devPct : prog(DATA.dev);
+
+  /* 추가개발 진척 = 요건 대장이 있으면 **요건 단위**로 센다 (M/D 가중 · 완료 1 · 진행중 0.5).
+     WBS 의 모듈 밴드보다 입자가 곱고, 상태를 한 곳(요건 대장)에서만 관리하게 된다.
+     요건 시트가 없는 프로젝트는 종전대로 WBS 추가개발 행의 기간가중. */
+  function progItems(a){
+    var n=0,t=0;
+    a.forEach(function(i){ var w=(i.md>0?i.md:1); t+=w; n+=w*WT[i.st]; });
+    return t?n/t:0;
+  }
+  var devItemsAll = DATA.devItems||[];
+  var pDev = DATA.devPct!==null && DATA.devPct!==undefined ? DATA.devPct
+           : (devItemsAll.length ? progItems(devItemsAll) : prog(DATA.dev));
   var wSum = DATA.weights.pkg + DATA.weights.dev || 1;
   var pAll = DATA.pctAll!==null ? DATA.pctAll
            : (hasDev ? (pPkg*DATA.weights.pkg + pDev*DATA.weights.dev)/wSum : pPkg);
@@ -995,6 +1010,7 @@ function render(DATA, warn){
     $('dev-sub').textContent = P.devMD
       ? '총 '+P.devMD+' M/D'+(P.devCount?', 공수가 책정된 요건 '+P.devCount+'건':'')+'입니다.'
       : '추가개발 단계별 진척입니다.';
+    if(DATA.hidePhase && $('dev-phase-card')) $('dev-phase-card').hidden=true;
     $('dev-m').textContent='진척률 '+pc(pDev)+'%';
     $('dev-phase').innerHTML='<thead><tr><th>단계</th><th>기간</th><th>주차</th><th>상태</th><th>비고</th></tr></thead><tbody>'
       +DATA.dev.map(function(it){
@@ -1036,7 +1052,9 @@ function render(DATA, warn){
           +'<td class="mn">'+esc(x.owner||'')+'</td>'
           +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기'}[x.st])+'</span></td></tr>'; }).join('')
       +'</tbody>';
-    $('dev-im').textContent=dn.length+' / '+di.length+'건 완료, '+sum(dn)+' / '+sum(di)+' M/D';
+    /* 단계 표를 감췄으면 진척률 뱃지가 그 카드와 함께 사라지므로 여기로 옮겨 붙인다 */
+    $('dev-im').textContent=(DATA.hidePhase?'진척률 '+pc(pDev)+'% · ':'')
+      +dn.length+' / '+di.length+'건 완료, '+sum(dn)+' / '+sum(di)+' M/D';
   })();
 
   /* ── 교육 녹화본 ── */

@@ -158,6 +158,20 @@ const ok = (cond, label, extra) => cond
     ok(!r.tabs.includes('녹화본') && !r.tabs.includes('이슈'), '녹화본/이슈 제거', r.tabs.join(','));
   }
 
+  console.log('\n== B-3. 단계별진척=숨김 -> 카드 제거 · 진척률은 요건 롤업 ==');
+  {
+    const f = { ...FIX, '설정': [...FIX['설정'], ['단계별진척', '숨김']] };
+    const r = await run(f);
+    ok(!r.err, '오류화면 없음', r.err);
+    ok(!/단계별 진척/.test(r.html) || /dev-phase-card[^>]*hidden/.test(r.html),
+      '단계별 진척 카드 숨김');
+    ok(/진척률 \d+% · 1 \/ 2건 완료/.test(r.html), '진척률이 요건 대장 머리로 옮겨감',
+      (r.html.match(/진척률 \d+% · [^<]*/) || [])[0]);
+    /* 요건 = 완료 20 M/D + 대기 40 M/D → M/D 가중 20/60 = 33% (WBS 밴드 기간가중이 아니다) */
+    ok(/진척률 33%/.test(r.html), '추가개발 진척률 = 요건 M/D 가중',
+      (r.html.match(/진척률 \d+%/g) || []).join(','));
+  }
+
   console.log('\n== B-2. 요건 계획일 열 없음 -> 「계획」 칸도 안 생김 ==');
   {
     const f = { ...FIX };
