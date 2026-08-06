@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.6.0';
+var VER = '1.7.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -506,9 +506,11 @@ function build(t){
              detail:r['상세']||'', action:r['대응방안']||'', owner:r['담당']||'', due:fmtDate(r['기한']) };
   }).filter(function(x){ return x.title; });
 
+  /* 계획시작/계획종료는 선택 열이다 — 없는 프로젝트는 표에 「계획」 칸 자체가 나오지 않는다 */
   if(t['요건']) D.devItems = t['요건'].map(function(r){
     return { no:r['No']||r['no']||'', cat:r['구분']||'', name:r['요건명']||'',
-             md:num(r['M/D']||r['MD'],0), owner:r['담당']||'', st:st(r['상태']) };
+             md:num(r['M/D']||r['MD'],0), owner:r['담당']||'', st:st(r['상태']),
+             ps:fmtDate(r['계획시작']||''), pe:fmtDate(r['계획종료']||'') };
   }).filter(function(x){ return x.name; });
 
   return { data:D, warn:warn };
@@ -1016,12 +1018,22 @@ function render(DATA, warn){
     }
     var dn=di.filter(function(x){ return x.st==='done'; });
     var sum=function(a){ return a.reduce(function(p,c){ return p+c.md; },0); };
+    /* 계획일은 넣은 프로젝트에서만 칸이 생긴다. 한 건도 없으면 열 자체를 만들지 않는다. */
+    var hasPlan=di.some(function(x){ return x.ps || x.pe; });
+    var planTxt=function(x){
+      if(!x.ps && !x.pe) return '—';
+      var e=x.pe;
+      if(x.ps && e && x.ps.slice(0,5)===e.slice(0,5)) e=e.slice(5);   /* 같은 해면 끝 날짜의 연도 생략 */
+      return esc(x.ps) + (e ? ' ~ '+esc(e) : '');
+    };
     $('dev-items').innerHTML='<thead><tr><th class="r">No</th><th>구분</th><th>요건명</th>'
-      +'<th class="r">M/D</th><th>담당</th><th>상태</th></tr></thead><tbody>'
+      +'<th class="r">M/D</th>'+(hasPlan?'<th>계획</th>':'')+'<th>담당</th><th>상태</th></tr></thead><tbody>'
       +di.map(function(x){
         var cls={done:'blue',doing:'red',todo:'line'}[x.st];
         return '<tr><td class="r mn">'+esc(x.no)+'</td><td class="mn">'+esc(x.cat)+'</td><td>'+esc(x.name)+'</td>'
-          +'<td class="r">'+(x.md||'')+'</td><td class="mn">'+esc(x.owner||'')+'</td>'
+          +'<td class="r">'+(x.md||'')+'</td>'
+          +(hasPlan?'<td class="mn">'+planTxt(x)+'</td>':'')
+          +'<td class="mn">'+esc(x.owner||'')+'</td>'
           +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기'}[x.st])+'</span></td></tr>'; }).join('')
       +'</tbody>';
     $('dev-im').textContent=dn.length+' / '+di.length+'건 완료, '+sum(dn)+' / '+sum(di)+' M/D';
