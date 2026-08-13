@@ -24,13 +24,13 @@
 (function(){
 'use strict';
 
-var VER = '1.8.0';
+var VER = '1.9.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
 
 /* 시트 탭 이름 = 표준 계약. 바꾸면 전 프로젝트가 깨집니다. */
-var SRC = ['설정','WBS','패키지진척','마일스톤','일정','주간업무','녹화본','산출물','이슈','요건'];
+var SRC = ['설정','WBS','패키지진척','마일스톤','일정','주간업무','녹화본','산출물','이슈','요건','확인요청'];
 
 var PLAIN    = CFG.plain === true;
 var DATA_URL = CFG.data || (PLAIN ? './data.xlsx' : './data.enc');
@@ -104,9 +104,11 @@ var PANELS = {
     +'<div class="card"><div class="ch"><h3>일정표</h3><span class="m" id="sch-m"></span></div>'
     +'<div class="cb"><div class="ts"><table class="t" id="schtbl"></table></div></div></div></section>',
 
+  /* 🔴 「매주 금요일 기준」이라 박혀 있었다 — 보고 요일은 프로젝트마다 다르고 바뀐다(실제로 바뀌었다).
+        공유 앱에 특정 요일을 박지 않는다. 기간은 각 주차 카드가 이미 보여준다. */
   'p-week': '<section class="panel" id="p-week" role="tabpanel" hidden>'
     +'<div class="ph"><h1>주간 업무</h1>'
-    +'<p class="sub">매주 금요일 기준 금주 실적, 차주 계획, 요청사항입니다.</p></div>'
+    +'<p class="sub">주차별 금주 실적, 차주 계획, 요청사항입니다.</p></div>'
     +'<div class="card"><div class="ch"><h3>주간 업무보고</h3><span class="m" id="wk-m"></span>'
     +'<select class="wsel" id="wk-sel" aria-label="주차 선택"></select></div>'
     +'<div class="cb"><div id="weeklog"></div></div></div></section>',
@@ -130,6 +132,15 @@ var PANELS = {
     +'<div class="ph"><h1>산출물 및 매뉴얼</h1>'
     +'<p class="sub">확정 문서는 눌러서 바로 열 수 있습니다. 링크가 없는 항목은 배포 전입니다.</p></div>'
     +'<div class="card"><div class="cb"><div class="ts"><table class="t" id="docs"></table></div></div></div></section>',
+
+  /* 확인요청 — 고객에게 답을 기다리고 있는 것. 「이슈」와 축이 다르다:
+     이슈 = 일정·품질을 위협하는 사항 / 확인요청 = 우리가 물었고 답이 오면 끝나는 것.
+     이슈로 올리면 고객이 프로젝트를 위태롭게 느끼므로 섞지 않는다. */
+  'p-req': '<section class="panel" id="p-req" role="tabpanel" hidden>'
+    +'<div class="ph"><h1>확인요청</h1>'
+    +'<p class="sub">회신·결정을 기다리고 있는 항목입니다. 회신 주시면 설계와 셋업에 반영합니다.</p></div>'
+    +'<div class="card"><div class="ch"><h3>요청 목록</h3><span class="m" id="req-m"></span></div>'
+    +'<div class="cb"><div class="ts"><table class="t" id="reqs"></table></div></div></div></section>',
 
   'p-iss': '<section class="panel" id="p-iss" role="tabpanel" hidden>'
     +'<div class="ph"><h1>이슈 및 리스크</h1>'
@@ -294,7 +305,7 @@ function objectify(rows){
 
 /* 상태값 · 날짜 · 숫자 정규화 */
 var ST={ '완료':'done','진행중':'doing','진행':'doing','예정':'todo','대기':'todo',
-         '배포':'done','작성중':'doing' };
+         '배포':'done','작성중':'doing','회신완료':'done','확인완료':'done','회신':'done' };
 function st(v){ return ST[String(v).trim()] || 'todo'; }
 
 function nd(v){
@@ -346,7 +357,7 @@ function build(t){
     weights:{ pkg:0.5, dev:0.5 },
     previewDate:null, hide:[],
     pkg:[], pkgSteps:[], dev:[], devSpan:null, devPct:null, pctPkg:null, pctAll:null,
-    milestones:[], schedule:[], weekly:[], recordings:[], docs:[], issues:[], devItems:[],
+    milestones:[], schedule:[], weekly:[], recordings:[], docs:[], issues:[], devItems:[], requests:[],
     issueSummary:'', devDocUrl:'', devDocText:''
   };
 
@@ -508,6 +519,16 @@ function build(t){
   if(t['이슈']) D.issues = t['이슈'].map(function(r){
     return { lv:r['영향도']||'중간', cause:r['원인']||'일정/선행조건', title:r['항목']||'',
              detail:r['상세']||'', action:r['대응방안']||'', owner:r['담당']||'', due:fmtDate(r['기한']) };
+  }).filter(function(x){ return x.title; });
+
+  /* 확인요청 — 「요청일 · 내용」만 있으면 되고 나머지는 비워도 된다.
+     회신기한은 「미정」 같은 말도 그대로 받는다(일정 시트와 같은 처리).
+     경로·회신 열은 선택 — 없는 프로젝트는 그 칸 자체가 표에 나오지 않는다. */
+  if(t['확인요청']) D.requests = t['확인요청'].map(function(r){
+    return { date:fmtDate(r['요청일']||''), cat:r['구분']||'', title:r['내용']||'',
+             via:r['경로']||'', due:fmtDate(r['회신기한']||''),
+             stat:String(r['상태']||'대기').trim(), st:st(r['상태']||'대기'),
+             reply:r['회신']||r['결과']||'' };
   }).filter(function(x){ return x.title; });
 
   /* 계획시작/계획종료는 선택 열이다 — 없는 프로젝트는 표에 「계획」 칸 자체가 나오지 않는다 */
@@ -1103,6 +1124,44 @@ function render(DATA, warn){
     if($('n-doc')) $('n-doc').textContent=DATA.docs.filter(function(d){ return d.st==='done'; }).length+'/'+DATA.docs.length;
   }
 
+  /* ── 확인요청 ── */
+  if($('p-req')) (function(){
+    var L=DATA.requests||[];
+    /* 대기 건을 위로, 그 안에서는 **오래 기다린 것부터**. 오래 묵은 요청이 맨 아래로
+       내려가 안 보이는 것이 이 표가 실패하는 방식이다. */
+    var rows=L.slice().sort(function(a,b){
+      if((a.st==='done') !== (b.st==='done')) return a.st==='done' ? 1 : -1;
+      return String(a.date).localeCompare(String(b.date));
+    });
+    var hasCat=L.some(function(x){ return x.cat; });
+    var hasVia=L.some(function(x){ return x.via; });
+
+    var body=rows.map(function(x){
+      var done=x.st==='done';
+      var dt=nd(x.date) ? parseYmd(nd(x.date)) : null;
+      var days=(dt && !done) ? Math.floor((today-dt)/DAY) : null;
+      /* 2주 넘게 답이 없으면 눈에 띄게 한다. 재촉이 아니라 「묻힌 것」을 드러내는 장치다. */
+      var wait = days==null ? '' :
+        '<span class="tag '+(days>=14?'red':'line')+'">대기 '+days+'일</span>';
+      return '<tr class="'+(done?'sch-past':'')+'">'
+        +'<td class="mn">'+esc(x.date||'—')+'</td>'
+        +(hasCat?'<td>'+(x.cat?'<span class="tag grey">'+esc(x.cat)+'</span>':'')+'</td>':'')
+        +'<td><b>'+esc(x.title)+'</b>'
+        +(x.reply?'<div class="dt" style="margin-top:5px">'+rich(x.reply)+'</div>':'')+'</td>'
+        +(hasVia?'<td class="mn">'+esc(x.via||'—')+'</td>':'')
+        +'<td class="mn">'+esc(x.due||'미정')+'</td>'
+        +'<td>'+(done ? '<span class="tag line">'+esc(x.stat||'회신완료')+'</span>' : wait)+'</td>'
+        +'</tr>';
+    }).join('');
+
+    $('reqs').innerHTML='<thead><tr><th>요청일</th>'+(hasCat?'<th>구분</th>':'')
+      +'<th>내용</th>'+(hasVia?'<th>경로</th>':'')+'<th>회신기한</th><th>상태</th></tr></thead><tbody>'
+      +body+'</tbody>';
+    var open=L.filter(function(x){ return x.st!=='done'; }).length;
+    $('req-m').textContent='전체 '+L.length+'건 · 대기 '+open+'건 · 회신 '+(L.length-open)+'건';
+    if($('n-req')) $('n-req').textContent=open+'/'+L.length;
+  })();
+
   /* ── 이슈 ── */
   if($('p-iss')){
     var sm=$('iss-sum');
@@ -1166,6 +1225,7 @@ function boot(password, onBadPw){
       {id:'p-dev',  label:'추가개발',  src:'WBS',    on:D.dev.length>0},
       {id:'p-rec',  label:'녹화본',    src:'녹화본',  on:D.recordings.length>0},
       {id:'p-doc',  label:'산출물',    src:'산출물',  on:D.docs.length>0},
+      {id:'p-req',  label:'확인요청',  src:'확인요청', on:D.requests.length>0, badge:true},
       {id:'p-iss',  label:'이슈',      src:'이슈',    on:D.issues.length>0}
     ];
     var tabs=TABDEF.filter(function(x){ return x.on && !hidden[x.src] && !hidden[x.label]; });

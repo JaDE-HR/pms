@@ -440,6 +440,61 @@ const ok = (cond, label, extra) => cond
     ok(r.tabs.includes('추가개발'), '나머지 탭은 그대로', r.tabs.join(','));
   }
 
+  console.log('\n== T. 확인요청 ==');
+  {
+    /* 기준일을 고정해야 「대기 N일」이 흔들리지 않는다 (오늘 날짜로 계산하면 매일 깨진다) */
+    const cfg = [...FIX['설정'], ['미리보기기준일', '2026-08-13']];
+    const REQ = [['요청일', '구분', '내용', '경로', '회신기한', '상태', '회신'],
+      ['2026-08-05', '인사/조직', '인사기록카드 출력 양식 결정', '검토서', '2026-08-20', '대기', ''],
+      ['2026-07-28', '공통', '착수보고회 참석인원 확정', '메일', '2026-07-28', '회신완료', '5명 참석'],
+      ['2026-07-29', '근태', '다우오피스 1시간 단위 연차 지원 여부', '회의', '미정', '대기', ''],
+    ];
+    const r = await run({ ...FIX, '설정': cfg, '확인요청': REQ });
+    ok(!r.err, '오류화면 없음', r.err);
+    ok(r.errs.length === 0, 'JS 예외 없음', r.errs.join('|'));
+    ok(r.tabs.includes('확인요청'), '확인요청 탭 생김', r.tabs.join(','));
+    ok(r.tabs.indexOf('확인요청') === r.tabs.indexOf('이슈') - 1, '이슈 바로 앞에 온다', r.tabs.join(','));
+
+    const tr = [...r.d.querySelectorAll('#reqs tbody tr')];
+    ok(tr.length === 3, '행 3개', String(tr.length));
+    /* 대기가 위 · 그 안에서 오래 기다린 것부터. 묵은 요청이 아래로 숨는 것을 막는다. */
+    ok(/2026\.07\.29/.test(tr[0].textContent) && /2026\.08\.05/.test(tr[1].textContent)
+       && /2026\.07\.28/.test(tr[2].textContent), '대기 먼저 · 오래된 순 정렬',
+       tr.map(x => x.children[0].textContent).join('|'));
+    ok(/대기 15일/.test(tr[0].textContent), '경과일 계산', tr[0].textContent);
+    ok(/tag red/.test(tr[0].innerHTML), '14일 넘으면 red', tr[0].innerHTML);
+    ok(!/tag red/.test(tr[1].innerHTML) && /대기 8일/.test(tr[1].textContent), '14일 미만은 강조 없음');
+    ok(!/대기 \d+일/.test(tr[2].textContent) && /회신완료/.test(tr[2].textContent), '회신 건은 경과일 없음');
+    ok(/5명 참석/.test(tr[2].textContent), '회신 내용 표시');
+    ok(/전체 3건 · 대기 2건 · 회신 1건/.test(r.d.getElementById('req-m').textContent), '요약 문구',
+       r.d.getElementById('req-m').textContent);
+    ok((r.d.getElementById('n-req') || {}).textContent === '2/3', '배지 = 대기/전체',
+       (r.d.getElementById('n-req') || {}).textContent);
+  }
+  {
+    /* 선택 열 — 구분·경로가 없는 프로젝트는 그 칸 자체가 안 생긴다 (요건 대장의 「계획」과 같은 규칙) */
+    const REQ = [['요청일', '내용', '회신기한', '상태'],
+      ['2026-08-05', '출력 양식 결정', '', '대기']];
+    const r = await run({ ...FIX, '확인요청': REQ });
+    const th = [...r.d.querySelectorAll('#reqs thead th')].map(x => x.textContent);
+    ok(th.join(',') === '요청일,내용,회신기한,상태', '구분·경로 칸 자체가 없음', th.join(','));
+    ok(/미정/.test(r.d.querySelector('#reqs tbody tr').textContent), '회신기한 비면 「미정」');
+  }
+  {
+    const r = await run(FIX);                      /* 확인요청 시트 없음 */
+    ok(!r.tabs.includes('확인요청'), '시트 없으면 탭 없음', r.tabs.join(','));
+    ok(!r.d.getElementById('reqs'), '표 자체가 없음');
+  }
+  {
+    const REQ = [['요청일', '구분', '내용', '경로', '회신기한', '상태', '회신'],
+      ['2026-08-05', '<svg onload=alert(1)>', '<script>alert(1)</script>', 'x', '', '대기',
+        '<img src=x onerror=alert(1)>']];
+    const r = await run({ ...FIX, '확인요청': REQ });
+    ok(r.d.querySelectorAll('script').length === 0, 'script 노드 0개');
+    ok(r.d.querySelectorAll('[onerror],[onload]').length === 0, '이벤트 핸들러 속성 0개');
+    ok(/&lt;script&gt;/.test(r.html), '<script> 는 글자로 표시됨');
+  }
+
   console.log(`\n=========== 통과 ${pass} / 실패 ${fail} ===========\n`);
   process.exit(fail ? 1 : 0);
 })();
