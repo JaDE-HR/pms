@@ -91,7 +91,7 @@ var PANELS = {
   'p-pkg': '<section class="panel" id="p-pkg" role="tabpanel" hidden>'
     +'<div class="ph" style="max-width:none"><h1>패키지 진척</h1>'
     +'<p class="sub">모듈마다 업무분석·기초셋업·교육·최종셋업·테스트·검수 여섯 단계를 거칩니다. '
-    +'완료된 단계만 진척으로 계산하며, 해당없음은 그 모듈의 단계 수에서 제외됩니다.</p></div>'
+    +'완료는 100%, 진행중은 50%로 계산하며, 해당없음은 그 모듈의 단계 수에서 제외됩니다.</p></div>'
     +'<div class="card"><div class="ch"><h3>모듈별 단계 현황</h3><span class="m" id="pkg-m"></span></div>'
     +'<div class="cb"><div class="glg" style="gap:22px">'
     +'<span><i class="stp done">완료</i></span><span><i class="stp doing">진행</i></span>'
@@ -603,7 +603,9 @@ function render(DATA, warn){
     for(var i=0;i<PSTEPS.length;i++){
       var v=p.steps[PSTEPS[i]];
       if(v==='해당없음'||v==='없음'||v==='-') continue;
-      den++; if(v==='완료') n+=1;
+      den++;
+      if(v==='완료') n+=1;
+      else if(v==='진행중'||v==='진행') n+=.5;   /* WBS 와 같은 가중 (완료 1 · 진행 0.5) */
     }
     return den ? n/den : 1;
   }
