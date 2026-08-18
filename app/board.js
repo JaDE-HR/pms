@@ -1071,7 +1071,7 @@ function render(DATA, warn){
       +di.map(function(x){
         var cls={done:'blue',doing:'red',todo:'line'}[x.st];
         return '<tr><td class="r mn">'+esc(x.no)+'</td><td class="mn">'+esc(x.cat)+'</td><td>'+esc(x.name)+'</td>'
-          +'<td class="r">'+(x.md||'')+'</td>'
+          +'<td class="r">'+(x.md||x.md===0?x.md:'')+'</td>'   /* 0 M/D 도 0 으로 표기 */
           +(hasPlan?'<td class="mn">'+planTxt(x)+'</td>':'')
           +'<td class="mn">'+esc(x.owner||'')+'</td>'
           +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기'}[x.st])+'</span></td></tr>'; }).join('')
