@@ -516,6 +516,7 @@ function build(t){
              owner:r['담당']||'', st:st(r['상태']), url:r['링크']||'' };
   }).filter(function(x){ return x.name; });
 
+  D.hasIssueSheet = !!t['이슈'];      /* 시트가 있으면 내용이 비어도 탭은 남긴다 */
   if(t['이슈']) D.issues = t['이슈'].map(function(r){
     return { lv:r['영향도']||'중간', cause:r['원인']||'일정/선행조건', title:r['항목']||'',
              detail:r['상세']||'', action:r['대응방안']||'', owner:r['담당']||'', due:fmtDate(r['기한']) };
@@ -1169,6 +1170,9 @@ function render(DATA, warn){
     var sm=$('iss-sum');
     if(DATA.issueSummary) sm.innerHTML='<span class="lb">공통 사유</span><span class="ct">'+rich(DATA.issueSummary)+'</span>';
     else sm.style.display='none';
+    if(!DATA.issues.length){
+      $('issues').innerHTML='<tbody><tr><td class="empty">현재 등록된 이슈가 없습니다.</td></tr></tbody>';
+    } else
     $('issues').innerHTML='<thead><tr><th>영향도</th><th>항목</th><th>원인</th><th>대응 방안</th><th>담당</th><th>기한</th></tr></thead><tbody>'
       +DATA.issues.map(function(x){
         var lvc = x.lv==='높음'?'red':'grey';
@@ -1228,7 +1232,7 @@ function boot(password, onBadPw){
       {id:'p-rec',  label:'녹화본',    src:'녹화본',  on:D.recordings.length>0},
       {id:'p-doc',  label:'산출물',    src:'산출물',  on:D.docs.length>0},
       {id:'p-req',  label:'확인요청',  src:'확인요청', on:D.requests.length>0, badge:true},
-      {id:'p-iss',  label:'이슈',      src:'이슈',    on:D.issues.length>0}
+      {id:'p-iss',  label:'이슈',      src:'이슈',    on:!!D.hasIssueSheet}
     ];
     var tabs=TABDEF.filter(function(x){ return x.on && !hidden[x.src] && !hidden[x.label]; });
 
