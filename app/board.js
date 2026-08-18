@@ -1006,24 +1006,35 @@ function render(DATA, warn){
       .concat(written.filter(function(w){ return w.week!==curWeek; })
                      .sort(function(a,b){ return b.week-a.week; }));
 
-    function block(w){
+    function block(w, isPrev){
       var li=function(a){ return (a||[]).map(function(t){ return '<li>'+rich(t)+'</li>'; }).join(''); };
-      var badge = w.week===curWeek ? '<span class="tag blue">이번 주</span>'
+      var badge = isPrev ? '<span class="tag grey">전주</span>'
+                : (w.week===curWeek ? '<span class="tag blue">이번 주</span>'
                 : (w.week>curWeek ? '<span class="tag line">예정</span>'
-                                  : '<span class="tag line">지난 주차</span>');
+                                  : '<span class="tag line">지난 주차</span>'));
       var body = has(w)
         ? (w.done&&w.done.length?'<h4>금주 실적</h4><ul>'+li(w.done)+'</ul>':'')
           +(w.next&&w.next.length?'<h4>차주 계획</h4><ul>'+li(w.next)+'</ul>':'')
           +(w.req&&w.req.length?'<h4 class="req">고객사 요청사항</h4><ul class="req">'+li(w.req)+'</ul>':'')
         : '<div class="empty" style="padding:22px 0">아직 등록된 내용이 없습니다.</div>';
-      return '<div class="wk"><div class="wk-l"><b>'+(w.week?w.week+'주차':'착수 전')+'</b>'
+      return '<div class="wk'+(isPrev?' prev':'')+'"><div class="wk-l"><b>'+(w.week?w.week+'주차':'착수 전')+'</b>'
         +'<div class="pd">'+esc(w.period||'')+'</div>'
         +(w.title?'<div class="tt">'+esc(w.title)+'</div>':'')
         +badge+'</div><div class="wk-r">'+body+'</div></div>';
     }
     function paint(v){
-      var list = v==='all' ? ordered : full.filter(function(w){ return String(w.week)===v; });
-      box.innerHTML = list.map(block).join('') || '<div class="empty">작성된 주간업무가 아직 없습니다.</div>';
+      if(v==='all'){
+        box.innerHTML = ordered.map(function(w){ return block(w,false); }).join('')
+          || '<div class="empty">작성된 주간업무가 아직 없습니다.</div>';
+        return;
+      }
+      /* 선택한 주차 + 바로 앞의 「작성된」 주차를 전주로 함께 보여준다 */
+      var cur=full.filter(function(w){ return String(w.week)===v; });
+      var prev=null;
+      for(var i=(+v)-1; i>=1; i--){ if(byWk[i] && has(byWk[i])){ prev=byWk[i]; break; } }
+      var html = cur.map(function(w){ return block(w,false); }).join('')
+               + (prev ? block(prev,true) : '');
+      box.innerHTML = html || '<div class="empty">작성된 주간업무가 아직 없습니다.</div>';
     }
     sel.addEventListener('change', function(){ paint(sel.value); });
     paint(String(def));
