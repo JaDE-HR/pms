@@ -1073,7 +1073,9 @@ function render(DATA, warn){
       +'<th class="r">M/D</th>'+(hasPlan?'<th>계획</th>':'')+'<th>담당</th><th>상태</th></tr></thead><tbody>'
       +di.map(function(x){
         var cls={done:'blue',doing:'red',todo:'line'}[x.st];
-        return '<tr><td class="r mn">'+esc(x.no)+'</td><td class="mn">'+esc(x.cat)+'</td><td>'+esc(x.name)+'</td>'
+        /* 구분이 「예비」인 줄(예비공수)은 노란 배경으로 구분한다 */
+        var spare = /예비/.test(x.cat||'');
+        return '<tr'+(spare?' class="spare"':'')+'><td class="r mn">'+esc(x.no)+'</td><td class="mn">'+esc(x.cat)+'</td><td>'+esc(x.name)+'</td>'
           +'<td class="r">'+(x.md||x.md===0?x.md:'')+'</td>'   /* 0 M/D 도 0 으로 표기 */
           +(hasPlan?'<td class="mn">'+planTxt(x)+'</td>':'')
           +'<td class="mn">'+esc(x.owner||'')+'</td>'
