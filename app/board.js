@@ -1024,18 +1024,9 @@ function render(DATA, warn){
         +badge+'</div><div class="wk-r">'+body+'</div></div>';
     }
     function paint(v){
-      if(v==='all'){
-        box.innerHTML = ordered.map(function(w){ return block(w,false); }).join('')
-          || '<div class="empty">작성된 주간업무가 아직 없습니다.</div>';
-        return;
-      }
-      /* 선택한 주차 + 바로 앞의 「작성된」 주차를 전주로 함께 보여준다 */
-      var cur=full.filter(function(w){ return String(w.week)===v; });
-      var prev=null;
-      for(var i=(+v)-1; i>=1; i--){ if(byWk[i] && has(byWk[i])){ prev=byWk[i]; break; } }
-      var html = cur.map(function(w){ return block(w,false); }).join('')
-               + (prev ? block(prev,true) : '');
-      box.innerHTML = html || '<div class="empty">작성된 주간업무가 아직 없습니다.</div>';
+      var list = v==='all' ? ordered : full.filter(function(w){ return String(w.week)===v; });
+      box.innerHTML = list.map(function(w){ return block(w,false); }).join('')
+        || '<div class="empty">작성된 주간업무가 아직 없습니다.</div>';
     }
     sel.addEventListener('change', function(){ paint(sel.value); });
     paint(String(def));

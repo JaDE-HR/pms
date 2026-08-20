@@ -368,9 +368,6 @@ table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:700px}
 .wk{display:grid;grid-template-columns:172px 1fr;gap:28px;padding:22px 0;
   border-bottom:1px solid var(--divider)}
 .wk:first-child{padding-top:0}
-/* 전주 블록 — 이번 주보다 한 단 가라앉힌다 */
-.wk.prev{opacity:.72}
-.wk.prev .wk-l b{color:var(--muted48)}
 .wk:last-child{border-bottom:0;padding-bottom:0}
 .wk-l b{display:block;font-size:28px;font-weight:600;letter-spacing:-1px;line-height:1}
 .wk-l .pd{font-size:13px;color:var(--muted48);margin-top:8px}
