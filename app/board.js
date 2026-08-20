@@ -1078,7 +1078,11 @@ function render(DATA, warn){
           +(hasPlan?'<td class="mn">'+planTxt(x)+'</td>':'')
           +'<td class="mn">'+esc(x.owner||'')+'</td>'
           +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기'}[x.st])+'</span></td></tr>'; }).join('')
-      +'</tbody>';
+      +'</tbody>'
+      /* 하단 합계 — 총 공수를 눈에 띄게 */
+      +'<tfoot><tr class="sumrow"><td class="r">-</td><td colspan="2">합계 '+di.length+'건</td>'
+      +'<td class="r">'+sum(di)+'</td>'+(hasPlan?'<td></td>':'')
+      +'<td colspan="2" class="mn">완료 '+sum(dn)+' M/D · 잔여 '+(sum(di)-sum(dn))+' M/D</td></tr></tfoot>';
     /* 단계 표를 감췄으면 진척률 뱃지가 그 카드와 함께 사라지므로 여기로 옮겨 붙인다 */
     $('dev-im').textContent=(DATA.hidePhase?'진척률 '+pc(pDev)+'% · ':'')
       +dn.length+' / '+di.length+'건 완료, '+sum(dn)+' / '+sum(di)+' M/D';

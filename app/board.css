@@ -429,6 +429,12 @@ table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:700px}
 .mpct.on{color:var(--primary)}
 .t td.ctr,.t th.ctr{text-align:center}
 
+/* 요건 대장 하단 합계 행 — 총 공수를 눈에 띄게 */
+.t tfoot .sumrow td{background:#e8f1fc;color:var(--primary);font-weight:700;
+  border-top:2px solid var(--primary);border-bottom:0;padding:12px 14px}
+.t tfoot .sumrow td.r{font-size:16px;letter-spacing:-0.4px}
+.t tfoot .sumrow td.mn{font-weight:600;color:#3d7ec4;font-size:12.5px}
+
 /* 데이터 안에서 색 강조 — <red>기한</red> 빨강, <blue>고객사 회신</blue> 파랑 */
 .rt{color:var(--over);font-weight:700}
 .bt{color:var(--primary);font-weight:700}
