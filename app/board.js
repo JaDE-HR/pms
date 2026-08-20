@@ -852,8 +852,9 @@ function render(DATA, warn){
 
     function cells(){ var c=''; for(var i=0;i<NW;i++) c+='<u'+(msMark[i]?' class="ms"':'')+'></u>'; return c; }
     function live(s,e){ return curWeek>0 && s<=curWeek && e>=curWeek; }
+    /* 막대 색 : 완료만 진한색, 진행중·예정은 연한색(아직 끝나지 않았으므로) */
     function bar(it,k){
-      return '<div class="gb '+k+(it.st==='todo'?' todo':'')+'" style="left:'+((it.s-1)/NW*100)
+      return '<div class="gb '+k+(it.st==='done'?'':' todo')+'" style="left:'+((it.s-1)/NW*100)
         +'%;width:'+(span(it)/NW*100)+'%" title="'+esc(it.n)+' / '+md(weeks[it.s-1].s)+'~'+md(weeks[it.e-1].e)+'"></div>';
     }
     var rows='';
