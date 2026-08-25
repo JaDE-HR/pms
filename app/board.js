@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.9.0';
+var VER = '1.9.1';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -305,6 +305,7 @@ function objectify(rows){
 
 /* 상태값 · 날짜 · 숫자 정규화 */
 var ST={ '완료':'done','진행중':'doing','진행':'doing','예정':'todo','대기':'todo',
+         '보류':'hold',
          '배포':'done','작성중':'doing','회신완료':'done','확인완료':'done','회신':'done' };
 function st(v){ return ST[String(v).trim()] || 'todo'; }
 
@@ -577,7 +578,7 @@ function render(DATA, warn){
   var hasDev = DATA.dev.length>0;
 
   /* 진척률 : 상태값 기간가중, 진척률 칸이 있으면 그 값 우선 */
-  var WT={done:1,doing:.5,todo:0};
+  var WT={done:1,doing:.5,todo:0,hold:0};
   var span=function(i){ return i.e-i.s+1; };
   function prog(a){
     var n=0,t=0;
@@ -1041,11 +1042,11 @@ function render(DATA, warn){
     $('dev-m').textContent='진척률 '+pc(pDev)+'%';
     $('dev-phase').innerHTML='<thead><tr><th>단계</th><th>기간</th><th>주차</th><th>상태</th><th>비고</th></tr></thead><tbody>'
       +DATA.dev.map(function(it){
-        var cls={done:'blue',doing:'red',todo:'line'}[it.st];
+        var cls={done:'blue',doing:'red',todo:'line',hold:'grey'}[it.st];
         return '<tr><td><b>'+esc(it.n)+'</b></td>'
           +'<td class="mn">'+md(weeks[it.s-1].s)+' ~ '+md(weeks[it.e-1].e)+'</td>'
           +'<td class="mn">'+it.s+'~'+it.e+'주차</td>'
-          +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'예정'}[it.st])+'</span></td>'
+          +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'예정',hold:'보류'}[it.st])+'</span></td>'
           +'<td class="dt">'+rich(it.memo||'')+'</td></tr>'; }).join('')+'</tbody>';
 
     var di=DATA.devItems||[];
@@ -1072,14 +1073,14 @@ function render(DATA, warn){
     $('dev-items').innerHTML='<thead><tr><th class="r">No</th><th>구분</th><th>요건명</th>'
       +'<th class="r">M/D</th>'+(hasPlan?'<th>계획</th>':'')+'<th>담당</th><th>상태</th></tr></thead><tbody>'
       +di.map(function(x){
-        var cls={done:'blue',doing:'red',todo:'line'}[x.st];
+        var cls={done:'blue',doing:'red',todo:'line',hold:'grey'}[x.st];
         /* 구분이 「예비」인 줄(예비공수)은 노란 배경으로 구분한다 */
         var spare = /예비/.test(x.cat||'');
         return '<tr'+(spare?' class="spare"':'')+'><td class="r mn">'+esc(x.no)+'</td><td class="mn">'+esc(x.cat)+'</td><td>'+esc(x.name)+'</td>'
           +'<td class="r">'+(x.md||x.md===0?x.md:'')+'</td>'   /* 0 M/D 도 0 으로 표기 */
           +(hasPlan?'<td class="mn">'+planTxt(x)+'</td>':'')
           +'<td class="mn">'+esc(x.owner||'')+'</td>'
-          +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기'}[x.st])+'</span></td></tr>'; }).join('')
+          +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기',hold:'보류'}[x.st])+'</span></td></tr>'; }).join('')
       +'</tbody>'
       /* 하단 합계 — 총 공수를 눈에 띄게 */
       +'<tfoot><tr class="sumrow"><td class="r">-</td><td colspan="2">합계 '+di.length+'건</td>'
@@ -1128,10 +1129,10 @@ function render(DATA, warn){
         var u=safeUrl(d.url), ext=/^https?:/i.test(u);
         var nm = u ? '<a class="dl" href="'+u+'"'+(ext?' target="_blank" rel="noopener"':' download')+'>'
                      +esc(d.name)+'<u>'+(ext?'열기':'다운로드')+'</u></a>' : esc(d.name);
-        var cls={done:'blue',doing:'red',todo:'line'}[d.st];
+        var cls={done:'blue',doing:'red',todo:'line',hold:'grey'}[d.st];
         return '<tr><td class="mn">'+esc(d.cat)+'</td><td>'+nm+'</td>'
           +'<td class="mn">'+esc(d.date||'—')+'</td><td class="mn">'+esc(d.owner||'')+'</td>'
-          +'<td><span class="tag '+cls+'">'+({done:'배포',doing:'작성중',todo:'예정'}[d.st])+'</span></td></tr>'; }).join('')
+          +'<td><span class="tag '+cls+'">'+({done:'배포',doing:'작성중',todo:'예정',hold:'보류'}[d.st])+'</span></td></tr>'; }).join('')
       +'</tbody>';
     if($('n-doc')) $('n-doc').textContent=DATA.docs.filter(function(d){ return d.st==='done'; }).length+'/'+DATA.docs.length;
   }
