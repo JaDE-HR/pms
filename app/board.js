@@ -1042,7 +1042,7 @@ function render(DATA, warn){
     $('dev-m').textContent='진척률 '+pc(pDev)+'%';
     $('dev-phase').innerHTML='<thead><tr><th>단계</th><th>기간</th><th>주차</th><th>상태</th><th>비고</th></tr></thead><tbody>'
       +DATA.dev.map(function(it){
-        var cls={done:'blue',doing:'red',todo:'line',hold:'grey'}[it.st];
+        var cls={done:'blue',doing:'red',todo:'line',hold:'yellow'}[it.st];
         return '<tr><td><b>'+esc(it.n)+'</b></td>'
           +'<td class="mn">'+md(weeks[it.s-1].s)+' ~ '+md(weeks[it.e-1].e)+'</td>'
           +'<td class="mn">'+it.s+'~'+it.e+'주차</td>'
@@ -1073,7 +1073,7 @@ function render(DATA, warn){
     $('dev-items').innerHTML='<thead><tr><th class="r">No</th><th>구분</th><th>요건명</th>'
       +'<th class="r">M/D</th>'+(hasPlan?'<th>계획</th>':'')+'<th>담당</th><th>상태</th></tr></thead><tbody>'
       +di.map(function(x){
-        var cls={done:'blue',doing:'red',todo:'line',hold:'grey'}[x.st];
+        var cls={done:'blue',doing:'red',todo:'line',hold:'yellow'}[x.st];
         /* 구분이 「예비」인 줄(예비공수)은 노란 배경으로 구분한다 */
         var spare = /예비/.test(x.cat||'');
         return '<tr'+(spare?' class="spare"':'')+'><td class="r mn">'+esc(x.no)+'</td><td class="mn">'+esc(x.cat)+'</td><td>'+esc(x.name)+'</td>'
@@ -1129,7 +1129,7 @@ function render(DATA, warn){
         var u=safeUrl(d.url), ext=/^https?:/i.test(u);
         var nm = u ? '<a class="dl" href="'+u+'"'+(ext?' target="_blank" rel="noopener"':' download')+'>'
                      +esc(d.name)+'<u>'+(ext?'열기':'다운로드')+'</u></a>' : esc(d.name);
-        var cls={done:'blue',doing:'red',todo:'line',hold:'grey'}[d.st];
+        var cls={done:'blue',doing:'red',todo:'line',hold:'yellow'}[d.st];
         return '<tr><td class="mn">'+esc(d.cat)+'</td><td>'+nm+'</td>'
           +'<td class="mn">'+esc(d.date||'—')+'</td><td class="mn">'+esc(d.owner||'')+'</td>'
           +'<td><span class="tag '+cls+'">'+({done:'배포',doing:'작성중',todo:'예정',hold:'보류'}[d.st])+'</span></td></tr>'; }).join('')

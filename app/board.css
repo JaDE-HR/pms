@@ -84,6 +84,7 @@ a:hover{text-decoration:underline}
 /* 당일 일정 — 남은 날짜 배지 중 가장 강한 단계 */
 .tag.today{background:var(--over);color:#fff}
 .tag.grey{background:#ececef;color:#555}
+.tag.yellow{background:#fff4d6;color:#8a5a00}
 .tag.line{background:var(--canvas);border:1px solid var(--hairline);color:var(--muted48)}
 
 /* 다음 방문·회의 칩 — 오픈 D-N(파랑)과 헷갈리지 않게 색을 나눈다 */
