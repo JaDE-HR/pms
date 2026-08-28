@@ -429,6 +429,13 @@ table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:700px}
 .mpct{font-size:14px;font-weight:600;letter-spacing:-0.4px;white-space:nowrap}
 .mpct.on{color:var(--primary)}
 .t td.ctr,.t th.ctr{text-align:center}
+/* 요건 대장 — 요건별 문서 링크(설계검토서·개발완료보고서).
+   표 안에 들어가는 링크라 카드 머리의 .docbtn 보다 작고 조용하게. */
+.t a.lnk{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:-0.2px;
+  padding:2px 11px;border-radius:9999px;border:1px solid var(--primary);
+  color:var(--primary);background:#fff;white-space:nowrap;line-height:1.6}
+.t a.lnk:hover{background:var(--primary);color:#fff;text-decoration:none}
+.t .nolnk{color:var(--muted48);font-size:12px}
 
 /* 요건 대장 예비공수 줄 — 노란 배경으로 구분 */
 .t tr.spare td{background:#fff4d6}

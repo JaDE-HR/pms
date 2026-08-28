@@ -429,6 +429,60 @@ const ok = (cond, label, extra) => cond
     ok(a && a.hidden, 'javascript: 스킴은 버튼째 차단');
   }
 
+  console.log('');
+  console.log('== R-2. 요건 대장 — 요건별 문서 링크 · 선택 열 판정 ==');
+  {
+    /* 열이 있으면 값이 비어도 칸이 생긴다(링크는 나중에 붙는다).
+       담당 열을 빼면 그 칸 자체가 사라진다. */
+    const f = { ...FIX };
+    f['요건'] = [['No', '구분', '요건명', 'M/D', '상태', '계획시작', '계획종료',
+      '설계검토서', '개발완료보고서'],
+      [1, '인사', '발령일괄등록', 20, '완료', new Date(2026, 7, 24), '2026-08-28',
+        'https://ex.com/review/E01/', 'https://ex.com/report/E01/'],
+      [2, '교육', '교육관리 컨버전', 40, '대기', '', '', 'https://ex.com/review/E15/', ''],
+    ];
+    const r = await run(f);
+    ok(!r.err, '오류화면 없음', r.err);
+    ok(r.errs.length === 0, 'JS 예외 없음', r.errs.join('|'));
+    /* 「담당」은 산출물·이슈 표에도 있으니 요건 대장 머리글만 본다 */
+    const th = [...r.d.querySelectorAll('#dev-items thead th')].map(x => x.textContent);
+    ok(!th.includes('담당'), '담당 열 미생성 (열을 빼면 칸도 사라진다)', th.join(','));
+    ok(th.includes('설계검토서'), '설계검토서 열 생성', th.join(','));
+    ok(th.includes('개발완료보고서'), '개발완료보고서 열 생성 (값이 비어도)', th.join(','));
+    const links = [...r.d.querySelectorAll('#dev-items a.lnk')];
+    ok(links.length === 3, '링크 3개 (E01 검토서·E01 보고서·E15 검토서)', String(links.length));
+    ok(links.every(a => a.getAttribute('target') === '_blank'
+      && /noopener/.test(a.getAttribute('rel'))), '새 탭 · noopener');
+    ok(links[0].getAttribute('href') === 'https://ex.com/review/E01/', '요건별 URL 연결',
+      links[0] && links[0].getAttribute('href'));
+    const dash = r.d.querySelectorAll('#dev-items .nolnk').length;
+    ok(dash === 1, '링크 없는 칸은 「—」 1개', String(dash));
+    /* 합계행 칸 수가 머리글과 어긋나면 표가 통째로 밀린다 */
+    const head = r.d.querySelectorAll('#dev-items thead th').length;
+    const foot = [...r.d.querySelectorAll('#dev-items tfoot td')]
+      .reduce((n, td) => n + (+td.getAttribute('colspan') || 1), 0);
+    ok(head === foot, '합계행 칸 수 = 머리글 칸 수', `head=${head} foot=${foot}`);
+    ok(r.html.includes('60 M/D'), '담당 열을 빼도 M/D 집계는 그대로');
+  }
+  {
+    /* 링크 열이 없는 프로젝트는 종전 그대로 — 담당은 남고 링크 칸은 안 생긴다 */
+    const r = await run(FIX);
+    const th2 = [...r.d.querySelectorAll('#dev-items thead th')].map(x => x.textContent);
+    ok(th2.includes('담당'), '담당 열 있는 시트는 그대로 렌더', th2.join(','));
+    ok(!th2.includes('설계검토서') && !th2.includes('개발완료보고서'),
+      '링크 열 없으면 칸 미생성', th2.join(','));
+    ok(r.d.querySelectorAll('#dev-items a.lnk').length === 0, '링크도 없음');
+  }
+  {
+    /* javascript: 스킴은 링크째 차단 */
+    const f = { ...FIX };
+    f['요건'] = [['No', '구분', '요건명', 'M/D', '상태', '설계검토서'],
+      [1, '인사', '발령일괄등록', 20, '완료', 'javascript:alert(1)']];
+    const r = await run(f);
+    ok(r.d.querySelectorAll('#dev-items a.lnk').length === 0, 'javascript: 스킴 차단');
+    ok(r.d.querySelectorAll('#dev-items .nolnk').length === 1, '차단된 칸은 「—」');
+  }
+
   console.log('\n== S. 산출물 시트를 빼면 탭이 사라진다 ==');
   {
     const rest = { ...FIX };

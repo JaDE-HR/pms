@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.9.1';
+var VER = '1.10.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -359,6 +359,7 @@ function build(t){
     previewDate:null, hide:[],
     pkg:[], pkgSteps:[], dev:[], devSpan:null, devPct:null, pctPkg:null, pctAll:null,
     milestones:[], schedule:[], weekly:[], recordings:[], docs:[], issues:[], devItems:[], requests:[],
+    devCols:{ owner:false, rv:false, rp:false },
     issueSummary:'', devDocUrl:'', devDocText:''
   };
 
@@ -533,12 +534,22 @@ function build(t){
              reply:r['회신']||r['결과']||'' };
   }).filter(function(x){ return x.title; });
 
-  /* 계획시작/계획종료는 선택 열이다 — 없는 프로젝트는 표에 「계획」 칸 자체가 나오지 않는다 */
-  if(t['요건']) D.devItems = t['요건'].map(function(r){
-    return { no:r['No']||r['no']||'', cat:r['구분']||'', name:r['요건명']||'',
-             md:num(r['M/D']||r['MD'],0), owner:r['담당']||'', st:st(r['상태']),
-             ps:fmtDate(r['계획시작']||''), pe:fmtDate(r['계획종료']||'') };
-  }).filter(function(x){ return x.name; });
+  /* 계획시작/계획종료는 선택 열이다 — 없는 프로젝트는 표에 「계획」 칸 자체가 나오지 않는다.
+     담당·설계검토서·개발완료보고서도 선택 열인데, 판정 기준이 다르다:
+       계획 = **값**이 있으면 칸이 생긴다   (자리표시 날짜를 고객에게 약속하지 않으려고)
+       나머지 = **열**이 있으면 칸이 생긴다 (링크가 아직 안 붙은 요건이 있는 게 정상이라,
+                값으로 판정하면 첫 링크가 등록될 때까지 칸 자체가 안 생긴다)
+     ⇒ 어느 칸을 보일지는 시트를 만드는 쪽(생성기)이 정한다. */
+  if(t['요건']){
+    D.devItems = t['요건'].map(function(r){
+      return { no:r['No']||r['no']||'', cat:r['구분']||'', name:r['요건명']||'',
+               md:num(r['M/D']||r['MD'],0), owner:r['담당']||'', st:st(r['상태']),
+               ps:fmtDate(r['계획시작']||''), pe:fmtDate(r['계획종료']||''),
+               rv:r['설계검토서']||'', rp:r['개발완료보고서']||'' };
+    }).filter(function(x){ return x.name; });
+    var h0 = t['요건'][0] || {};
+    D.devCols = { owner:('담당' in h0), rv:('설계검토서' in h0), rp:('개발완료보고서' in h0) };
+  }
 
   return { data:D, warn:warn };
 }
@@ -1064,14 +1075,25 @@ function render(DATA, warn){
     var sum=function(a){ return a.reduce(function(p,c){ return p+c.md; },0); };
     /* 계획일은 넣은 프로젝트에서만 칸이 생긴다. 한 건도 없으면 열 자체를 만들지 않는다. */
     var hasPlan=di.some(function(x){ return x.ps || x.pe; });
+    var col=DATA.devCols||{ owner:true, rv:false, rp:false };
     var planTxt=function(x){
       if(!x.ps && !x.pe) return '—';
       var e=x.pe;
       if(x.ps && e && x.ps.slice(0,5)===e.slice(0,5)) e=e.slice(5);   /* 같은 해면 끝 날짜의 연도 생략 */
       return esc(x.ps) + (e ? ' ~ '+esc(e) : '');
     };
+    /* 요건별 문서 링크. 아직 안 붙은 요건은 「—」로 자리만 남긴다
+       (링크가 없다는 것도 정보다 — 칸을 지우면 그 요건만 빠진 것처럼 보인다). */
+    var docLink=function(u){
+      var s=safeUrl(u);
+      return s ? '<a class="lnk" href="'+s+'" target="_blank" rel="noopener">열기</a>'
+               : '<span class="nolnk">—</span>';
+    };
     $('dev-items').innerHTML='<thead><tr><th class="r">No</th><th>구분</th><th>요건명</th>'
-      +'<th class="r">M/D</th>'+(hasPlan?'<th>계획</th>':'')+'<th>담당</th><th>상태</th></tr></thead><tbody>'
+      +'<th class="r">M/D</th>'+(hasPlan?'<th>계획</th>':'')
+      +(col.owner?'<th>담당</th>':'')+'<th>상태</th>'
+      +(col.rv?'<th class="ctr">설계검토서</th>':'')
+      +(col.rp?'<th class="ctr">개발완료보고서</th>':'')+'</tr></thead><tbody>'
       +di.map(function(x){
         var cls={done:'blue',doing:'red',todo:'line',hold:'yellow'}[x.st];
         /* 구분이 「예비」인 줄(예비공수)은 노란 배경으로 구분한다 */
@@ -1079,13 +1101,16 @@ function render(DATA, warn){
         return '<tr'+(spare?' class="spare"':'')+'><td class="r mn">'+esc(x.no)+'</td><td class="mn">'+esc(x.cat)+'</td><td>'+esc(x.name)+'</td>'
           +'<td class="r">'+(x.md||x.md===0?x.md:'')+'</td>'   /* 0 M/D 도 0 으로 표기 */
           +(hasPlan?'<td class="mn">'+planTxt(x)+'</td>':'')
-          +'<td class="mn">'+esc(x.owner||'')+'</td>'
-          +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기',hold:'보류'}[x.st])+'</span></td></tr>'; }).join('')
+          +(col.owner?'<td class="mn">'+esc(x.owner||'')+'</td>':'')
+          +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기',hold:'보류'}[x.st])+'</span></td>'
+          +(col.rv?'<td class="ctr">'+docLink(x.rv)+'</td>':'')
+          +(col.rp?'<td class="ctr">'+docLink(x.rp)+'</td>':'')+'</tr>'; }).join('')
       +'</tbody>'
-      /* 하단 합계 — 총 공수를 눈에 띄게 */
+      /* 하단 합계 — 총 공수를 눈에 띄게. 꼬리 칸 수는 위에서 실제로 만든 열 수와 맞춘다 */
       +'<tfoot><tr class="sumrow"><td class="r">-</td><td colspan="2">합계 '+di.length+'건</td>'
       +'<td class="r">'+sum(di)+'</td>'+(hasPlan?'<td></td>':'')
-      +'<td colspan="2" class="mn">완료 '+sum(dn)+' M/D · 잔여 '+(sum(di)-sum(dn))+' M/D</td></tr></tfoot>';
+      +'<td colspan="'+(1+(col.owner?1:0)+(col.rv?1:0)+(col.rp?1:0))+'" class="mn">완료 '
+      +sum(dn)+' M/D · 잔여 '+(sum(di)-sum(dn))+' M/D</td></tr></tfoot>';
     /* 단계 표를 감췄으면 진척률 뱃지가 그 카드와 함께 사라지므로 여기로 옮겨 붙인다 */
     $('dev-im').textContent=(DATA.hidePhase?'진척률 '+pc(pDev)+'% · ':'')
       +dn.length+' / '+di.length+'건 완료, '+sum(dn)+' / '+sum(di)+' M/D';
