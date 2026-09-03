@@ -79,7 +79,7 @@ curl -sS -o /dev/null -w '%{size_download}\n' https://jade-hr.github.io/pms/<프
 
 ### “화면(앱)을 고쳐줘”
 `app/` 수정은 **전 프로젝트에 동시 반영**된다. 반드시:
-1. `cd _tools && npm install && node test.js` → **60개 항목 전부 통과**
+1. `cd _tools && npm install && node test.js` → **전 항목 통과**(실패 0 · 항목 수는 계속 는다 — 2026-09-03 기준 149)
 2. `app/board.js` 의 `VER` 를 올린다
 3. 각 프로젝트 `index.html` 의 `?v=` 를 올린다 (안 올리면 고객 브라우저가 옛 앱을 캐시)
 

@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.10.0';
+var VER = '1.11.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -545,7 +545,10 @@ function build(t){
       return { no:r['No']||r['no']||'', cat:r['구분']||'', name:r['요건명']||'',
                md:num(r['M/D']||r['MD'],0), owner:r['담당']||'', st:st(r['상태']),
                ps:fmtDate(r['계획시작']||''), pe:fmtDate(r['계획종료']||''),
-               rv:r['설계검토서']||'', rp:r['개발완료보고서']||'' };
+               rv:r['설계검토서']||'', rp:r['개발완료보고서']||'',
+               /* 설계검토서상태 = 링크 버튼의 글자(예: 「작성중」). 비면 「열기」.
+                  확정 전 문서도 고객이 열어 볼 수는 있어야 하므로 링크는 그대로 두고 글자만 바꾼다. */
+               rvs:String(r['설계검토서상태']||'').trim() };
     }).filter(function(x){ return x.name; });
     var h0 = t['요건'][0] || {};
     D.devCols = { owner:('담당' in h0), rv:('설계검토서' in h0), rp:('개발완료보고서' in h0) };
@@ -1084,10 +1087,13 @@ function render(DATA, warn){
     };
     /* 요건별 문서 링크. 아직 안 붙은 요건은 「—」로 자리만 남긴다
        (링크가 없다는 것도 정보다 — 칸을 지우면 그 요건만 빠진 것처럼 보인다). */
-    var docLink=function(u){
+    /* label 이 있으면(예: 「작성중」) 버튼 글자만 바뀌고 링크는 그대로 열린다 —
+       확정 전 문서를 「열기」로 보이면 고객이 확정본으로 읽는다. 링크가 없으면 label 이 있어도 「—」. */
+    var docLink=function(u, label){
       var s=safeUrl(u);
-      return s ? '<a class="lnk" href="'+s+'" target="_blank" rel="noopener">열기</a>'
-               : '<span class="nolnk">—</span>';
+      if(!s) return '<span class="nolnk">—</span>';
+      return label ? '<a class="lnk draft" href="'+s+'" target="_blank" rel="noopener">'+esc(label)+'</a>'
+                   : '<a class="lnk" href="'+s+'" target="_blank" rel="noopener">열기</a>';
     };
     $('dev-items').innerHTML='<thead><tr><th class="r">No</th><th>구분</th><th>요건명</th>'
       +'<th class="r">M/D</th>'+(hasPlan?'<th>계획</th>':'')
@@ -1103,7 +1109,7 @@ function render(DATA, warn){
           +(hasPlan?'<td class="mn">'+planTxt(x)+'</td>':'')
           +(col.owner?'<td class="mn">'+esc(x.owner||'')+'</td>':'')
           +'<td><span class="tag '+cls+'">'+({done:'완료',doing:'진행중',todo:'대기',hold:'보류'}[x.st])+'</span></td>'
-          +(col.rv?'<td class="ctr">'+docLink(x.rv)+'</td>':'')
+          +(col.rv?'<td class="ctr">'+docLink(x.rv, x.rvs)+'</td>':'')
           +(col.rp?'<td class="ctr">'+docLink(x.rp)+'</td>':'')+'</tr>'; }).join('')
       +'</tbody>'
       /* 하단 합계 — 총 공수를 눈에 띄게. 꼬리 칸 수는 위에서 실제로 만든 열 수와 맞춘다 */

@@ -483,6 +483,50 @@ const ok = (cond, label, extra) => cond
     ok(r.d.querySelectorAll('#dev-items .nolnk').length === 1, '차단된 칸은 「—」');
   }
 
+  console.log('');
+  console.log('== R-3. 설계검토서상태 — 확정 전 문서는 「작성중」 글자로, 링크는 그대로 ==');
+  {
+    /* 확정 전 검토서를 「열기」로 보이면 고객이 확정본으로 읽는다.
+       상태 열에 글자를 주면 버튼 글자만 바뀌고 링크는 그대로 열린다. 링크가 없으면 글자가 있어도 「—」. */
+    const f = { ...FIX };
+    f['요건'] = [['No', '구분', '요건명', 'M/D', '상태', '설계검토서', '설계검토서상태', '개발완료보고서'],
+      [1, '인사', '발령현황조회', 10, '진행중', 'https://ex.com/review/E01/', '', ''],
+      [2, '인사', '인사기록카드', 10, '대기', 'https://ex.com/review/E03/', '작성중', ''],
+      [3, '교육', '자격인증관리', 20, '대기', '', '작성중', ''],
+      [4, '급여', '국민연금', 5, '대기', 'https://ex.com/review/E07/', ' 작성중 ', 'https://ex.com/report/E07/'],
+    ];
+    const r = await run(f);
+    ok(!r.err, '오류화면 없음', r.err);
+    ok(r.errs.length === 0, 'JS 예외 없음', r.errs.join('|'));
+    const th = [...r.d.querySelectorAll('#dev-items thead th')].map(x => x.textContent);
+    ok(!th.includes('설계검토서상태'), '상태 열은 머리글로 나오지 않는다 (라벨일 뿐)', th.join(','));
+    const rows = [...r.d.querySelectorAll('#dev-items tbody tr')];
+    const rv = rows.map(tr => tr.querySelectorAll('td.ctr')[0]);
+    ok(rv[0].textContent === '열기' && !rv[0].querySelector('a.draft'), '상태 비면 「열기」', rv[0].textContent);
+    ok(rv[1].textContent === '작성중', '상태 있으면 그 글자', rv[1].textContent);
+    ok(!!rv[1].querySelector('a.lnk.draft'), '작성중은 draft 클래스(점선·회색)');
+    ok(rv[1].querySelector('a').getAttribute('href') === 'https://ex.com/review/E03/', '작성중이어도 링크는 그대로 열린다');
+    ok(rv[1].querySelector('a').getAttribute('target') === '_blank', '작성중 링크도 새 탭');
+    ok(rv[2].querySelector('.nolnk') && rv[2].textContent === '—', '링크 없으면 상태가 있어도 「—」', rv[2].textContent);
+    ok(rv[3].textContent === '작성중', '앞뒤 공백은 걷어낸다', JSON.stringify(rv[3].textContent));
+    const rp = rows[3].querySelectorAll('td.ctr')[1];
+    ok(rp.textContent === '열기', '개발완료보고서 칸은 상태의 영향을 받지 않는다', rp.textContent);
+    ok(r.d.querySelectorAll('#dev-items a.lnk').length === 4, '링크 4개 (검토서 3 + 보고서 1)');
+    const head = r.d.querySelectorAll('#dev-items thead th').length;
+    const foot = [...r.d.querySelectorAll('#dev-items tfoot td')]
+      .reduce((n, td) => n + (+td.getAttribute('colspan') || 1), 0);
+    ok(head === foot, '합계행 칸 수 = 머리글 칸 수', `head=${head} foot=${foot}`);
+  }
+  {
+    /* 상태 글자에 태그를 넣어도 글자로만 나온다 */
+    const f = { ...FIX };
+    f['요건'] = [['No', '구분', '요건명', 'M/D', '상태', '설계검토서', '설계검토서상태'],
+      [1, '인사', '발령', 10, '대기', 'https://ex.com/review/E01/', '<img src=x onerror=alert(1)>']];
+    const r = await run(f);
+    ok(!r.d.querySelector('#dev-items img'), '상태 글자의 태그는 실행되지 않는다');
+    ok(r.d.querySelector('#dev-items a.lnk').textContent.includes('<img'), '태그가 글자로 보인다');
+  }
+
   console.log('\n== S. 산출물 시트를 빼면 탭이 사라진다 ==');
   {
     const rest = { ...FIX };

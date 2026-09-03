@@ -435,6 +435,10 @@ table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:700px}
   padding:2px 11px;border-radius:9999px;border:1px solid var(--primary);
   color:var(--primary);background:#fff;white-space:nowrap;line-height:1.6}
 .t a.lnk:hover{background:var(--primary);color:#fff;text-decoration:none}
+/* 확정 전 문서(「작성중」 등 라벨) — 열리긴 하지만 「열기」와 같은 무게로 보이면 안 된다:
+   점선·회색으로 낮춰 확정본이 아님을 눈으로 가른다 */
+.t a.lnk.draft{border-style:dashed;border-color:var(--muted48);color:var(--muted48);font-weight:500}
+.t a.lnk.draft:hover{background:var(--muted48);border-color:var(--muted48);color:#fff}
 .t .nolnk{color:var(--muted48);font-size:12px}
 
 /* 요건 대장 예비공수 줄 — 노란 배경으로 구분 */
