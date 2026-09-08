@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.11.0';
+var VER = '1.11.1';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -55,7 +55,10 @@ function rich(s){
     .replace(/&lt;red&gt;/gi, '<span class="rt">')
     .replace(/&lt;\/red&gt;/gi, '</span>')
     .replace(/&lt;blue&gt;/gi, '<span class="bt">')
-    .replace(/&lt;\/blue&gt;/gi, '</span>');
+    .replace(/&lt;\/blue&gt;/gi, '</span>')
+    /* <gray>…</gray> 흐린 글씨 — 항목에 딸린 부연 설명을 한 단 낮춰 보이게 한다 */
+    .replace(/&lt;gray&gt;/gi, '<span class="gt">')
+    .replace(/&lt;\/gray&gt;/gi, '</span>');
 }
 
 /* href 로 나갈 값. javascript: 등은 버린다. */
