@@ -3,12 +3,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="../app/board.css?v=35">
+<link rel="stylesheet" href="./board.simpac.css?v=1">
 <script>window.BOARD = { client:'심팩', logo:'./ci.svg?v=19', logoH:40, logoDy:-4 };</script>
 <script src="../app/xlsx.mini.js"></script>
-<script src="../app/board.js?v=35"></script>
+<script src="./board.js?v=1"></script>
 
 <!-- ══════════════════════════════════════════════════════════════
      이 파일에서 고칠 것은 <title> 한 줄뿐입니다.
+
+     🔴 심팩은 공용 앱(../app/board.js)이 아니라 이 폴더의 board.js(포크)를 씁니다.
+        「진척 현황」 탭이 포크에만 있기 때문입니다. 스타일 추가분은 board.simpac.css.
+        공용 앱이 바뀌어도 여기에는 반영되지 않습니다. 포크를 고치면 위 두 줄의 ?v= 를 올리세요.
 
      데이터는 같은 폴더의 data.enc 에서 읽습니다.
      화면에 나오는 모든 것(고객사명·로고·기간·진척률·탭 구성)이 그 안에 있습니다.

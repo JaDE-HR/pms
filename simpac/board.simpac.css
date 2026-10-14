@@ -1,0 +1,11 @@
+/* ══════════════════════════════════════════════════════════════
+   심팩 전용 — 「진척 현황」 탭 스타일
+   공용 app/board.css 뒤에 덧붙여 읽습니다. 같은 폴더의 board.js(포크)와 짝입니다.
+   ══════════════════════════════════════════════════════════════ */
+.t td.pg-mod{width:190px;border-right:1px solid var(--divider);vertical-align:top}
+.t td.pg-mod b{display:block;font-weight:700;margin-bottom:10px}
+.t td.pg-mod .mbar{min-width:0;margin-bottom:7px}
+.t td.pg-mod em{font-style:normal;font-size:12px;color:var(--muted48);margin-left:8px}
+.t td.pg-done{color:var(--muted48)}
+/* 모듈 묶음의 경계 — rowspan 칸 때문에 아랫줄이 끊기므로 다음 묶음 첫 행의 윗줄로 긋는다 */
+.t tr.pg-first:not(:first-child) td{border-top:1px solid var(--hairline)}
