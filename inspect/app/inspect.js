@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "13";
+  const VER = "14";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -44,10 +44,16 @@
 
   // ── 서버 ──────────────────────────────────────────
   async function api(path, opts = {}) {
-    const res = await fetch(API + path, { ...opts, headers: { "Content-Type": "application/json", "X-Inspect-Pass": pass } });
+    let res;
+    try {
+      res = await fetch(API + path, { ...opts, headers: { "Content-Type": "application/json", "X-Inspect-Pass": pass } });
+    } catch (err) {
+      // 브라우저 네트워크 오류(영문 메시지)는 그대로 보여주지 않는다
+      const e = new Error("연결이 잠시 끊겨 저장하지 못했습니다. 다시 눌러 주세요."); e.net = true; throw e;
+    }
     const data = await res.json().catch(() => ({}));
     if (res.status === 401) { const e = new Error(data.message || "비밀번호가 맞지 않습니다."); e.auth = true; throw e; }
-    if (!res.ok) throw new Error(data.message || "저장하지 못했습니다. 잠시 뒤 다시 시도해 주세요.");
+    if (!res.ok) { const e = new Error(data.message || "저장하지 못했습니다. 화면을 새로 불러왔으니 다시 눌러 주세요."); e.stale = res.status === 400; throw e; }
     return data;
   }
   const group = (list, k) => list.reduce((o, x) => ((o[x[k]] = o[x[k]] || []).push(x), o), {});
@@ -289,11 +295,23 @@
     t.textContent = msg; clearTimeout(toast.t);
     toast.t = setTimeout(() => { t.textContent = ""; }, 3500);
   }
-  const fail = err => err.auth ? gate("비밀번호가 바뀌었습니다. 다시 입력해 주세요.") : toast(err.message);
+  // 실패하면 서버 기준으로 다시 불러와 화면을 맞춘다
+  const resync = () => load().then(renderAll).catch(() => {});
+  const fail = err => {
+    if (err.auth) return gate("비밀번호가 바뀌었습니다. 다시 입력해 주세요.");
+    toast(err.message);
+    resync();
+  };
 
+  // 누르는 즉시 화면(버튼 / 진척도)에 반영하고, 저장은 뒤에서 한다
   async function setResult(id, status) {
     const text = (drafts[id] || "").trim();
     const sendText = status === "issue" || status === "fixed" ? text : "";
+    const prevRes = S.results[id], prevRv = S.reviews[id];
+    const now = new Date().toISOString();
+    if (status === "none") delete S.results[id]; else S.results[id] = { item_id: id, status, name, role, at: now };
+    if (prevRv && (!prevRes || prevRes.status !== status)) delete S.reviews[id];
+    renderAll();
     try {
       const r = await api("/result", { method: "POST", body: JSON.stringify({ itemId: id, status, name, text: sendText }) });
       const entry = { item_id: id, status, name, role, at: r.at };
@@ -303,19 +321,30 @@
       if (sendText) { (S.opinions[id] = S.opinions[id] || []).push({ id: r.opinionId, item_id: id, name, text: sendText, at: r.at, role }); delete drafts[id]; }
       renderAll();
       toast(`${ST[status === "none" ? "" : status].label}(으)로 저장했습니다.${r.reviewCleared ? " 검수 체크가 풀렸습니다." : ""}`);
-    } catch (err) { fail(err); }
+    } catch (err) {
+      if (prevRes) S.results[id] = prevRes; else delete S.results[id];
+      if (prevRv) S.reviews[id] = prevRv;
+      renderAll();
+      fail(err);
+    }
   }
 
   async function onReview(e) {
     const cb = e.target.closest("[data-review]"); if (!cb) return;
-    const id = cb.dataset.review, checked = cb.checked;
+    const id = cb.dataset.review, checked = cb.checked, prev = S.reviews[id];
+    if (checked) S.reviews[id] = { item_id: id, name, at: new Date().toISOString() }; else delete S.reviews[id];
+    renderAll();
     try {
       const r = await api("/review", { method: "POST", body: JSON.stringify({ itemId: id, checked, name }) });
       if (checked) S.reviews[id] = { item_id: id, name, at: r.at }; else delete S.reviews[id];
       (S.history[id] = S.history[id] || []).push({ item_id: id, status: checked ? "review" : "review_off", name, role, at: r.at });
       renderAll();
       toast(checked ? "검수를 체크했습니다." : "검수 체크를 해제했습니다.");
-    } catch (err) { cb.checked = !checked; fail(err); }
+    } catch (err) {
+      if (prev) S.reviews[id] = prev; else delete S.reviews[id];
+      renderAll();
+      fail(err);
+    }
   }
 
   async function onRowClick(e) {
