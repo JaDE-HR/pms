@@ -1,9 +1,9 @@
 // JaDE 검수 시트 표준 앱. 전 고객사가 함께 쓴다. 고객사별 값은 각 index.html 의 window.INSPECT 에만 둔다.
 //   window.INSPECT = { key: "<프로젝트키>", api: "https://<worker 주소>" }
-// 흐름: 고객사 테스트(정상 / 문제 있음 / 해당 없음) → JaDE 조치 완료 → 재테스트 → 모듈 검수 완료
+// 흐름: 테스트(정상 / 문제 있음 / 해당 없음) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "2";
+  const VER = "3";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -16,6 +16,7 @@
     na: { label: "해당 없음", cls: "na" },
     "": { label: "미실행", cls: "none" },
   };
+  const HIST = { ...Object.fromEntries(Object.entries(ST).map(([k, v]) => [k, "테스트 " + v.label])), review: "검수 체크", review_off: "검수 해제" };
   const PASSING = ["ok", "na"];
 
   const $ = s => document.querySelector(s);
@@ -32,7 +33,7 @@
   let pass = store.get(PASS_KEY, sessionStorage);
   let name = store.get(NAME_KEY);
   let role = "client";
-  let S = { mods: [], rows: [], results: {}, history: {}, opinions: {}, approvals: {} };
+  let S = { mods: [], rows: [], results: {}, reviews: {}, history: {}, opinions: {} };
   let mod = "", filter = "all", pollTimer = 0;
   const drafts = {};
 
@@ -52,9 +53,9 @@
     S.mods = d.scenario.mods || [];
     S.rows = d.scenario.rows || [];
     S.results = Object.fromEntries(d.results.map(r => [r.item_id, r]));
+    S.reviews = Object.fromEntries(d.reviews.map(r => [r.item_id, r]));
     S.history = group(d.history, "item_id");
     S.opinions = group(d.opinions, "item_id");
-    S.approvals = Object.fromEntries(d.approvals.map(a => [a.mod_id, a]));
     if (!S.mods.some(m => m.id === mod)) mod = store.get("inspect-mod:" + CFG.key);
     if (!S.mods.some(m => m.id === mod)) mod = (S.mods[0] || {}).id;
   }
@@ -66,7 +67,7 @@
       <div class="gate"><form class="gate-card" id="gateForm">
         <div class="eyebrow">검수용 테스트 시나리오</div>
         <h1>검수 시트</h1>
-        <p class="sub">안내받은 비밀번호와 본인 이름을 입력해 주세요.<br>테스트 결과와 의견에 이 이름이 함께 남습니다.</p>
+        <p class="sub">안내받은 비밀번호와 본인 이름을 입력해 주세요.<br>테스트 결과, 검수, 의견에 이 이름이 함께 남습니다.</p>
         <label for="gatePass">비밀번호<input type="password" id="gatePass" autocomplete="off" required></label>
         <label for="gateName">이름<input type="text" id="gateName" maxlength="20" required value="${esc(name)}" placeholder="예: 홍길동"></label>
         <button type="submit" class="btn primary" id="gateGo">들어가기</button>
@@ -108,7 +109,7 @@
       <section class="hero"><div class="wrap"><div class="hero-text">
         <div class="eyebrow">검수용 테스트 시나리오</div>
         <h1>모듈별 테스트 / 검수</h1>
-        <ol class="flow"><li>항목대로 실행하고 결과를 고릅니다.</li><li>문제 있음은 JaDE 가 조치 후 표시합니다.</li><li>다시 실행해 정상으로 바꿉니다.</li><li>모두 정상이면 모듈 검수 완료를 누릅니다.</li></ol>
+        <ol class="flow"><li>테스트: 항목대로 실행하고 결과를 고릅니다.</li><li>조치: 문제 있음은 JaDE 가 고친 뒤 조치 완료로 표시합니다.</li><li>재테스트: 다시 실행해 정상으로 바꿉니다.</li><li>검수: 테스트가 정상인 항목에 검수 체크를 합니다. 모두 체크되면 모듈 검수 완료입니다.</li></ol>
       </div></div></section>
       <div class="wrap"><div class="band" id="mods" role="group" aria-label="모듈별 진행"></div></div>
       <div class="bar"><div class="wrap"><div class="tablist" role="tablist" aria-label="모듈" id="tabs"></div></div></div>
@@ -120,6 +121,7 @@
             <button type="button" class="fbtn" data-f="none">미실행</button>
             <button type="button" class="fbtn" data-f="issue">문제 있음</button>
             <button type="button" class="fbtn" data-f="fixed">조치 완료</button>
+            <button type="button" class="fbtn" data-f="wait">검수 대기</button>
           </div>
         </div>
         <div class="approve" id="approve"></div>
@@ -133,8 +135,8 @@
     }));
     document.querySelectorAll(".fbtn").forEach(b => b.addEventListener("click", () => { filter = b.dataset.f; renderRows(); }));
     $("#rows").addEventListener("click", onRowClick);
+    $("#rows").addEventListener("change", onReview);
     $("#rows").addEventListener("input", e => { if (e.target.matches("textarea[data-item]")) drafts[e.target.dataset.item] = e.target.value; });
-    $("#approve").addEventListener("click", onApproveClick);
     $("#copyBtn").addEventListener("click", copyResult);
     renderAll();
     pollTimer = setInterval(poll, POLL_MS);
@@ -145,8 +147,13 @@
   // ── 계산 ──────────────────────────────────────────
   const modRows = m => S.rows.filter(r => r.m === m);
   const statusOf = r => (S.results[r.id] || {}).status || "";
+  const passing = r => PASSING.includes(statusOf(r));
+  const reviewed = r => !!S.reviews[r.id];
   const countOf = rows => rows.reduce((c, r) => (c[statusOf(r)] = (c[statusOf(r)] || 0) + 1, c), {});
-  const passOf = rows => rows.filter(r => PASSING.includes(statusOf(r))).length;
+  const passOf = rows => rows.filter(passing).length;
+  const reviewOf = rows => rows.filter(reviewed).length;
+  const modDone = m => { const rows = modRows(m); return rows.length && reviewOf(rows) === rows.length; };
+  const lastReview = m => modRows(m).map(r => S.reviews[r.id]).filter(Boolean).sort((a, b) => a.at < b.at ? 1 : -1)[0];
   const fmt = iso => { const d = new Date(iso); const p = n => String(n).padStart(2, "0"); return `${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
 
   // ── 그리기 ────────────────────────────────────────
@@ -169,17 +176,24 @@
     return block(red, "red", "주의") + block(plain, "", "참고");
   }
 
-  function resultHtml(r, locked) {
+  function testHtml(r) {
     const cur = statusOf(r), res = S.results[r.id];
-    const hist = (S.history[r.id] || []).slice(0, -1).slice(-3).reverse();
-    const btn = (st, extra = "") => `<button type="button" class="rbtn ${ST[st].cls}" data-status="${st}" data-item="${esc(r.id)}" aria-pressed="${cur === st}" ${locked ? "disabled" : ""} ${extra}>${ST[st].label}</button>`;
-    const buttons = role === "jade"
-      ? (cur === "issue" ? btn("fixed") : "")
-      : btn("ok") + btn("issue") + btn("na");
+    const hist = (S.history[r.id] || []).slice(0, -1).slice(-4).reverse();
+    const btn = st => `<button type="button" class="rbtn ${ST[st].cls}" data-status="${st}" data-item="${esc(r.id)}" aria-pressed="${cur === st}">${ST[st].label}</button>`;
+    const buttons = role === "jade" ? (cur === "issue" ? btn("fixed") : "") : btn("ok") + btn("issue") + btn("na");
     return `<div class="status ${ST[cur].cls}">${ST[cur].label}</div>
       ${res ? `<div class="check-by">${esc(res.name)}${res.role === "jade" ? " (JaDE)" : ""}<br><time>${fmt(res.at)}</time></div>` : ""}
       <div class="rbtns">${buttons}</div>
-      ${hist.length ? `<details class="hist"><summary>이전 ${hist.length}건</summary>${hist.map(h => `<div>${ST[h.status].label} - ${esc(h.name)} ${fmt(h.at)}</div>`).join("")}</details>` : ""}`;
+      ${hist.length ? `<details class="hist"><summary>이전 ${hist.length}건</summary>${hist.map(h => `<div>${HIST[h.status] || h.status} - ${esc(h.name)} ${fmt(h.at)}</div>`).join("")}</details>` : ""}`;
+  }
+
+  function reviewHtml(r) {
+    const rv = S.reviews[r.id], ready = passing(r), can = role === "client" && ready;
+    return `<label class="rv-box ${rv ? "on" : ""} ${can ? "" : "off"}" for="rv-${esc(r.id)}">
+        <input type="checkbox" id="rv-${esc(r.id)}" data-review="${esc(r.id)}" ${rv ? "checked" : ""} ${can ? "" : "disabled"}>
+        <span>${rv ? "검수 완료" : "검수"}</span></label>
+      ${rv ? `<div class="check-by">${esc(rv.name)}<br><time>${fmt(rv.at)}</time></div>`
+           : `<div class="rv-hint">${ready ? (role === "client" ? "체크해 주세요" : "고객사 검수 대기") : "테스트 정상 후"}</div>`}`;
   }
 
   function opinionsHtml(id) {
@@ -187,14 +201,15 @@
       + (o.name === name && o.role === role ? ` <button type="button" class="link op-del" data-del="${o.id}" data-item="${esc(id)}">삭제</button>` : "") + `</li>`).join("");
   }
 
-  function rowHtml(r, who, locked) {
-    const cur = statusOf(r);
-    return `<article class="row st-${ST[cur].cls}" data-id="${esc(r.id)}">
+  function rowHtml(r, who) {
+    const cls = reviewed(r) ? "st-reviewed" : "st-" + ST[statusOf(r)].cls;
+    return `<article class="row ${cls}" data-id="${esc(r.id)}">
       <div class="who-col"><div class="name">${esc(r.n)}</div>${r.risk ? '<span class="risk">운영 영향</span>' : ""}
         <div class="place">${r.menu.map(m => { const p = m.split(" > "); const last = p.pop(); return `<div><span class="crumb">${esc(p.join(" > "))}</span><span class="chip">${esc(last)}</span></div>`; }).join("")}<span class="who">${esc(r.who || who)}</span></div></div>
       <div class="desc"><ol class="steps">${r.steps.map(t => `<li>${lineHtml(t)}</li>`).join("")}</ol>
         <div class="result"><b>기대 결과</b><span>${linesHtml(r.expect)}</span></div>${notesHtml(r.note, r.risk)}</div>
-      <div class="check">${resultHtml(r, locked)}</div>
+      <div class="check">${testHtml(r)}</div>
+      <div class="review">${reviewHtml(r)}</div>
       <div class="opinion">
         <ul class="op-list">${opinionsHtml(r.id)}</ul>
         <div class="op-new"><textarea id="op-${esc(r.id)}" data-item="${esc(r.id)}" placeholder="${role === "jade" ? "조치 내용 / 답변을 적어 주세요" : "의견이 있으면 적어 주세요\n문제 있음은 의견이 필수입니다"}">${esc(drafts[r.id] || "")}</textarea>
@@ -202,38 +217,42 @@
     </article>`;
   }
 
+  function matches(r) {
+    if (filter === "all") return true;
+    if (filter === "wait") return passing(r) && !reviewed(r);
+    return ST[statusOf(r)].cls === filter;
+  }
+
   function renderRows() {
     const m = S.mods.find(x => x.id === mod) || {};
-    const locked = !!S.approvals[mod];
     const focus = document.activeElement && document.activeElement.id;
-    const list = modRows(mod).filter(r => filter === "all" || ST[statusOf(r)].cls === filter);
+    const list = modRows(mod).filter(matches);
     const groups = [...new Set(list.map(r => r.g))];
     $("#rows").innerHTML = groups.length ? groups.map(g => {
       const all = modRows(mod).filter(r => r.g === g);
-      return `<section><div class="gh"><h3>${esc(g)}</h3><span>정상 ${passOf(all)} / ${all.length}</span></div>
-        <div class="cols"><span>항목</span><span>설명</span><span class="ctr">결과</span><span>의견</span></div>
-        ${list.filter(r => r.g === g).map(r => rowHtml(r, m.who, locked)).join("")}</section>`;
+      return `<section><div class="gh"><h3>${esc(g)}</h3><span>테스트 ${passOf(all)} / ${all.length} · 검수 ${reviewOf(all)} / ${all.length}</span></div>
+        <div class="cols"><span>항목</span><span>설명</span><span class="ctr">테스트</span><span class="ctr">검수</span><span>의견</span></div>
+        ${list.filter(r => r.g === g).map(r => rowHtml(r, m.who)).join("")}</section>`;
     }).join("") : `<div class="empty">이 조건에 해당하는 항목이 없습니다.</div>`;
     document.querySelectorAll(".fbtn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === filter)));
     if (focus) { const el = document.getElementById(focus); if (el) { el.focus(); if (el.setSelectionRange && el.value) el.setSelectionRange(el.value.length, el.value.length); } }
   }
 
   function renderApprove() {
-    const rows = modRows(mod), a = S.approvals[mod], c = countOf(rows), left = rows.length - passOf(rows);
+    const rows = modRows(mod), c = countOf(rows), n = rows.length;
     const counts = `<span class="cnt ok">정상 ${c.ok || 0}</span><span class="cnt issue">문제 있음 ${c.issue || 0}</span><span class="cnt fixed">조치 완료 ${c.fixed || 0}</span><span class="cnt na">해당 없음 ${c.na || 0}</span><span class="cnt none">미실행 ${c[""] || 0}</span>`;
-    let action;
-    if (a) action = `<div class="approved">검수 완료 - ${esc(a.name)} <time>${fmt(a.at)}</time></div>`
-      + (role === "jade" ? ` <button type="button" class="btn" data-unapprove="${esc(mod)}">검수 취소</button>` : "");
-    else if (role === "jade") action = `<span class="approve-hint">검수 완료는 고객사 담당자가 누릅니다.</span>`;
-    else action = `<button type="button" class="btn primary" data-approve="${esc(mod)}" ${left ? "disabled" : ""}>모듈 검수 완료</button>`
-      + `<span class="approve-hint">${left ? `정상 / 해당 없음이 아닌 항목 ${left}개가 남아 있습니다.` : "모든 항목이 정상입니다. 검수 완료를 눌러 주세요."}</span>`;
-    $("#approve").innerHTML = `<div class="counts">${counts}</div><div class="approve-act">${action}</div>`;
+    const last = lastReview(mod);
+    const state = modDone(mod)
+      ? `<div class="approved">모듈 검수 완료${last ? ` - 마지막 검수 ${esc(last.name)} <time>${fmt(last.at)}</time>` : ""}</div>`
+      : `<div class="approve-prog"><b>테스트</b> ${passOf(rows)} / ${n}<b>검수</b> ${reviewOf(rows)} / ${n}</div>
+         <span class="approve-hint">모든 항목이 검수되면 모듈 검수 완료로 바뀝니다.</span>`;
+    $("#approve").innerHTML = `<div class="counts">${counts}</div><div class="approve-act">${state}</div>`;
   }
 
   function renderShell() {
     const m = S.mods.find(x => x.id === mod) || {};
-    $("#mods").innerHTML = `<div class="sc all"><div class="sc-l">전체 진행</div><div class="sc-v"><span id="pAll">0</span><small>%</small></div><div class="trk"><i id="bAll"></i></div><div class="sc-s" id="sAll"></div></div>`
-      + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}" aria-pressed="${x.id === mod}"><div class="sc-l">${esc(x.name)}${S.approvals[x.id] ? ' <span class="sc-done">검수 완료</span>' : ""}</div><div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div></button>`).join("");
+    $("#mods").innerHTML = `<div class="sc all"><div class="sc-l">전체 검수</div><div class="sc-v"><span id="pAll">0</span><small>%</small></div><div class="trk"><i id="bAll"></i></div><div class="sc-s" id="sAll"></div></div>`
+      + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}" aria-pressed="${x.id === mod}"><div class="sc-l">${esc(x.name)}${modDone(x.id) ? ' <span class="sc-done">검수 완료</span>' : ""}</div><div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div></button>`).join("");
     $("#tabs").innerHTML = S.mods.map(x => `<button type="button" class="tab" role="tab" data-m="${esc(x.id)}" aria-selected="${x.id === mod}">${esc(x.name)}<b data-c="${esc(x.id)}"></b></button>`).join("");
     $("#modName").textContent = m.name || "";
     $("#draftTag").hidden = !m.draft;
@@ -243,16 +262,15 @@
   }
 
   function progress() {
-    const pAll = S.rows.length ? Math.round(passOf(S.rows) / S.rows.length * 100) : 0;
-    const cAll = countOf(S.rows);
-    $("#pAll").textContent = pAll; $("#bAll").style.width = pAll + "%";
-    $("#sAll").textContent = `정상 ${passOf(S.rows)} · 문제 ${cAll.issue || 0} · 조치 ${cAll.fixed || 0} · 미실행 ${cAll[""] || 0}`;
+    const n = S.rows.length, rv = reviewOf(S.rows), p = n ? Math.round(rv / n * 100) : 0, c = countOf(S.rows);
+    $("#pAll").textContent = p; $("#bAll").style.width = p + "%";
+    $("#sAll").textContent = `테스트 ${passOf(S.rows)}/${n} · 검수 ${rv}/${n}${c.issue ? ` · 문제 ${c.issue}` : ""}`;
     S.mods.forEach(x => {
-      const rows = modRows(x.id), ok = passOf(rows), c = countOf(rows), p = rows.length ? Math.round(ok / rows.length * 100) : 0;
-      document.querySelector(`[data-p="${x.id}"]`).textContent = p;
-      document.querySelector(`[data-b="${x.id}"]`).style.width = p + "%";
-      document.querySelector(`[data-s="${x.id}"]`).textContent = `정상 ${ok}/${rows.length}${c.issue ? ` · 문제 ${c.issue}` : ""}`;
-      document.querySelector(`[data-c="${x.id}"]`).textContent = `${ok}/${rows.length}`;
+      const rows = modRows(x.id), r = reviewOf(rows), t = passOf(rows), cc = countOf(rows), pp = rows.length ? Math.round(r / rows.length * 100) : 0;
+      document.querySelector(`[data-p="${x.id}"]`).textContent = pp;
+      document.querySelector(`[data-b="${x.id}"]`).style.width = pp + "%";
+      document.querySelector(`[data-s="${x.id}"]`).textContent = `테스트 ${t}/${rows.length} · 검수 ${r}/${rows.length}${cc.issue ? ` · 문제 ${cc.issue}` : ""}`;
+      document.querySelector(`[data-c="${x.id}"]`).textContent = `${r}/${rows.length}`;
     });
   }
 
@@ -279,10 +297,23 @@
       const entry = { item_id: id, status, name, role, at: r.at };
       S.results[id] = entry;
       (S.history[id] = S.history[id] || []).push(entry);
+      if (r.reviewCleared) { delete S.reviews[id]; S.history[id].push({ item_id: id, status: "review_off", name, role, at: r.at }); }
       if (sendText) { (S.opinions[id] = S.opinions[id] || []).push({ id: r.opinionId, item_id: id, name, text: sendText, at: r.at, role }); delete drafts[id]; }
-      renderShell(); renderRows(); progress();
-      toast(`${ST[status].label}(으)로 저장했습니다.`);
+      renderAll();
+      toast(`테스트 ${ST[status].label}(으)로 저장했습니다.${r.reviewCleared ? " 검수 체크가 풀렸습니다." : ""}`);
     } catch (err) { fail(err); }
+  }
+
+  async function onReview(e) {
+    const cb = e.target.closest("[data-review]"); if (!cb) return;
+    const id = cb.dataset.review, checked = cb.checked;
+    try {
+      const r = await api("/review", { method: "POST", body: JSON.stringify({ itemId: id, checked, name }) });
+      if (checked) S.reviews[id] = { item_id: id, name, at: r.at }; else delete S.reviews[id];
+      (S.history[id] = S.history[id] || []).push({ item_id: id, status: checked ? "review" : "review_off", name, role, at: r.at });
+      renderAll();
+      toast(checked ? "검수를 체크했습니다." : "검수 체크를 해제했습니다.");
+    } catch (err) { cb.checked = !checked; fail(err); }
   }
 
   async function onRowClick(e) {
@@ -315,38 +346,20 @@
     }
   }
 
-  async function onApproveClick(e) {
-    const ap = e.target.closest("[data-approve]"), un = e.target.closest("[data-unapprove]");
-    const b = ap || un; if (!b) return;
-    if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = ap ? "검수 완료 확인" : "검수 취소 확인"; return; }
-    try {
-      if (ap) {
-        const r = await api("/approve", { method: "POST", body: JSON.stringify({ modId: mod, name }) });
-        S.approvals[mod] = { mod_id: mod, name, at: r.at };
-        toast("검수 완료로 저장했습니다.");
-      } else {
-        await api("/approve/" + mod, { method: "DELETE", body: JSON.stringify({ name }) });
-        delete S.approvals[mod];
-        toast("검수를 취소했습니다.");
-      }
-      renderAll();
-    } catch (err) { fail(err); }
-  }
-
   async function poll() {
     if (document.visibilityState !== "visible") return;
-    try { await load(); renderShell(); renderRows(); progress(); }
+    try { await load(); renderAll(); }
     catch (err) { if (err.auth) gate("비밀번호가 바뀌었습니다. 다시 입력해 주세요."); }
   }
 
   function copyResult() {
     const cell = s => '"' + String(s).replace(/"/g, '""') + '"';
-    const head = ["모듈", "프로세스", "항목", "결과", "결과 입력자", "입력 시각", "의견", "모듈 검수", "메뉴"].join("\t");
+    const head = ["모듈", "프로세스", "항목", "테스트", "테스트 입력자", "테스트 시각", "검수", "검수자", "검수 시각", "의견", "메뉴"].join("\t");
     const body = S.rows.map(r => {
-      const res = S.results[r.id] || {}, m = S.mods.find(x => x.id === r.m) || {}, a = S.approvals[r.m];
+      const res = S.results[r.id] || {}, rv = S.reviews[r.id], m = S.mods.find(x => x.id === r.m) || {};
       const ops = (S.opinions[r.id] || []).map(o => `${o.role === "jade" ? "[JaDE] " : ""}${o.text} - ${o.name} (${fmt(o.at)})`).join("\n");
       return [cell(m.name || ""), cell(r.g), cell(r.n), cell(ST[res.status || ""].label), cell(res.name || ""), cell(res.at ? fmt(res.at) : ""),
-        cell(ops), cell(a ? `${a.name} ${fmt(a.at)}` : ""), cell(r.menu.join(" / "))].join("\t");
+        rv ? "Y" : "", cell(rv ? rv.name : ""), cell(rv ? fmt(rv.at) : ""), cell(ops), cell(r.menu.join(" / "))].join("\t");
     });
     navigator.clipboard.writeText([head, ...body].join("\n"))
       .then(() => toast("복사했습니다. 엑셀에 붙여넣으세요."))

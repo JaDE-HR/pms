@@ -58,11 +58,20 @@ CREATE TABLE IF NOT EXISTS opinions (
 );
 CREATE INDEX IF NOT EXISTS opinions_key ON opinions (key, item_id);
 
--- 모듈별 검수 완료
+-- 모듈별 검수 완료 (v2. 지금은 쓰지 않음: 항목 검수가 모두 끝나면 자동 완료)
 CREATE TABLE IF NOT EXISTS approvals (
   key    TEXT NOT NULL,
   mod_id TEXT NOT NULL,
   name   TEXT NOT NULL,
   at     TEXT NOT NULL,
   PRIMARY KEY (key, mod_id)
+);
+
+-- 항목별 검수 체크. 테스트 결과가 정상 / 해당 없음일 때만 체크되고, 테스트 결과가 바뀌면 지워진다
+CREATE TABLE IF NOT EXISTS reviews (
+  key     TEXT NOT NULL,
+  item_id TEXT NOT NULL,
+  name    TEXT NOT NULL,
+  at      TEXT NOT NULL,
+  PRIMARY KEY (key, item_id)
 );
