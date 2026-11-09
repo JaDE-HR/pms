@@ -7,7 +7,7 @@
 //   DELETE /api/<key>/opinion/<id>          { name }   본인이 쓴 의견만
 //
 // X-Inspect-Pass 헤더로 역할을 정한다. 고객사 비밀번호면 client, JaDE 비밀번호면 jade.
-//   client: 테스트 정상 / 오류(의견 필수), 검수 체크
+//   client: 테스트 정상 / 오류 (자유롭게 바꿀 수 있음), 검수 체크
 //   jade:   조치 완료(오류 항목만), 답변
 // 검수 체크는 테스트가 정상 / 해당 없음일 때만 된다. 테스트 결과가 바뀌면 그 항목의 검수는 풀린다.
 // 시나리오는 비밀번호가 맞을 때만 내려간다.
@@ -78,7 +78,6 @@ async function route(req, env) {
       if (status !== "fixed") return json({ error: "forbidden", message: "JaDE 는 조치 완료만 표시할 수 있습니다." }, 403);
       if (!cur || cur.status !== "issue") return json({ error: "bad_request", message: "오류 항목만 조치 완료로 바꿀 수 있습니다." }, 400);
     }
-    if (status === "issue" && !text) return json({ error: "bad_request", message: "오류 내용을 의견으로 적어 주세요." }, 400);
     if (cur && cur.status === status && !text) return json({ ok: true, at: now, opinionId: null, reviewCleared: false, unchanged: true });
     const reviewed = await DB.prepare("SELECT 1 FROM reviews WHERE key = ? AND item_id = ?").bind(key, row.id).first();
     const stmts = [

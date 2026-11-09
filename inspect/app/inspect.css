@@ -285,3 +285,16 @@ body{margin:0}
 .row.st-issue{background:#fdeeee}
 .row.st-issue .op-list li:not(.op-jade){background:#fff;border:1px solid #f3c5c9}
 .cnt.issue{background:var(--st-issue);color:#fff}
+
+/* ── v5: 버튼은 모두 같은 색, 결과는 항목 박스 배경으로 표시 (정상 파랑 / 오류 빨강) ── */
+.rbtn,.rbtn.ok,.rbtn.issue,.rbtn.fixed{background:var(--canvas);border:1px solid var(--control);color:var(--body);font-weight:600}
+.rbtn:hover:not(:disabled){border-color:var(--ink);color:var(--ink)}
+.rbtn[aria-pressed="true"],.rbtn.ok[aria-pressed="true"],.rbtn.issue[aria-pressed="true"]{background:var(--canvas);border:2px solid var(--ink);color:var(--ink);font-weight:700}
+.status,.status.ok,.status.issue,.status.fixed,.status.na{background:transparent;color:var(--ink);border:0;font-weight:700}
+.status.none{border:0;color:var(--muted);font-weight:500}
+.row.st-ok,.row.st-reviewed{background:#dcebfb}
+.row.st-issue{background:#fbdcdc}
+.row.st-fixed{background:#fff3cf}
+.row.st-ok .result,.row.st-ok .notes:not(.red),.row.st-reviewed .result,.row.st-reviewed .notes:not(.red),
+.row.st-issue .result,.row.st-issue .notes:not(.red),.row.st-fixed .result,.row.st-fixed .notes:not(.red){background:var(--canvas)}
+.row.st-ok .op-list li,.row.st-reviewed .op-list li,.row.st-issue .op-list li:not(.op-jade),.row.st-fixed .op-list li:not(.op-jade){background:var(--canvas)}

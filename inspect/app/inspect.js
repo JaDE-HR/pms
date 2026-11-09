@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "4";
+  const VER = "5";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -212,7 +212,7 @@
       <div class="review">${reviewHtml(r)}</div>
       <div class="opinion">
         <ul class="op-list">${opinionsHtml(r.id)}</ul>
-        <div class="op-new"><textarea id="op-${esc(r.id)}" data-item="${esc(r.id)}" placeholder="${role === "jade" ? "조치 내용 / 답변을 적어 주세요" : "의견이 있으면 적어 주세요\n오류는 의견이 필수입니다"}">${esc(drafts[r.id] || "")}</textarea>
+        <div class="op-new"><textarea id="op-${esc(r.id)}" data-item="${esc(r.id)}" placeholder="${role === "jade" ? "조치 내용 / 답변을 적어 주세요" : "의견이 있으면 적어 주세요\n오류면 어떤 내용인지 적어 주세요"}">${esc(drafts[r.id] || "")}</textarea>
         <button type="button" class="btn small" data-add="${esc(r.id)}">${role === "jade" ? "답변 등록" : "의견 등록"}</button></div></div>
     </article>`;
   }
@@ -286,11 +286,6 @@
 
   async function setResult(id, status) {
     const text = (drafts[id] || "").trim();
-    if (status === "issue" && !text) {
-      toast("오류 내용을 의견 칸에 먼저 적어 주세요.");
-      const ta = document.getElementById("op-" + id); if (ta) ta.focus();
-      return;
-    }
     const sendText = status === "issue" || status === "fixed" ? text : "";
     try {
       const r = await api("/result", { method: "POST", body: JSON.stringify({ itemId: id, status, name, text: sendText }) });
