@@ -15,7 +15,7 @@
 const ITER = 10000;           // PBKDF2 반복 횟수. 무료 플랜 CPU 한도 안에서 도는 값
 const MAX_NAME = 20;
 const MAX_TEXT = 2000;
-const CLIENT_STATUS = ["ok", "issue"];   // 정상 / 오류
+const CLIENT_STATUS = ["none", "ok", "issue"];   // 미실행(결과 지움) / 정상 / 오류
 const PASSING = ["ok", "na"];
 
 export default {
@@ -78,12 +78,14 @@ async function route(req, env) {
       if (status !== "fixed") return json({ error: "forbidden", message: "JaDE 는 조치 완료만 표시할 수 있습니다." }, 403);
       if (!cur || cur.status !== "issue") return json({ error: "bad_request", message: "오류 항목만 조치 완료로 바꿀 수 있습니다." }, 400);
     }
-    if (cur && cur.status === status && !text) return json({ ok: true, at: now, opinionId: null, reviewCleared: false, unchanged: true });
+    if (((cur && cur.status === status) || (!cur && status === "none")) && !text) return json({ ok: true, at: now, opinionId: null, reviewCleared: false, unchanged: true });
     const reviewed = await DB.prepare("SELECT 1 FROM reviews WHERE key = ? AND item_id = ?").bind(key, row.id).first();
     const stmts = [
-      DB.prepare("INSERT INTO results (key, item_id, status, name, role, at) VALUES (?, ?, ?, ?, ?, ?) " +
-        "ON CONFLICT(key, item_id) DO UPDATE SET status = excluded.status, name = excluded.name, role = excluded.role, at = excluded.at")
-        .bind(key, row.id, status, name, role, now),
+      status === "none"
+        ? DB.prepare("DELETE FROM results WHERE key = ? AND item_id = ?").bind(key, row.id)
+        : DB.prepare("INSERT INTO results (key, item_id, status, name, role, at) VALUES (?, ?, ?, ?, ?, ?) " +
+          "ON CONFLICT(key, item_id) DO UPDATE SET status = excluded.status, name = excluded.name, role = excluded.role, at = excluded.at")
+          .bind(key, row.id, status, name, role, now),
       hist(row.id, status),
     ];
     if (reviewed && (!cur || cur.status !== status)) {

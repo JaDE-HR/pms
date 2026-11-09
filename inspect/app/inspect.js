@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "5";
+  const VER = "6";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -178,13 +178,13 @@
 
   function testHtml(r) {
     const cur = statusOf(r), res = S.results[r.id];
-    const hist = (S.history[r.id] || []).slice(0, -1).slice(-4).reverse();
-    const btn = st => `<button type="button" class="rbtn ${ST[st].cls}" data-status="${st}" data-item="${esc(r.id)}" aria-pressed="${cur === st}">${ST[st].label}</button>`;
-    const buttons = role === "jade" ? (cur === "issue" ? btn("fixed") : "") : btn("ok") + btn("issue");
-    return `<div class="status ${ST[cur].cls}">${ST[cur].label}</div>
-      ${res ? `<div class="check-by">${esc(res.name)}${res.role === "jade" ? " (JaDE)" : ""}<br><time>${fmt(res.at)}</time></div>` : ""}
-      <div class="rbtns">${buttons}</div>
-      ${hist.length ? `<details class="hist"><summary>이전 ${hist.length}건</summary>${hist.map(h => `<div>${HIST[h.status] || h.status} - ${esc(h.name)} ${fmt(h.at)}</div>`).join("")}</details>` : ""}`;
+    const btn = (st, key) => `<button type="button" class="rbtn" data-status="${key}" data-item="${esc(r.id)}" aria-pressed="${cur === st}">${ST[st].label}</button>`;
+    const buttons = role === "jade"
+      ? (cur === "issue" ? btn("fixed", "fixed") : `<div class="status-text">${ST[cur].label}</div>`)
+      : btn("", "none") + btn("ok", "ok") + btn("issue", "issue");
+    return `<div class="rbtns">${buttons}</div>
+      ${cur === "fixed" && role !== "jade" ? '<div class="fixed-note">JaDE 조치 완료</div>' : ""}
+      ${res ? `<div class="check-by">${esc(res.name)}${res.role === "jade" ? " (JaDE)" : ""}<br><time>${fmt(res.at)}</time></div>` : ""}`;
   }
 
   function reviewHtml(r) {
@@ -290,12 +290,12 @@
     try {
       const r = await api("/result", { method: "POST", body: JSON.stringify({ itemId: id, status, name, text: sendText }) });
       const entry = { item_id: id, status, name, role, at: r.at };
-      S.results[id] = entry;
+      if (status === "none") delete S.results[id]; else S.results[id] = entry;
       (S.history[id] = S.history[id] || []).push(entry);
       if (r.reviewCleared) { delete S.reviews[id]; S.history[id].push({ item_id: id, status: "review_off", name, role, at: r.at }); }
       if (sendText) { (S.opinions[id] = S.opinions[id] || []).push({ id: r.opinionId, item_id: id, name, text: sendText, at: r.at, role }); delete drafts[id]; }
       renderAll();
-      toast(`테스트 ${ST[status].label}(으)로 저장했습니다.${r.reviewCleared ? " 검수 체크가 풀렸습니다." : ""}`);
+      toast(`${ST[status === "none" ? "" : status].label}(으)로 저장했습니다.${r.reviewCleared ? " 검수 체크가 풀렸습니다." : ""}`);
     } catch (err) { fail(err); }
   }
 
