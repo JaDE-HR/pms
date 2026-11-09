@@ -79,6 +79,7 @@ async function route(req, env) {
       if (!cur || cur.status !== "issue") return json({ error: "bad_request", message: "문제 있음 항목만 조치 완료로 바꿀 수 있습니다." }, 400);
     }
     if (status === "issue" && !text) return json({ error: "bad_request", message: "무엇이 달랐는지 의견을 적어 주세요." }, 400);
+    if (cur && cur.status === status && !text) return json({ ok: true, at: now, opinionId: null, reviewCleared: false, unchanged: true });
     const reviewed = await DB.prepare("SELECT 1 FROM reviews WHERE key = ? AND item_id = ?").bind(key, row.id).first();
     const stmts = [
       DB.prepare("INSERT INTO results (key, item_id, status, name, role, at) VALUES (?, ?, ?, ?, ?, ?) " +
