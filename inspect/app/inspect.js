@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "15";
+  const VER = "16";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -426,7 +426,7 @@
     s.onerror = () => no(new Error("엑셀 도구를 불러오지 못했습니다. 잠시 뒤 다시 눌러 주세요."));
     document.head.appendChild(s);
   });
-  const plain = s => String(s || "").replace(/\[\[(.+?)\]\]/g, "$1").replace(/\*\*(.+?)\*\*/g, "$1").replace(/!!(.+?)!!/g, "$1 (확인 필요)");
+  const plain = s => String(s || "").replace(/\[\[(.+?)\]\]/g, "$1").replace(/\*\*(.+?)\*\*/g, "$1").replace(/!!(.+?)!!/g, "$1");
   const dw = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 0x2e80 ? 1.8 : 1), 0);   // 한글은 약 두 칸
   const linesIn = (text, width) => String(text || "").split("\n").reduce((n, l) => n + Math.max(1, Math.ceil(dw(l) / (width - 2))), 0);
   const ymd = (d, sep) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join(sep);
@@ -436,39 +436,81 @@
     try {
       const ExcelJS = await loadXls();
       const wb = new ExcelJS.Workbook();
-      const FONT = "맑은 고딕", now = new Date();
-      const line = { style: "thin", color: { argb: "FFD5DBE2" } };
+      const FONT = "맑은 고딕", now = new Date(), SZ = 9;
+      const F = (extra = {}) => ({ name: FONT, size: SZ, ...extra });
+      const BOLD = F({ bold: true }), GRAY = F({ color: { argb: "FF6B7683" } }), RED = F({ color: { argb: "FFE00000" } });
+      const line = { style: "thin", color: { argb: "FFA6A6A6" } };
       const box = { top: line, left: line, bottom: line, right: line };
       const fill = argb => ({ type: "pattern", pattern: "solid", fgColor: { argb } });
+      const rt = parts => ({ richText: parts.filter(p => p && p.text).map(p => ({ text: p.text, font: p.font || F() })) });
+      const txt = v => v && v.richText ? v.richText.map(x => x.text).join("") : String(v == null ? "" : v);
       const page = ws => {
         ws.pageSetup = { paperSize: 9, orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0, horizontalCentered: true,
-          margins: { left: 0.3, right: 0.3, top: 0.45, bottom: 0.45, header: 0.2, footer: 0.2 } };
+          margins: { left: 0.25, right: 0.25, top: 0.4, bottom: 0.45, header: 0.2, footer: 0.2 } };
         ws.headerFooter = { oddFooter: "&C&P / &N" };
-      };
-      const title = (ws, cols, t, sub) => {
-        ws.mergeCells(1, 1, 1, cols); ws.mergeCells(2, 1, 2, cols);
-        Object.assign(ws.getCell(1, 1), { value: t, font: { name: FONT, size: 15, bold: true } });
-        Object.assign(ws.getCell(2, 1), { value: sub, font: { name: FONT, size: 10, color: { argb: "FF6B7683" } } });
-        ws.getRow(1).height = 26; ws.getRow(2).height = 18;
-      };
-      const head = (ws, names) => {
-        const r = ws.getRow(3); r.values = names; r.height = 22;
-        r.eachCell(c => Object.assign(c, { font: { name: FONT, size: 10, bold: true, color: { argb: "FFFFFFFF" } }, fill: fill("FF1F5FBF"),
-          alignment: { vertical: "middle", horizontal: "center" }, border: box }));
       };
       const client = CFG.client || CFG.key;
       const stamp = `${ymd(now, ".")} ${String(now.getHours()).padStart(2, "0")}시 ${String(now.getMinutes()).padStart(2, "0")}분 출력`;
       const live = S.mods.filter(m => !m.prepare);
 
+      // 검수 시나리오 (한 시트에 모듈별로 이어 붙인다)
+      const ws = wb.addWorksheet("검수 시나리오");
+      const HEAD = ["프로세스", "항목", "테스트", "검수", "대상자", "메뉴", "설명", "참고", "의견"];
+      const W = [13, 16, 10, 10, 9, 27, 58, 30, 26];
+      ws.columns = W.map(width => ({ width }));
+      const CENTER = [1, 2, 3, 4, 5];
+      live.forEach((m, mi) => {
+        const rows = modRows(m.id), c = countOf(rows);
+        if (mi) { ws.addRow([]); ws.lastRow.height = 12; }
+        const tr = ws.addRow([`검수용 테스트 시나리오 - ${m.name}`]);
+        tr.height = 28; tr.getCell(1).font = F({ size: 15, bold: true }); tr.getCell(1).alignment = { vertical: "middle" };
+        if (mi) ws.getRow(tr.number - 1).addPageBreak();
+        const sr = ws.addRow([`${stamp}    진척도 ${pctOf(rows)}%    테스트 정상 ${passOf(rows)}/${rows.length}    검수 ${reviewOf(rows)}/${rows.length}    오류 ${(c.issue || 0) + (c.fixed || 0)}`]);
+        sr.height = 16; sr.getCell(1).font = GRAY;
+        const hr = ws.addRow(HEAD); hr.height = 22;
+        hr.eachCell(cell => Object.assign(cell, { font: BOLD, fill: fill("FFF2F2F2"), border: box, alignment: { vertical: "middle", horizontal: "center" } }));
+        [...new Set(rows.map(r => r.g))].forEach(g => {
+          const first = ws.rowCount + 1;
+          rows.filter(r => r.g === g).forEach(r => {
+            const res = S.results[r.id], rv = S.reviews[r.id], st = statusOf(r);
+            const steps = r.steps.map((s, i) => { const [h, ...sub] = plain(s).split("\n"); return `${i + 1}. ${h}` + sub.map(x => `\n    - ${x}`).join(""); }).join("\n");
+            const desc = rt([{ text: steps }, { text: "\n\n기대 결과", font: BOLD }, { text: "\n" + plain(r.expect) }]);
+            const notes = [...(r.risk ? [{ text: "* 운영 영향", font: RED }] : []),
+              ...(r.note || []).map(t => t[0] === "!" ? { text: "* " + plain(t.slice(1)), font: RED } : { text: "* " + plain(t) })];
+            const note = rt(notes.map((n, i) => ({ ...n, text: (i ? "\n" : "") + n.text })));
+            const test = res ? rt([{ text: ST[st].label, font: st === "issue" ? F({ bold: true, color: { argb: "FFE00000" } }) : BOLD },
+              { text: `\n${res.name}${res.role === "jade" ? " (JaDE)" : ""}\n${fmt(res.at)}`, font: GRAY }]) : "미실행";
+            const review = rv ? rt([{ text: "검수 완료", font: BOLD }, { text: `\n${rv.name}\n${fmt(rv.at)}`, font: GRAY }]) : "";
+            const ops = (S.opinions[r.id] || []).map(o => `${o.role === "jade" ? "[JaDE 답변] " : ""}${o.text} - ${o.name} ${fmt(o.at)}`).join("\n");
+            const vals = [g, plain(r.n), test, review, r.who || m.who || "", r.menu.map(x => plain(x).replace(/ > /g, ">")).join("\n"), desc, note, ops];
+            const row = ws.addRow(vals);
+            // 인쇄(A4 맞춤)에서는 엑셀 자동 맞춤도 1 ~ 2줄 모자라서 한 줄 17.5pt로 넉넉히 잡는다
+            row.height = Math.min(409, Math.max(2, ...vals.map((v, i) => i ? linesIn(txt(v), W[i]) : 1)) * 17.5 + 8);
+            const tbg = st === "issue" ? "FFFFF3F3" : st === "fixed" ? "FFFFFCF2" : PASSING.includes(st) ? "FFF2F8FF" : null;
+            row.eachCell({ includeEmpty: true }, (cell, i) => {
+              cell.border = box;
+              cell.alignment = { vertical: "middle", horizontal: CENTER.includes(i) ? "center" : "left", wrapText: true };
+              if (typeof cell.value === "string") cell.font = F();
+              if (i === 3 && tbg) cell.fill = fill(tbg);
+              if (i === 4 && rv) cell.fill = fill("FFF2F8FF");
+            });
+          });
+          if (ws.rowCount > first) ws.mergeCells(first, 1, ws.rowCount, 1);
+        });
+      });
+      page(ws);
+
       // 요약
       const sum = wb.addWorksheet("요약");
       sum.columns = [{ width: 18 }, { width: 10 }, { width: 13 }, { width: 10 }, { width: 10 }, { width: 10 }, { width: 12 }];
-      title(sum, 7, `${client} 모듈별 검수 리스트`, stamp);
-      head(sum, ["모듈", "항목", "테스트 정상", "검수", "오류", "미실행", "진척도"]);
+      const t1 = sum.addRow([`${client} 모듈별 검수 현황`]); t1.height = 28; t1.getCell(1).font = F({ size: 15, bold: true });
+      sum.addRow([stamp]).getCell(1).font = GRAY;
+      const sh = sum.addRow(["모듈", "항목", "테스트 정상", "검수", "오류", "미실행", "진척도"]); sh.height = 22;
+      sh.eachCell(cell => Object.assign(cell, { font: BOLD, fill: fill("FFF2F2F2"), border: box, alignment: { vertical: "middle", horizontal: "center" } }));
       const sumRow = (vals, bold) => {
         const r = sum.addRow(vals); r.height = 20;
-        r.eachCell({ includeEmpty: true }, (c, i) => Object.assign(c, { font: { name: FONT, size: 10, bold }, border: box,
-          alignment: { vertical: "middle", horizontal: i === 1 ? "left" : "center" }, fill: bold ? fill("FFF2F4F6") : undefined }));
+        r.eachCell({ includeEmpty: true }, (cell, i) => Object.assign(cell, { font: bold ? BOLD : F(), border: box,
+          alignment: { vertical: "middle", horizontal: i === 1 ? "left" : "center" }, fill: bold ? fill("FFF2F2F2") : undefined }));
       };
       S.mods.forEach(m => {
         if (m.prepare) return sumRow([m.name, "준비중", "", "", "", "", ""]);
@@ -477,46 +519,7 @@
       });
       const all = S.rows, ca = countOf(all);
       sumRow(["전체", all.length, passOf(all), reviewOf(all), (ca.issue || 0) + (ca.fixed || 0), ca[""] || 0, pctOf(all) + "%"], true);
-      sum.views = [{ state: "frozen", ySplit: 3 }]; page(sum);
-
-      // 모듈별 시트 (화면과 같은 5칸 구성)
-      const W = [26, 70, 14, 14, 36];
-      live.forEach(m => {
-        const rows = modRows(m.id), c = countOf(rows);
-        const ws = wb.addWorksheet(m.name.replace(/[\\/?*[\]:]/g, " ").slice(0, 31));
-        ws.columns = W.map(width => ({ width }));
-        title(ws, 5, `${client} 모듈별 검수 리스트 (${m.name})`,
-          `${stamp}    진척도 ${pctOf(rows)}%    테스트 정상 ${passOf(rows)}/${rows.length}    검수 ${reviewOf(rows)}/${rows.length}    오류 ${(c.issue || 0) + (c.fixed || 0)}`);
-        head(ws, ["항목", "설명", "테스트", "검수", "의견"]);
-        [...new Set(rows.map(r => r.g))].forEach(g => {
-          const gr = ws.addRow([g]); ws.mergeCells(gr.number, 1, gr.number, 5); gr.height = 22;
-          Object.assign(gr.getCell(1), { font: { name: FONT, size: 11, bold: true }, fill: fill("FFF2F4F6"), border: box, alignment: { vertical: "middle" } });
-          rows.filter(r => r.g === g).forEach(r => {
-            const res = S.results[r.id], rv = S.reviews[r.id], st = statusOf(r);
-            // 굵게 / 회색 글씨를 섞기 위해 셀을 여러 조각(richText)으로 만든다
-            const F = (extra = {}) => ({ name: FONT, size: 10, ...extra });
-            const BOLD = F({ bold: true }), GRAY = F({ color: { argb: "FF6B7683" } }), RED = F({ bold: true, color: { argb: "FFD0021B" } });
-            const rt = parts => ({ richText: parts.filter(p => p.text).map(p => ({ text: p.text, font: p.font || F() })) });
-            const a = rt([{ text: plain(r.n), font: BOLD }, { text: "\n\n" + r.menu.map(plain).join("\n"), font: GRAY }, r.risk ? { text: "\n\n운영 영향", font: RED } : {}]);
-            const steps = r.steps.map((s, i) => { const [h, ...sub] = plain(s).split("\n"); return `${i + 1}. ${h}` + sub.map(x => `\n    - ${x}`).join(""); }).join("\n");
-            const notes = (r.note || []).map(t => t[0] === "!" ? { text: "\n주의  " + plain(t.slice(1)), font: RED } : { text: "\n참고  " + plain(t), font: GRAY });
-            const b = rt([{ text: steps }, { text: "\n\n기대 결과", font: BOLD }, { text: "\n" + plain(r.expect) }, notes.length ? { text: "\n" } : {}, ...notes]);
-            const t = res ? `${ST[st].label}\n${res.name}${res.role === "jade" ? " (JaDE)" : ""}\n${fmt(res.at)}` : "미실행";
-            const d = rv ? `검수 완료\n${rv.name}\n${fmt(rv.at)}` : passing(r) ? "검수 대기" : "";
-            const e = (S.opinions[r.id] || []).map(o => `${o.role === "jade" ? "[JaDE 답변] " : ""}${o.text}\n  - ${o.name} ${fmt(o.at)}`).join("\n");
-            const vals = [a, b, t, d, e], row = ws.addRow(vals);
-            const txt = v => v && v.richText ? v.richText.map(x => x.text).join("") : v;
-            row.height = Math.min(409, (Math.max(...vals.map((v, i) => linesIn(txt(v), W[i]))) + 1) * 15 + 6);
-            const bg = rv || PASSING.includes(st) ? "FFF2F8FF" : st === "issue" ? "FFFFF3F3" : st === "fixed" ? "FFFFFCF2" : null;
-            row.eachCell({ includeEmpty: true }, (cell, i) => Object.assign(cell, {
-              alignment: { vertical: "top", horizontal: i === 3 || i === 4 ? "center" : "left", wrapText: true },
-              border: box, fill: bg ? fill(bg) : undefined },
-              i >= 3 ? { font: F({ bold: (i === 3 && !!res) || (i === 4 && !!rv), color: i === 3 && st === "issue" ? { argb: "FFD0021B" } : undefined }) } : {}));
-          });
-        });
-        ws.views = [{ state: "frozen", ySplit: 3 }];
-        page(ws); ws.pageSetup.printTitlesRow = "3:3";
-      });
+      page(sum);
 
       const buf = await wb.xlsx.writeBuffer();
       const url = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
