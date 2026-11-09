@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "14";
+  const VER = "15";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -58,8 +58,10 @@
   }
   const group = (list, k) => list.reduce((o, x) => ((o[x[k]] = o[x[k]] || []).push(x), o), {});
 
-  async function load() {
+  let seq = 0;   // 저장할 때마다 1씩 올린다. 자동 새로고침이 그 사이 받은 옛 데이터로 덮어쓰지 않게 한다
+  async function load(onlyIfSeq) {
     const d = await api("/sheet");
+    if (onlyIfSeq !== undefined && onlyIfSeq !== seq) return false;
     role = d.role;
     S.mods = d.scenario.mods || [];
     const prep = new Set(S.mods.filter(m => m.prepare).map(m => m.id));
@@ -70,6 +72,7 @@
     S.opinions = group(d.opinions, "item_id");
     if (!S.mods.some(m => m.id === mod)) mod = store.get("inspect-mod:" + CFG.key);
     if (!S.mods.some(m => m.id === mod)) mod = (S.mods[0] || {}).id;
+    return true;
   }
 
   // ── 입장 화면 ─────────────────────────────────────
@@ -112,10 +115,10 @@
   function start() {
     document.body.innerHTML = `
       <header class="top"><div class="wrap">
-        <span class="brand">${brandHtml()}</span>
+        <a class="brand" href="#" id="homeBtn" title="처음 화면으로">${brandHtml()}</a>
         <div class="tools">
-          <span class="toast" id="toast" role="status"></span>
-          <button type="button" class="btn" id="copyBtn">결과 복사</button>
+          <span class="toast" id="toast" role="alert"></span>
+          <button type="button" class="btn" id="xlsBtn">엑셀 다운로드</button>
         </div>
       </div></header>
       <section class="hero"><div class="wrap"><div class="hero-text">
@@ -146,7 +149,8 @@
     $("#rows").addEventListener("click", onRowClick);
     $("#rows").addEventListener("change", onReview);
     $("#rows").addEventListener("input", e => { if (e.target.matches("textarea[data-item]")) drafts[e.target.dataset.item] = e.target.value; });
-    $("#copyBtn").addEventListener("click", copyResult);
+    $("#xlsBtn").addEventListener("click", exportXlsx);
+    $("#homeBtn").addEventListener("click", e => { e.preventDefault(); gate(); });
     renderAll();
     pollTimer = setInterval(poll, POLL_MS);
   }
@@ -162,6 +166,8 @@
   const passOf = rows => rows.filter(passing).length;
   const reviewOf = rows => rows.filter(reviewed).length;
   const modDone = m => { const rows = modRows(m); return rows.length && reviewOf(rows) === rows.length; };
+  // 진척도: 테스트 정상 = 절반, 검수 체크 = 완료
+  const pctOf = rows => rows.length ? Math.round(rows.reduce((s, r) => s + (reviewed(r) ? 1 : passing(r) ? .5 : 0), 0) / rows.length * 100) : 0;
   const lastReview = m => modRows(m).map(r => S.reviews[r.id]).filter(Boolean).sort((a, b) => a.at < b.at ? 1 : -1)[0];
   const fmt = iso => { const d = new Date(iso); const p = n => String(n).padStart(2, "0"); return `${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
 
@@ -259,11 +265,18 @@
 
   function renderShell() {
     const m = S.mods.find(x => x.id === mod) || {};
-    $("#mods").innerHTML = `<div class="sc all"><div class="sc-l">전체 검수</div><div class="sc-v"><span id="pAll">0</span><small>%</small></div><div class="trk"><i id="bAll"></i></div><div class="sc-s" id="sAll"></div></div>`
-      + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}" aria-pressed="${x.id === mod}"><div class="sc-l">${esc(x.name)}${!x.prepare && modDone(x.id) ? ' <span class="sc-done">검수 완료</span>' : ""}</div>`
-        + (x.prepare ? '<div class="sc-ready">준비중</div>'
-          : `<div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div>`) + `</button>`).join("");
-    $("#tabs").innerHTML = S.mods.map(x => `<button type="button" class="tab" role="tab" data-m="${esc(x.id)}" aria-selected="${x.id === mod}">${esc(x.name)}${x.prepare ? "<b>준비중</b>" : `<b data-c="${esc(x.id)}"></b>`}</button>`).join("");
+    // 모듈 칸은 한 번만 그리고 이후에는 숫자 / 막대만 바꾼다 (매번 다시 그리면 막대가 0부터 다시 차올라 버벅여 보인다)
+    const sig = JSON.stringify(S.mods.map(x => [x.id, x.name, !!x.prepare]));
+    if ($("#mods").dataset.sig !== sig) {
+      $("#mods").dataset.sig = sig;
+      $("#mods").innerHTML = `<div class="sc all"><div class="sc-l">전체 검수</div><div class="sc-v"><span id="pAll">0</span><small>%</small></div><div class="trk"><i id="bAll"></i></div><div class="sc-s" id="sAll"></div></div>`
+        + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}"><div class="sc-l">${esc(x.name)}${x.prepare ? "" : ` <span class="sc-done" data-done="${esc(x.id)}" hidden>검수 완료</span>`}</div>`
+          + (x.prepare ? '<div class="sc-ready">준비중</div>'
+            : `<div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div>`) + `</button>`).join("");
+      $("#tabs").innerHTML = S.mods.map(x => `<button type="button" class="tab" role="tab" data-m="${esc(x.id)}">${esc(x.name)}${x.prepare ? "<b>준비중</b>" : `<b data-c="${esc(x.id)}"></b>`}</button>`).join("");
+    }
+    document.querySelectorAll("#mods [data-m]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === mod)));
+    document.querySelectorAll("#tabs [data-m]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.m === mod)));
     $("#modName").textContent = m.name || "";
     $("#draftTag").hidden = !m.draft || !!m.prepare;
     document.querySelector(".filters").hidden = !!m.prepare;
@@ -275,19 +288,36 @@
   function progress() {
     const prep = new Set(S.mods.filter(x => x.prepare).map(x => x.id));
     const live = S.rows.filter(r => !prep.has(r.m));   // 준비중 모듈은 전체 진척도에서 뺀다
-    const n = live.length, rv = reviewOf(live), p = n ? Math.round(rv / n * 100) : 0, c = countOf(live);
-    $("#pAll").textContent = p; $("#bAll").style.width = p + "%";
-    $("#sAll").innerHTML = `<span>테스트 ${passOf(live)}/${n}</span><span>검수 ${rv}/${n}</span>${c.issue ? `<span>오류 ${c.issue}</span>` : ""}`;
+    const n = live.length, rv = reviewOf(live), p = pctOf(live), c = countOf(live);
+    const put = (el, prop, v) => { if (el && el[prop] !== v) el[prop] = v; };
+    put($("#pAll"), "textContent", String(p)); $("#bAll").style.width = p + "%";
+    put($("#sAll"), "innerHTML", `<span>테스트 ${passOf(live)}/${n}</span><span>검수 ${rv}/${n}</span>${c.issue ? `<span>오류 ${c.issue}</span>` : ""}`);
     S.mods.filter(x => !x.prepare).forEach(x => {
-      const rows = modRows(x.id), r = reviewOf(rows), t = passOf(rows), cc = countOf(rows), pp = rows.length ? Math.round(r / rows.length * 100) : 0;
-      document.querySelector(`[data-p="${x.id}"]`).textContent = pp;
+      const rows = modRows(x.id), r = reviewOf(rows), t = passOf(rows), cc = countOf(rows), pp = pctOf(rows);
+      put(document.querySelector(`[data-p="${x.id}"]`), "textContent", String(pp));
       document.querySelector(`[data-b="${x.id}"]`).style.width = pp + "%";
-      document.querySelector(`[data-s="${x.id}"]`).innerHTML = `<span>테스트 ${t}/${rows.length}</span><span>검수 ${r}/${rows.length}</span>${cc.issue ? `<span>오류 ${cc.issue}</span>` : ""}`;
-      document.querySelector(`[data-c="${x.id}"]`).textContent = `${r}/${rows.length}`;
+      put(document.querySelector(`[data-s="${x.id}"]`), "innerHTML", `<span>테스트 ${t}/${rows.length}</span><span>검수 ${r}/${rows.length}</span>${cc.issue ? `<span>오류 ${cc.issue}</span>` : ""}`);
+      put(document.querySelector(`[data-c="${x.id}"]`), "textContent", `${r}/${rows.length}`);
+      document.querySelector(`[data-done="${x.id}"]`).hidden = !modDone(x.id);
     });
+    document.querySelectorAll(".fbtn").forEach(b => put(b, "innerHTML", `${FL[b.dataset.f]}<b>${modRows(mod).filter(r => inFilter(r, b.dataset.f)).length}</b>`));
+    renderApprove();
   }
 
   function renderAll() { renderShell(); renderRows(); progress(); }
+
+  // 항목 하나만 다시 그린다 (스크롤 / 입력 중인 의견 유지)
+  function refreshRow(id) {
+    const r = S.rows.find(x => x.id === id), el = document.querySelector(`.row[data-id="${CSS.escape(id)}"]`);
+    if (r && el) {
+      if (matches(r)) {
+        const m = S.mods.find(x => x.id === mod) || {}, t = document.createElement("div");
+        t.innerHTML = rowHtml(r, m.who).trim();
+        el.replaceWith(t.firstChild);
+      } else el.remove();
+    }
+    progress();
+  }
 
   // ── 동작 ──────────────────────────────────────────
   function toast(msg) {
@@ -296,55 +326,57 @@
     toast.t = setTimeout(() => { t.textContent = ""; }, 3500);
   }
   // 실패하면 서버 기준으로 다시 불러와 화면을 맞춘다
-  const resync = () => load().then(renderAll).catch(() => {});
+  const resync = () => { const s0 = seq; load(s0).then(ok => ok && renderAll()).catch(() => {}); };
   const fail = err => {
     if (err.auth) return gate("비밀번호가 바뀌었습니다. 다시 입력해 주세요.");
     toast(err.message);
     resync();
   };
 
-  // 누르는 즉시 화면(버튼 / 진척도)에 반영하고, 저장은 뒤에서 한다
+  // 누르는 즉시 화면(버튼 / 진척도)에 반영하고, 저장은 뒤에서 한다. 성공 알림은 띄우지 않는다
+  let busy = 0;
   async function setResult(id, status) {
     const text = (drafts[id] || "").trim();
     const sendText = status === "issue" || status === "fixed" ? text : "";
     const prevRes = S.results[id], prevRv = S.reviews[id];
-    const now = new Date().toISOString();
-    if (status === "none") delete S.results[id]; else S.results[id] = { item_id: id, status, name, role, at: now };
-    if (prevRv && (!prevRes || prevRes.status !== status)) delete S.reviews[id];
-    renderAll();
+    if ((prevRes ? prevRes.status : "none") === status && !sendText) return;
+    if (status === "none") delete S.results[id]; else S.results[id] = { item_id: id, status, name, role, at: new Date().toISOString() };
+    if (prevRv) delete S.reviews[id];
+    refreshRow(id);
+    busy++; seq++;
     try {
       const r = await api("/result", { method: "POST", body: JSON.stringify({ itemId: id, status, name, text: sendText }) });
       const entry = { item_id: id, status, name, role, at: r.at };
       if (status === "none") delete S.results[id]; else S.results[id] = entry;
       (S.history[id] = S.history[id] || []).push(entry);
-      if (r.reviewCleared) { delete S.reviews[id]; S.history[id].push({ item_id: id, status: "review_off", name, role, at: r.at }); }
+      if (r.reviewCleared) S.history[id].push({ item_id: id, status: "review_off", name, role, at: r.at });
+      else if (prevRv && r.unchanged) S.reviews[id] = prevRv;
       if (sendText) { (S.opinions[id] = S.opinions[id] || []).push({ id: r.opinionId, item_id: id, name, text: sendText, at: r.at, role }); delete drafts[id]; }
-      renderAll();
-      toast(`${ST[status === "none" ? "" : status].label}(으)로 저장했습니다.${r.reviewCleared ? " 검수 체크가 풀렸습니다." : ""}`);
+      refreshRow(id);
     } catch (err) {
       if (prevRes) S.results[id] = prevRes; else delete S.results[id];
       if (prevRv) S.reviews[id] = prevRv;
-      renderAll();
+      refreshRow(id);
       fail(err);
-    }
+    } finally { busy--; }
   }
 
   async function onReview(e) {
     const cb = e.target.closest("[data-review]"); if (!cb) return;
     const id = cb.dataset.review, checked = cb.checked, prev = S.reviews[id];
     if (checked) S.reviews[id] = { item_id: id, name, at: new Date().toISOString() }; else delete S.reviews[id];
-    renderAll();
+    refreshRow(id);
+    busy++; seq++;
     try {
       const r = await api("/review", { method: "POST", body: JSON.stringify({ itemId: id, checked, name }) });
       if (checked) S.reviews[id] = { item_id: id, name, at: r.at }; else delete S.reviews[id];
       (S.history[id] = S.history[id] || []).push({ item_id: id, status: checked ? "review" : "review_off", name, role, at: r.at });
-      renderAll();
-      toast(checked ? "검수를 체크했습니다." : "검수 체크를 해제했습니다.");
+      refreshRow(id);
     } catch (err) {
       if (prev) S.reviews[id] = prev; else delete S.reviews[id];
-      renderAll();
+      refreshRow(id);
       fail(err);
-    }
+    } finally { busy--; }
   }
 
   async function onRowClick(e) {
@@ -359,8 +391,7 @@
         const r = await api("/opinion", { method: "POST", body: JSON.stringify({ itemId: id, text, name }) });
         (S.opinions[id] = S.opinions[id] || []).push({ id: r.id, item_id: id, name, text, at: r.at, role });
         delete drafts[id];
-        renderRows();
-        toast(role === "jade" ? "답변을 등록했습니다." : "의견을 등록했습니다.");
+        seq++; refreshRow(id);
       } catch (err) { add.disabled = false; fail(err); }
       return;
     }
@@ -370,36 +401,136 @@
       if (del.dataset.confirm !== "1") { del.dataset.confirm = "1"; del.textContent = "삭제 확인"; return; }
       try {
         await api("/opinion/" + oid, { method: "DELETE", body: JSON.stringify({ name }) });
-        S.opinions[id] = (S.opinions[id] || []).filter(o => o.id !== oid);
-        renderRows();
-        toast("의견을 삭제했습니다.");
+        seq++; S.opinions[id] = (S.opinions[id] || []).filter(o => o.id !== oid);
+        refreshRow(id);
       } catch (err) { fail(err); }
     }
   }
 
+  // 다른 사람이 바꾼 내용만 반영한다. 저장 중이거나 바뀐 게 없으면 다시 그리지 않는다
+  const sigOf = () => JSON.stringify([S.rows.map(r => r.id + r.n + r.steps.length), S.results, S.reviews, S.opinions]);
   async function poll() {
-    if (document.visibilityState !== "visible") return;
-    try { await load(); renderAll(); }
-    catch (err) { if (err.auth) gate("비밀번호가 바뀌었습니다. 다시 입력해 주세요."); }
+    if (document.visibilityState !== "visible" || busy) return;
+    const before = sigOf(), s0 = seq;
+    try {
+      if (!await load(s0)) return;   // 받는 사이 누군가 저장했으면 버린다
+      if (!busy && sigOf() !== before) { renderShell(); renderRows(); progress(); }
+    } catch (err) { if (err.auth) gate("비밀번호가 바뀌었습니다. 다시 입력해 주세요."); }
   }
 
-  function copyResult() {
-    const cell = s => '"' + String(s).replace(/"/g, '""') + '"';
-    const head = ["모듈", "프로세스", "항목", "테스트", "테스트 입력자", "테스트 시각", "검수", "검수자", "검수 시각", "의견", "메뉴"].join("\t");
-    const body = S.rows.map(r => {
-      const res = S.results[r.id] || {}, rv = S.reviews[r.id], m = S.mods.find(x => x.id === r.m) || {};
-      const ops = (S.opinions[r.id] || []).map(o => `${o.role === "jade" ? "[JaDE] " : ""}${o.text} - ${o.name} (${fmt(o.at)})`).join("\n");
-      return [cell(m.name || ""), cell(r.g), cell(r.n), cell(ST[res.status || ""].label), cell(res.name || ""), cell(res.at ? fmt(res.at) : ""),
-        rv ? "Y" : "", cell(rv ? rv.name : ""), cell(rv ? fmt(rv.at) : ""), cell(ops), cell(r.menu.join(" / "))].join("\t");
-    });
-    navigator.clipboard.writeText([head, ...body].join("\n"))
-      .then(() => toast("복사했습니다. 엑셀에 붙여넣으세요."))
-      .catch(() => toast("복사하지 못했습니다. 브라우저 권한을 확인해 주세요."));
+  // ── 엑셀 (A4 가로) ────────────────────────────────
+  const XLS_URL = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+  const loadXls = () => window.ExcelJS ? Promise.resolve(window.ExcelJS) : new Promise((ok, no) => {
+    const s = document.createElement("script"); s.src = XLS_URL;
+    s.onload = () => ok(window.ExcelJS);
+    s.onerror = () => no(new Error("엑셀 도구를 불러오지 못했습니다. 잠시 뒤 다시 눌러 주세요."));
+    document.head.appendChild(s);
+  });
+  const plain = s => String(s || "").replace(/\[\[(.+?)\]\]/g, "$1").replace(/\*\*(.+?)\*\*/g, "$1").replace(/!!(.+?)!!/g, "$1 (확인 필요)");
+  const dw = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) > 0x2e80 ? 1.8 : 1), 0);   // 한글은 약 두 칸
+  const linesIn = (text, width) => String(text || "").split("\n").reduce((n, l) => n + Math.max(1, Math.ceil(dw(l) / (width - 2))), 0);
+  const ymd = (d, sep) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join(sep);
+
+  async function exportXlsx() {
+    const btn = $("#xlsBtn"); btn.disabled = true;
+    try {
+      const ExcelJS = await loadXls();
+      const wb = new ExcelJS.Workbook();
+      const FONT = "맑은 고딕", now = new Date();
+      const line = { style: "thin", color: { argb: "FFD5DBE2" } };
+      const box = { top: line, left: line, bottom: line, right: line };
+      const fill = argb => ({ type: "pattern", pattern: "solid", fgColor: { argb } });
+      const page = ws => {
+        ws.pageSetup = { paperSize: 9, orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0, horizontalCentered: true,
+          margins: { left: 0.3, right: 0.3, top: 0.45, bottom: 0.45, header: 0.2, footer: 0.2 } };
+        ws.headerFooter = { oddFooter: "&C&P / &N" };
+      };
+      const title = (ws, cols, t, sub) => {
+        ws.mergeCells(1, 1, 1, cols); ws.mergeCells(2, 1, 2, cols);
+        Object.assign(ws.getCell(1, 1), { value: t, font: { name: FONT, size: 15, bold: true } });
+        Object.assign(ws.getCell(2, 1), { value: sub, font: { name: FONT, size: 10, color: { argb: "FF6B7683" } } });
+        ws.getRow(1).height = 26; ws.getRow(2).height = 18;
+      };
+      const head = (ws, names) => {
+        const r = ws.getRow(3); r.values = names; r.height = 22;
+        r.eachCell(c => Object.assign(c, { font: { name: FONT, size: 10, bold: true, color: { argb: "FFFFFFFF" } }, fill: fill("FF1F5FBF"),
+          alignment: { vertical: "middle", horizontal: "center" }, border: box }));
+      };
+      const client = CFG.client || CFG.key;
+      const stamp = `${ymd(now, ".")} ${String(now.getHours()).padStart(2, "0")}시 ${String(now.getMinutes()).padStart(2, "0")}분 출력`;
+      const live = S.mods.filter(m => !m.prepare);
+
+      // 요약
+      const sum = wb.addWorksheet("요약");
+      sum.columns = [{ width: 18 }, { width: 10 }, { width: 13 }, { width: 10 }, { width: 10 }, { width: 10 }, { width: 12 }];
+      title(sum, 7, `${client} 모듈별 검수 리스트`, stamp);
+      head(sum, ["모듈", "항목", "테스트 정상", "검수", "오류", "미실행", "진척도"]);
+      const sumRow = (vals, bold) => {
+        const r = sum.addRow(vals); r.height = 20;
+        r.eachCell({ includeEmpty: true }, (c, i) => Object.assign(c, { font: { name: FONT, size: 10, bold }, border: box,
+          alignment: { vertical: "middle", horizontal: i === 1 ? "left" : "center" }, fill: bold ? fill("FFF2F4F6") : undefined }));
+      };
+      S.mods.forEach(m => {
+        if (m.prepare) return sumRow([m.name, "준비중", "", "", "", "", ""]);
+        const rows = modRows(m.id), c = countOf(rows);
+        sumRow([m.name, rows.length, passOf(rows), reviewOf(rows), (c.issue || 0) + (c.fixed || 0), c[""] || 0, pctOf(rows) + "%"]);
+      });
+      const all = S.rows, ca = countOf(all);
+      sumRow(["전체", all.length, passOf(all), reviewOf(all), (ca.issue || 0) + (ca.fixed || 0), ca[""] || 0, pctOf(all) + "%"], true);
+      sum.views = [{ state: "frozen", ySplit: 3 }]; page(sum);
+
+      // 모듈별 시트 (화면과 같은 5칸 구성)
+      const W = [26, 70, 14, 14, 36];
+      live.forEach(m => {
+        const rows = modRows(m.id), c = countOf(rows);
+        const ws = wb.addWorksheet(m.name.replace(/[\\/?*[\]:]/g, " ").slice(0, 31));
+        ws.columns = W.map(width => ({ width }));
+        title(ws, 5, `${client} 모듈별 검수 리스트 (${m.name})`,
+          `${stamp}    진척도 ${pctOf(rows)}%    테스트 정상 ${passOf(rows)}/${rows.length}    검수 ${reviewOf(rows)}/${rows.length}    오류 ${(c.issue || 0) + (c.fixed || 0)}`);
+        head(ws, ["항목", "설명", "테스트", "검수", "의견"]);
+        [...new Set(rows.map(r => r.g))].forEach(g => {
+          const gr = ws.addRow([g]); ws.mergeCells(gr.number, 1, gr.number, 5); gr.height = 22;
+          Object.assign(gr.getCell(1), { font: { name: FONT, size: 11, bold: true }, fill: fill("FFF2F4F6"), border: box, alignment: { vertical: "middle" } });
+          rows.filter(r => r.g === g).forEach(r => {
+            const res = S.results[r.id], rv = S.reviews[r.id], st = statusOf(r);
+            // 굵게 / 회색 글씨를 섞기 위해 셀을 여러 조각(richText)으로 만든다
+            const F = (extra = {}) => ({ name: FONT, size: 10, ...extra });
+            const BOLD = F({ bold: true }), GRAY = F({ color: { argb: "FF6B7683" } }), RED = F({ bold: true, color: { argb: "FFD0021B" } });
+            const rt = parts => ({ richText: parts.filter(p => p.text).map(p => ({ text: p.text, font: p.font || F() })) });
+            const a = rt([{ text: plain(r.n), font: BOLD }, { text: "\n\n" + r.menu.map(plain).join("\n"), font: GRAY }, r.risk ? { text: "\n\n운영 영향", font: RED } : {}]);
+            const steps = r.steps.map((s, i) => { const [h, ...sub] = plain(s).split("\n"); return `${i + 1}. ${h}` + sub.map(x => `\n    - ${x}`).join(""); }).join("\n");
+            const notes = (r.note || []).map(t => t[0] === "!" ? { text: "\n주의  " + plain(t.slice(1)), font: RED } : { text: "\n참고  " + plain(t), font: GRAY });
+            const b = rt([{ text: steps }, { text: "\n\n기대 결과", font: BOLD }, { text: "\n" + plain(r.expect) }, notes.length ? { text: "\n" } : {}, ...notes]);
+            const t = res ? `${ST[st].label}\n${res.name}${res.role === "jade" ? " (JaDE)" : ""}\n${fmt(res.at)}` : "미실행";
+            const d = rv ? `검수 완료\n${rv.name}\n${fmt(rv.at)}` : passing(r) ? "검수 대기" : "";
+            const e = (S.opinions[r.id] || []).map(o => `${o.role === "jade" ? "[JaDE 답변] " : ""}${o.text}\n  - ${o.name} ${fmt(o.at)}`).join("\n");
+            const vals = [a, b, t, d, e], row = ws.addRow(vals);
+            const txt = v => v && v.richText ? v.richText.map(x => x.text).join("") : v;
+            row.height = Math.min(409, (Math.max(...vals.map((v, i) => linesIn(txt(v), W[i]))) + 1) * 15 + 6);
+            const bg = rv || PASSING.includes(st) ? "FFF2F8FF" : st === "issue" ? "FFFFF3F3" : st === "fixed" ? "FFFFFCF2" : null;
+            row.eachCell({ includeEmpty: true }, (cell, i) => Object.assign(cell, {
+              alignment: { vertical: "top", horizontal: i === 3 || i === 4 ? "center" : "left", wrapText: true },
+              border: box, fill: bg ? fill(bg) : undefined },
+              i >= 3 ? { font: F({ bold: (i === 3 && !!res) || (i === 4 && !!rv), color: i === 3 && st === "issue" ? { argb: "FFD0021B" } : undefined }) } : {}));
+          });
+        });
+        ws.views = [{ state: "frozen", ySplit: 3 }];
+        page(ws); ws.pageSetup.printTitlesRow = "3:3";
+      });
+
+      const buf = await wb.xlsx.writeBuffer();
+      const url = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+      const link = document.createElement("a");
+      link.href = url; link.download = `${client}_모듈별_검수리스트_${ymd(now, "")}.xlsx`;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    } catch (err) { toast(err.message || "엑셀을 만들지 못했습니다."); }
+    finally { btn.disabled = false; }
   }
 
   // ── 시작 ──────────────────────────────────────────
+  // 새로고침하거나 로고를 누르면 항상 로그인 화면부터 (이름 / 비밀번호는 미리 채워 둔다)
   if (!CFG.key || !CFG.api) { document.body.textContent = "검수 시트 설정(window.INSPECT)이 없습니다."; return; }
-  if (pass && name) load().then(start).catch(err => gate(err.auth ? "" : "연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요."));
-  else gate();
+  gate();
   window.__INSPECT_VER = VER;
 })();

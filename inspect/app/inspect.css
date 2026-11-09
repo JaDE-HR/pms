@@ -358,3 +358,7 @@ body{margin:0}
 .gate-fields button:hover{background:#0058b0}
 .gate-fields button:disabled{background:#b9c3ce;cursor:default}
 .gate-msg{margin-top:14px;font-size:13px;color:var(--over);min-height:19px}
+
+/* v15 */
+a.brand{text-decoration:none;color:inherit;cursor:pointer}
+.toast{color:#d0021b;font-weight:600}
