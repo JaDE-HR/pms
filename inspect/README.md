@@ -24,6 +24,8 @@
 JaDE 비밀번호는 `<키>/inspect/jade-admin.local.md` 에만 있습니다 (커밋되지 않음).
 시나리오 항목에 `"risk": true` 를 넣으면 `운영 영향` 표시와 "JaDE 담당자와 함께 진행" 주의가 붙습니다.
 
+모듈에 `"prepare": true` 를 넣으면 탭과 상단 패널에 `준비중` 으로만 보이고, 그 모듈 항목은 진행률에서 빠집니다.
+
 ```
 inspect/app/          표준 화면 (전 고객사 공유) — 고객사 정보 없음
 inspect/worker/       저장 API (Cloudflare Worker + D1)

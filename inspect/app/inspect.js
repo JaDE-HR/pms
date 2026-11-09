@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "7";
+  const VER = "8";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -18,6 +18,7 @@
   };
   const HIST = { ...Object.fromEntries(Object.entries(ST).map(([k, v]) => [k, "테스트 " + v.label])), review: "검수 체크", review_off: "검수 해제" };
   const PASSING = ["ok", "na"];
+  const FL = { all: "전체", none: "미실행", ok: "정상", issue: "오류" };
 
   const $ = s => document.querySelector(s);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -51,7 +52,8 @@
     const d = await api("/sheet");
     role = d.role;
     S.mods = d.scenario.mods || [];
-    S.rows = d.scenario.rows || [];
+    const prep = new Set(S.mods.filter(m => m.prepare).map(m => m.id));
+    S.rows = (d.scenario.rows || []).filter(r => !prep.has(r.m));
     S.results = Object.fromEntries(d.results.map(r => [r.item_id, r]));
     S.reviews = Object.fromEntries(d.reviews.map(r => [r.item_id, r]));
     S.history = group(d.history, "item_id");
@@ -119,9 +121,8 @@
           <div class="filters" role="group" aria-label="항목 필터">
             <button type="button" class="fbtn" data-f="all">전체</button>
             <button type="button" class="fbtn" data-f="none">미실행</button>
+            <button type="button" class="fbtn" data-f="ok">정상</button>
             <button type="button" class="fbtn" data-f="issue">오류</button>
-            <button type="button" class="fbtn" data-f="fixed">조치 완료</button>
-            <button type="button" class="fbtn" data-f="wait">검수 대기</button>
           </div>
         </div>
         <div class="approve" id="approve"></div>
@@ -222,14 +223,15 @@
     </article>`;
   }
 
-  function matches(r) {
-    if (filter === "all") return true;
-    if (filter === "wait") return passing(r) && !reviewed(r);
-    return ST[statusOf(r)].cls === filter;
-  }
+  // 오류 필터에는 JaDE 조치 완료(재테스트 대기)도 함께 보인다
+  const inFilter = (r, f) => f === "all" || (f === "none" && !statusOf(r)) || (f === "ok" && statusOf(r) === "ok")
+    || (f === "issue" && ["issue", "fixed"].includes(statusOf(r)));
+  const matches = r => inFilter(r, filter);
 
   function renderRows() {
     const m = S.mods.find(x => x.id === mod) || {};
+    if (m.prepare) { $("#rows").innerHTML = '<div class="empty prepare">준비중입니다.</div>'; return; }
+    document.querySelectorAll(".fbtn").forEach(b => { b.innerHTML = `${FL[b.dataset.f]}<b>${modRows(mod).filter(r => inFilter(r, b.dataset.f)).length}</b>`; });
     const focus = document.activeElement && document.activeElement.id;
     const list = modRows(mod).filter(matches);
     const groups = [...new Set(list.map(r => r.g))];
@@ -243,25 +245,23 @@
   }
 
   function renderApprove() {
-    const rows = modRows(mod), c = countOf(rows), n = rows.length;
-    const counts = `<span class="cnt ok">정상 ${c.ok || 0}</span><span class="cnt issue">오류 ${c.issue || 0}</span><span class="cnt fixed">조치 완료 ${c.fixed || 0}</span>${c.na ? `<span class="cnt na">해당 없음 ${c.na}</span>` : ""}<span class="cnt none">미실행 ${c[""] || 0}</span>`;
-    const last = lastReview(mod);
-    const state = modDone(mod)
-      ? `<div class="approved">모듈 검수 완료${last ? ` (마지막 검수 ${esc(last.name)} <time>${fmt(last.at)}</time>)` : ""}</div>`
-      : `<div class="approve-prog"><b>테스트</b> ${passOf(rows)} / ${n}<b>검수</b> ${reviewOf(rows)} / ${n}</div>
-         <span class="approve-hint">모든 항목이 검수되면 모듈 검수 완료로 바뀝니다.</span>`;
-    $("#approve").innerHTML = `<div class="counts">${counts}</div><div class="approve-act">${state}</div>`;
+    const m = S.mods.find(x => x.id === mod) || {}, done = !m.prepare && modDone(mod), last = lastReview(mod);
+    $("#approve").hidden = !done;
+    $("#approve").innerHTML = done ? `<div class="approved">모듈 검수 완료${last ? ` (마지막 검수 ${esc(last.name)} <time>${fmt(last.at)}</time>)` : ""}</div>` : "";
   }
 
   function renderShell() {
     const m = S.mods.find(x => x.id === mod) || {};
     $("#mods").innerHTML = `<div class="sc all"><div class="sc-l">전체 검수</div><div class="sc-v"><span id="pAll">0</span><small>%</small></div><div class="trk"><i id="bAll"></i></div><div class="sc-s" id="sAll"></div></div>`
-      + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}" aria-pressed="${x.id === mod}"><div class="sc-l">${esc(x.name)}${modDone(x.id) ? ' <span class="sc-done">검수 완료</span>' : ""}</div><div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div></button>`).join("");
-    $("#tabs").innerHTML = S.mods.map(x => `<button type="button" class="tab" role="tab" data-m="${esc(x.id)}" aria-selected="${x.id === mod}">${esc(x.name)}<b data-c="${esc(x.id)}"></b></button>`).join("");
+      + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}" aria-pressed="${x.id === mod}"><div class="sc-l">${esc(x.name)}${!x.prepare && modDone(x.id) ? ' <span class="sc-done">검수 완료</span>' : ""}</div>`
+        + (x.prepare ? '<div class="sc-ready">준비중</div>'
+          : `<div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div>`) + `</button>`).join("");
+    $("#tabs").innerHTML = S.mods.map(x => `<button type="button" class="tab" role="tab" data-m="${esc(x.id)}" aria-selected="${x.id === mod}">${esc(x.name)}${x.prepare ? "<b>준비중</b>" : `<b data-c="${esc(x.id)}"></b>`}</button>`).join("");
     $("#modName").textContent = m.name || "";
-    $("#draftTag").hidden = !m.draft;
+    $("#draftTag").hidden = !m.draft || !!m.prepare;
+    document.querySelector(".filters").hidden = !!m.prepare;
     $("#prep").innerHTML = (m.prep || []).length ? `<b>시작 전 준비</b><ul>${m.prep.map(t => `<li>${prepItem(t)}</li>`).join("")}</ul>` : "";
-    $("#prep").hidden = !(m.prep || []).length;
+    $("#prep").hidden = !(m.prep || []).length || !!m.prepare;
     renderApprove();
   }
 
@@ -269,7 +269,7 @@
     const n = S.rows.length, rv = reviewOf(S.rows), p = n ? Math.round(rv / n * 100) : 0, c = countOf(S.rows);
     $("#pAll").textContent = p; $("#bAll").style.width = p + "%";
     $("#sAll").innerHTML = `<span>테스트 ${passOf(S.rows)}/${n}</span><span>검수 ${rv}/${n}</span>${c.issue ? `<span>오류 ${c.issue}</span>` : ""}`;
-    S.mods.forEach(x => {
+    S.mods.filter(x => !x.prepare).forEach(x => {
       const rows = modRows(x.id), r = reviewOf(rows), t = passOf(rows), cc = countOf(rows), pp = rows.length ? Math.round(r / rows.length * 100) : 0;
       document.querySelector(`[data-p="${x.id}"]`).textContent = pp;
       document.querySelector(`[data-b="${x.id}"]`).style.width = pp + "%";
