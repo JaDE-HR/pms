@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "12";
+  const VER = "13";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -267,9 +267,11 @@
   }
 
   function progress() {
-    const n = S.rows.length, rv = reviewOf(S.rows), p = n ? Math.round(rv / n * 100) : 0, c = countOf(S.rows);
+    const prep = new Set(S.mods.filter(x => x.prepare).map(x => x.id));
+    const live = S.rows.filter(r => !prep.has(r.m));   // 준비중 모듈은 전체 진척도에서 뺀다
+    const n = live.length, rv = reviewOf(live), p = n ? Math.round(rv / n * 100) : 0, c = countOf(live);
     $("#pAll").textContent = p; $("#bAll").style.width = p + "%";
-    $("#sAll").innerHTML = `<span>테스트 ${passOf(S.rows)}/${n}</span><span>검수 ${rv}/${n}</span>${c.issue ? `<span>오류 ${c.issue}</span>` : ""}`;
+    $("#sAll").innerHTML = `<span>테스트 ${passOf(live)}/${n}</span><span>검수 ${rv}/${n}</span>${c.issue ? `<span>오류 ${c.issue}</span>` : ""}`;
     S.mods.filter(x => !x.prepare).forEach(x => {
       const rows = modRows(x.id), r = reviewOf(rows), t = passOf(rows), cc = countOf(rows), pp = rows.length ? Math.round(r / rows.length * 100) : 0;
       document.querySelector(`[data-p="${x.id}"]`).textContent = pp;
