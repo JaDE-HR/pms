@@ -1,0 +1,13 @@
+name = "jade-inspect"
+main = "src/index.js"
+compatibility_date = "2025-05-01"
+
+# 검수 시트 저장 API. 데이터베이스 ID는 비밀값이 아니다.
+[[d1_databases]]
+binding = "DB"
+database_name = "jade-inspect"
+database_id = "7e10e0b3-90b0-4057-bd74-bc6545f3197a"
+
+[vars]
+# 이 주소에서 연 화면만 API를 부를 수 있다. 로컬 미리보기는 localhost 전체를 허용한다.
+ALLOWED_ORIGINS = "https://jade-hr.github.io"
