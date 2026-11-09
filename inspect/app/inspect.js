@@ -3,12 +3,16 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "8";
+  const VER = "10";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
   const NAME_KEY = "inspect-name";
   const POLL_MS = 15000;
+  const APP = (document.currentScript && document.currentScript.src || "").replace(/[^/]*$/, "");
+  const HCG = APP + "hcg.png";
+  const brandHtml = () => (CFG.logo ? `<img class="cl" src="${CFG.logo}" alt="${CFG.client || ""}">` : (CFG.client ? `<b>${CFG.client}</b>` : ""))
+    + (CFG.logo || CFG.client ? "<i></i>" : "") + `<img class="hcg" src="${HCG}" alt="HCG">`;
   const ST = {
     ok: { label: "정상", cls: "ok" },
     issue: { label: "오류", cls: "issue" },
@@ -67,12 +71,14 @@
     clearInterval(pollTimer);
     document.body.innerHTML = `
       <div class="gate"><form class="gate-card" id="gateForm">
-        <div class="eyebrow">검수용 테스트 시나리오</div>
-        <h1>검수 시트</h1>
-        <p class="sub">안내받은 비밀번호와 본인 이름을 입력해 주세요.<br>테스트 결과, 검수, 의견에 이 이름이 함께 남습니다.</p>
-        <label for="gatePass">비밀번호<input type="password" id="gatePass" autocomplete="off" required></label>
-        <label for="gateName">이름<input type="text" id="gateName" maxlength="20" required value="${esc(name)}" placeholder="예: 홍길동"></label>
-        <button type="submit" class="btn primary" id="gateGo">들어가기</button>
+        <div class="gate-logo">${brandHtml()}</div>
+        <h1>모듈별 검수 리스트</h1>
+        <p class="gs-sub">비밀번호와 이름을 입력해 주세요.<br>테스트 결과와 의견에 이름이 함께 남습니다.</p>
+        <div class="gate-fields">
+          <input type="password" id="gatePass" placeholder="비밀번호" autocomplete="off" aria-label="비밀번호" required>
+          <input type="text" id="gateName" maxlength="20" placeholder="이름" aria-label="이름" required value="${esc(name)}">
+          <button type="submit" id="gateGo">확인</button>
+        </div>
         <p class="gate-msg" id="gateMsg" role="alert">${esc(msg)}</p>
       </form></div>`;
     if (pass) $("#gatePass").value = pass;
@@ -99,18 +105,16 @@
   // ── 화면 틀 ───────────────────────────────────────
   function start() {
     document.body.innerHTML = `
-      <div class="prod-bar">운영 서버입니다. 테스트 사번(테스트1 ~ 테스트5)으로만 진행해 주세요.</div>
       <header class="top"><div class="wrap">
-        <span class="brand">JaDE</span>
+        <span class="brand">${brandHtml()}</span>
         <div class="tools">
           <span class="toast" id="toast" role="status"></span>
-          <span class="me">${role === "jade" ? '<span class="role-jade">JaDE</span> ' : ""}검수자 <b id="meName"></b> <button type="button" class="link" id="meChange">변경</button></span>
           <button type="button" class="btn" id="copyBtn">결과 복사</button>
         </div>
       </div></header>
       <section class="hero"><div class="wrap"><div class="hero-text">
         <div class="eyebrow">검수용 테스트 시나리오</div>
-        <h1>모듈별 테스트 / 검수</h1>
+        <h1>모듈별 검수 리스트</h1>
         <ol class="flow"><li>항목대로 실행하고 테스트 결과를 고릅니다.</li><li>오류는 JaDE 가 고친 뒤 조치 완료로 표시합니다.</li><li>다시 실행해 정상으로 바꿉니다.</li><li>테스트가 정상인 항목에 검수 체크를 합니다.</li><li>모두 체크되면 모듈 검수 완료입니다.</li></ol>
       </div></div></section>
       <div class="wrap"><div class="band" id="mods" role="group" aria-label="모듈별 진행"></div></div>
@@ -129,8 +133,6 @@
         <div class="prep" id="prep"></div>
         <div class="groups" id="rows"></div>
       </main>`;
-    $("#meName").textContent = name;
-    $("#meChange").addEventListener("click", () => gate());
     ["#mods", "#tabs"].forEach(q => $(q).addEventListener("click", e => {
       const b = e.target.closest("[data-m]"); if (b) selectMod(b.dataset.m);
     }));

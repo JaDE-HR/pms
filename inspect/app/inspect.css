@@ -334,3 +334,27 @@ body{margin:0}
 .sc-ready{margin-top:.65rem;line-height:1}
 .sc-s,.sc-s span{font-size:.85rem;line-height:1.5;color:rgba(255,255,255,.62);font-weight:400}
 .sc-s{gap:.1rem}
+
+/* ── v10: pms 현황판과 같은 로고 / 잠금 화면 ── */
+.top .wrap{min-height:68px}
+.brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.brand img.cl{height:40px;display:block}
+.brand b{font-size:1.35rem;font-weight:800;letter-spacing:-.03em}
+.brand i{display:block;width:1px;height:24px;background:var(--hairline)}
+.brand img.hcg{height:24px;display:block;opacity:.88}
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--canvas)}
+.gate-card{width:100%;max-width:380px;text-align:center;display:block}
+.gate-logo{display:flex;align-items:center;justify-content:center;gap:13px;margin-bottom:30px}
+.gate-logo img.cl{height:46px}
+.gate-logo b{font-size:27px;font-weight:800}
+.gate-logo i{display:block;width:1px;height:28px;background:var(--hairline)}
+.gate-logo img.hcg{height:28px;opacity:.88}
+.gate-card h1{font-size:22px;font-weight:600;letter-spacing:-.6px;margin:0}
+.gate-card .gs-sub{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.6}
+.gate-fields{margin-top:28px;display:grid;gap:8px}
+.gate-fields input{width:100%;border:1px solid var(--hairline);border-radius:9999px;padding:12px 18px;font:400 15px var(--sans);color:var(--ink);background:var(--canvas);letter-spacing:.5px;text-align:left}
+.gate-fields input:focus{outline:none;border-color:var(--primary)}
+.gate-fields button{border:0;border-radius:9999px;background:var(--primary);color:#fff;padding:12px 22px;font:600 14px var(--sans);cursor:pointer}
+.gate-fields button:hover{background:#0058b0}
+.gate-fields button:disabled{background:#b9c3ce;cursor:default}
+.gate-msg{margin-top:14px;font-size:13px;color:var(--over);min-height:19px}
