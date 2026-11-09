@@ -1,9 +1,9 @@
 // JaDE 검수 시트 표준 앱. 전 고객사가 함께 쓴다. 고객사별 값은 각 index.html 의 window.INSPECT 에만 둔다.
 //   window.INSPECT = { key: "<프로젝트키>", api: "https://<worker 주소>" }
-// 흐름: 테스트(정상 / 문제 있음 / 해당 없음) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
+// 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "3";
+  const VER = "4";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -11,7 +11,7 @@
   const POLL_MS = 15000;
   const ST = {
     ok: { label: "정상", cls: "ok" },
-    issue: { label: "문제 있음", cls: "issue" },
+    issue: { label: "오류", cls: "issue" },
     fixed: { label: "조치 완료", cls: "fixed" },
     na: { label: "해당 없음", cls: "na" },
     "": { label: "미실행", cls: "none" },
@@ -109,7 +109,7 @@
       <section class="hero"><div class="wrap"><div class="hero-text">
         <div class="eyebrow">검수용 테스트 시나리오</div>
         <h1>모듈별 테스트 / 검수</h1>
-        <ol class="flow"><li>테스트: 항목대로 실행하고 결과를 고릅니다.</li><li>조치: 문제 있음은 JaDE 가 고친 뒤 조치 완료로 표시합니다.</li><li>재테스트: 다시 실행해 정상으로 바꿉니다.</li><li>검수: 테스트가 정상인 항목에 검수 체크를 합니다. 모두 체크되면 모듈 검수 완료입니다.</li></ol>
+        <ol class="flow"><li>테스트: 항목대로 실행하고 결과를 고릅니다.</li><li>조치: 오류는 JaDE 가 고친 뒤 조치 완료로 표시합니다.</li><li>재테스트: 다시 실행해 정상으로 바꿉니다.</li><li>검수: 테스트가 정상인 항목에 검수 체크를 합니다. 모두 체크되면 모듈 검수 완료입니다.</li></ol>
       </div></div></section>
       <div class="wrap"><div class="band" id="mods" role="group" aria-label="모듈별 진행"></div></div>
       <div class="bar"><div class="wrap"><div class="tablist" role="tablist" aria-label="모듈" id="tabs"></div></div></div>
@@ -119,7 +119,7 @@
           <div class="filters" role="group" aria-label="항목 필터">
             <button type="button" class="fbtn" data-f="all">전체</button>
             <button type="button" class="fbtn" data-f="none">미실행</button>
-            <button type="button" class="fbtn" data-f="issue">문제 있음</button>
+            <button type="button" class="fbtn" data-f="issue">오류</button>
             <button type="button" class="fbtn" data-f="fixed">조치 완료</button>
             <button type="button" class="fbtn" data-f="wait">검수 대기</button>
           </div>
@@ -180,7 +180,7 @@
     const cur = statusOf(r), res = S.results[r.id];
     const hist = (S.history[r.id] || []).slice(0, -1).slice(-4).reverse();
     const btn = st => `<button type="button" class="rbtn ${ST[st].cls}" data-status="${st}" data-item="${esc(r.id)}" aria-pressed="${cur === st}">${ST[st].label}</button>`;
-    const buttons = role === "jade" ? (cur === "issue" ? btn("fixed") : "") : btn("ok") + btn("issue") + btn("na");
+    const buttons = role === "jade" ? (cur === "issue" ? btn("fixed") : "") : btn("ok") + btn("issue");
     return `<div class="status ${ST[cur].cls}">${ST[cur].label}</div>
       ${res ? `<div class="check-by">${esc(res.name)}${res.role === "jade" ? " (JaDE)" : ""}<br><time>${fmt(res.at)}</time></div>` : ""}
       <div class="rbtns">${buttons}</div>
@@ -212,7 +212,7 @@
       <div class="review">${reviewHtml(r)}</div>
       <div class="opinion">
         <ul class="op-list">${opinionsHtml(r.id)}</ul>
-        <div class="op-new"><textarea id="op-${esc(r.id)}" data-item="${esc(r.id)}" placeholder="${role === "jade" ? "조치 내용 / 답변을 적어 주세요" : "의견이 있으면 적어 주세요\n문제 있음은 의견이 필수입니다"}">${esc(drafts[r.id] || "")}</textarea>
+        <div class="op-new"><textarea id="op-${esc(r.id)}" data-item="${esc(r.id)}" placeholder="${role === "jade" ? "조치 내용 / 답변을 적어 주세요" : "의견이 있으면 적어 주세요\n오류는 의견이 필수입니다"}">${esc(drafts[r.id] || "")}</textarea>
         <button type="button" class="btn small" data-add="${esc(r.id)}">${role === "jade" ? "답변 등록" : "의견 등록"}</button></div></div>
     </article>`;
   }
@@ -240,7 +240,7 @@
 
   function renderApprove() {
     const rows = modRows(mod), c = countOf(rows), n = rows.length;
-    const counts = `<span class="cnt ok">정상 ${c.ok || 0}</span><span class="cnt issue">문제 있음 ${c.issue || 0}</span><span class="cnt fixed">조치 완료 ${c.fixed || 0}</span><span class="cnt na">해당 없음 ${c.na || 0}</span><span class="cnt none">미실행 ${c[""] || 0}</span>`;
+    const counts = `<span class="cnt ok">정상 ${c.ok || 0}</span><span class="cnt issue">오류 ${c.issue || 0}</span><span class="cnt fixed">조치 완료 ${c.fixed || 0}</span>${c.na ? `<span class="cnt na">해당 없음 ${c.na}</span>` : ""}<span class="cnt none">미실행 ${c[""] || 0}</span>`;
     const last = lastReview(mod);
     const state = modDone(mod)
       ? `<div class="approved">모듈 검수 완료${last ? ` - 마지막 검수 ${esc(last.name)} <time>${fmt(last.at)}</time>` : ""}</div>`
@@ -264,12 +264,12 @@
   function progress() {
     const n = S.rows.length, rv = reviewOf(S.rows), p = n ? Math.round(rv / n * 100) : 0, c = countOf(S.rows);
     $("#pAll").textContent = p; $("#bAll").style.width = p + "%";
-    $("#sAll").textContent = `테스트 ${passOf(S.rows)}/${n} · 검수 ${rv}/${n}${c.issue ? ` · 문제 ${c.issue}` : ""}`;
+    $("#sAll").textContent = `테스트 ${passOf(S.rows)}/${n} · 검수 ${rv}/${n}${c.issue ? ` · 오류 ${c.issue}` : ""}`;
     S.mods.forEach(x => {
       const rows = modRows(x.id), r = reviewOf(rows), t = passOf(rows), cc = countOf(rows), pp = rows.length ? Math.round(r / rows.length * 100) : 0;
       document.querySelector(`[data-p="${x.id}"]`).textContent = pp;
       document.querySelector(`[data-b="${x.id}"]`).style.width = pp + "%";
-      document.querySelector(`[data-s="${x.id}"]`).textContent = `테스트 ${t}/${rows.length} · 검수 ${r}/${rows.length}${cc.issue ? ` · 문제 ${cc.issue}` : ""}`;
+      document.querySelector(`[data-s="${x.id}"]`).textContent = `테스트 ${t}/${rows.length} · 검수 ${r}/${rows.length}${cc.issue ? ` · 오류 ${cc.issue}` : ""}`;
       document.querySelector(`[data-c="${x.id}"]`).textContent = `${r}/${rows.length}`;
     });
   }
@@ -287,7 +287,7 @@
   async function setResult(id, status) {
     const text = (drafts[id] || "").trim();
     if (status === "issue" && !text) {
-      toast("무엇이 달랐는지 의견 칸에 먼저 적어 주세요.");
+      toast("오류 내용을 의견 칸에 먼저 적어 주세요.");
       const ta = document.getElementById("op-" + id); if (ta) ta.focus();
       return;
     }
