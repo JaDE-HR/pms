@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "11";
+  const VER = "12";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -172,7 +172,6 @@
   }
   function notesHtml(note = [], risk) {
     const red = note.filter(t => t[0] === "!").map(t => t.slice(1));
-    if (risk) red.unshift("운영 데이터가 바뀌는 항목입니다. JaDE 담당자와 함께 진행합니다.");
     const plain = note.filter(t => t[0] !== "!");
     const block = (items, cls, label) => items.length
       ? `<div class="notes ${cls}"><b>${label}</b><ul>${[...new Set(items)].map(t => `<li>${rich(t)}</li>`).join("")}</ul></div>` : "";
