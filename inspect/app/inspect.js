@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "10";
+  const VER = "11";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -115,7 +115,7 @@
       <section class="hero"><div class="wrap"><div class="hero-text">
         <div class="eyebrow">검수용 테스트 시나리오</div>
         <h1>모듈별 검수 리스트</h1>
-        <ol class="flow"><li>항목대로 실행하고 테스트 결과를 고릅니다.</li><li>오류는 JaDE 가 고친 뒤 조치 완료로 표시합니다.</li><li>다시 실행해 정상으로 바꿉니다.</li><li>테스트가 정상인 항목에 검수 체크를 합니다.</li><li>모두 체크되면 모듈 검수 완료입니다.</li></ol>
+        <ol class="flow"><li>항목대로 실행하고 테스트 결과를 고릅니다.</li><li>오류는 HCG 프로젝트팀이 확인 후 고친 뒤 메일로 재안내하여 ${esc(CFG.client || "고객사")} 측에서 오류 항목 테스트를 재진행합니다.</li><li>테스트가 정상인 항목은 고객사와 확인 후 검수 체크 합니다.</li><li>모두 체크되면 모듈 검수 완료입니다.</li></ol>
       </div></div></section>
       <div class="wrap"><div class="band" id="mods" role="group" aria-label="모듈별 진행"></div></div>
       <div class="bar"><div class="wrap"><div class="tablist" role="tablist" aria-label="모듈" id="tabs"></div></div></div>
