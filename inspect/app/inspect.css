@@ -311,3 +311,8 @@ body{margin:0}
 .row.st-ok .result,.row.st-reviewed .result,.row.st-issue .result,.row.st-fixed .result,
 .row.st-ok .notes:not(.red),.row.st-reviewed .notes:not(.red),.row.st-issue .notes:not(.red),.row.st-fixed .notes:not(.red){background:var(--box)}
 .row.st-ok .op-list li:not(.op-jade),.row.st-reviewed .op-list li:not(.op-jade),.row.st-issue .op-list li:not(.op-jade),.row.st-fixed .op-list li:not(.op-jade){background:var(--box);border:0}
+
+/* ── v7: 숫자 나열은 가운데 점 없이 간격으로 ── */
+.sc-s{display:flex;flex-wrap:wrap;gap:.2rem .9rem}
+.name{word-break:keep-all}
+.name-sub{display:block;margin-top:.15rem;font-size:.92rem;font-weight:600;color:var(--body);white-space:nowrap}

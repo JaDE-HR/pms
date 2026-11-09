@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "6";
+  const VER = "7";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -109,7 +109,7 @@
       <section class="hero"><div class="wrap"><div class="hero-text">
         <div class="eyebrow">검수용 테스트 시나리오</div>
         <h1>모듈별 테스트 / 검수</h1>
-        <ol class="flow"><li>테스트: 항목대로 실행하고 결과를 고릅니다.</li><li>조치: 오류는 JaDE 가 고친 뒤 조치 완료로 표시합니다.</li><li>재테스트: 다시 실행해 정상으로 바꿉니다.</li><li>검수: 테스트가 정상인 항목에 검수 체크를 합니다. 모두 체크되면 모듈 검수 완료입니다.</li></ol>
+        <ol class="flow"><li>항목대로 실행하고 테스트 결과를 고릅니다.</li><li>오류는 JaDE 가 고친 뒤 조치 완료로 표시합니다.</li><li>다시 실행해 정상으로 바꿉니다.</li><li>테스트가 정상인 항목에 검수 체크를 합니다.</li><li>모두 체크되면 모듈 검수 완료입니다.</li></ol>
       </div></div></section>
       <div class="wrap"><div class="band" id="mods" role="group" aria-label="모듈별 진행"></div></div>
       <div class="bar"><div class="wrap"><div class="tablist" role="tablist" aria-label="모듈" id="tabs"></div></div></div>
@@ -201,10 +201,15 @@
       + (o.name === name && o.role === role ? ` <button type="button" class="link op-del" data-del="${o.id}" data-item="${esc(id)}">삭제</button>` : "") + `</li>`).join("");
   }
 
+  function nameHtml(n) {
+    const m = n.match(/^(.+?) (\(.+\))$/);
+    return m ? `${esc(m[1])}<span class="name-sub">${esc(m[2])}</span>` : esc(n);
+  }
+
   function rowHtml(r, who) {
     const cls = reviewed(r) ? "st-reviewed" : "st-" + ST[statusOf(r)].cls;
     return `<article class="row ${cls}" data-id="${esc(r.id)}">
-      <div class="who-col"><div class="name">${esc(r.n)}</div>${r.risk ? '<span class="risk">운영 영향</span>' : ""}
+      <div class="who-col"><div class="name">${nameHtml(r.n)}</div>${r.risk ? '<span class="risk">운영 영향</span>' : ""}
         <div class="place">${r.menu.map(m => { const p = m.split(" > "); const last = p.pop(); return `<div><span class="crumb">${esc(p.join(" > "))}</span><span class="chip">${esc(last)}</span></div>`; }).join("")}<span class="who">${esc(r.who || who)}</span></div></div>
       <div class="desc"><ol class="steps">${r.steps.map(t => `<li>${lineHtml(t)}</li>`).join("")}</ol>
         <div class="result"><b>기대 결과</b><span>${linesHtml(r.expect)}</span></div>${notesHtml(r.note, r.risk)}</div>
@@ -229,8 +234,7 @@
     const list = modRows(mod).filter(matches);
     const groups = [...new Set(list.map(r => r.g))];
     $("#rows").innerHTML = groups.length ? groups.map(g => {
-      const all = modRows(mod).filter(r => r.g === g);
-      return `<section><div class="gh"><h3>${esc(g)}</h3><span>테스트 ${passOf(all)} / ${all.length} · 검수 ${reviewOf(all)} / ${all.length}</span></div>
+      return `<section><div class="gh"><h3>${esc(g)}</h3></div>
         <div class="cols"><span>항목</span><span>설명</span><span class="ctr">테스트</span><span class="ctr">검수</span><span>의견</span></div>
         ${list.filter(r => r.g === g).map(r => rowHtml(r, m.who)).join("")}</section>`;
     }).join("") : `<div class="empty">이 조건에 해당하는 항목이 없습니다.</div>`;
@@ -243,7 +247,7 @@
     const counts = `<span class="cnt ok">정상 ${c.ok || 0}</span><span class="cnt issue">오류 ${c.issue || 0}</span><span class="cnt fixed">조치 완료 ${c.fixed || 0}</span>${c.na ? `<span class="cnt na">해당 없음 ${c.na}</span>` : ""}<span class="cnt none">미실행 ${c[""] || 0}</span>`;
     const last = lastReview(mod);
     const state = modDone(mod)
-      ? `<div class="approved">모듈 검수 완료${last ? ` - 마지막 검수 ${esc(last.name)} <time>${fmt(last.at)}</time>` : ""}</div>`
+      ? `<div class="approved">모듈 검수 완료${last ? ` (마지막 검수 ${esc(last.name)} <time>${fmt(last.at)}</time>)` : ""}</div>`
       : `<div class="approve-prog"><b>테스트</b> ${passOf(rows)} / ${n}<b>검수</b> ${reviewOf(rows)} / ${n}</div>
          <span class="approve-hint">모든 항목이 검수되면 모듈 검수 완료로 바뀝니다.</span>`;
     $("#approve").innerHTML = `<div class="counts">${counts}</div><div class="approve-act">${state}</div>`;
@@ -264,12 +268,12 @@
   function progress() {
     const n = S.rows.length, rv = reviewOf(S.rows), p = n ? Math.round(rv / n * 100) : 0, c = countOf(S.rows);
     $("#pAll").textContent = p; $("#bAll").style.width = p + "%";
-    $("#sAll").textContent = `테스트 ${passOf(S.rows)}/${n} · 검수 ${rv}/${n}${c.issue ? ` · 오류 ${c.issue}` : ""}`;
+    $("#sAll").innerHTML = `<span>테스트 ${passOf(S.rows)}/${n}</span><span>검수 ${rv}/${n}</span>${c.issue ? `<span>오류 ${c.issue}</span>` : ""}`;
     S.mods.forEach(x => {
       const rows = modRows(x.id), r = reviewOf(rows), t = passOf(rows), cc = countOf(rows), pp = rows.length ? Math.round(r / rows.length * 100) : 0;
       document.querySelector(`[data-p="${x.id}"]`).textContent = pp;
       document.querySelector(`[data-b="${x.id}"]`).style.width = pp + "%";
-      document.querySelector(`[data-s="${x.id}"]`).textContent = `테스트 ${t}/${rows.length} · 검수 ${r}/${rows.length}${cc.issue ? ` · 오류 ${cc.issue}` : ""}`;
+      document.querySelector(`[data-s="${x.id}"]`).innerHTML = `<span>테스트 ${t}/${rows.length}</span><span>검수 ${r}/${rows.length}</span>${cc.issue ? `<span>오류 ${cc.issue}</span>` : ""}`;
       document.querySelector(`[data-c="${x.id}"]`).textContent = `${r}/${rows.length}`;
     });
   }
