@@ -91,8 +91,8 @@
   },
   "tam3": {
    "file": "tam3.bin",
-   "iv": "Ny4v2bOugd3IjZkf",
-   "size": 6975501,
+   "iv": "QIEz7+d899DGykWF",
+   "size": 6930372,
    "title": "일근태생성",
    "chapters": [
     [
@@ -104,7 +104,7 @@
      "STEP 02 중도입사자 일근태 생성"
     ],
     [
-     63,
+     62,
      "STEP 03 생성이력 확인"
     ]
    ],
