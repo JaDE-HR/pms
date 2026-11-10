@@ -17,7 +17,7 @@
  "videos": {
   "tam1": {
    "file": "tam1.bin",
-   "iv": "ioivyMvOxJwZA4g4",
+   "iv": "e7ezX20t2PfGq2vO",
    "title": "휴일관리",
    "chapters": [
     [
@@ -25,7 +25,7 @@
      "STEP 01 전년도 자료 복사"
     ],
     [
-     24,
+     23,
      "STEP 02 음력 휴일 확인"
     ],
     [
@@ -37,8 +37,8 @@
      "STEP 04 2027년 휴일 추가"
     ]
    ],
-   "size": 9024022,
-   "length": "1분 23초",
+   "size": 8835660,
+   "length": "1분 20초",
    "group": "tam_y"
   },
   "org1": {
@@ -62,6 +62,50 @@
    ],
    "length": "0분 49초",
    "group": "org_m"
+  },
+  "tam2": {
+   "file": "tam2.bin",
+   "iv": "5yWFoLEqcSKCWYod",
+   "size": 8210180,
+   "title": "근무스케쥴생성",
+   "chapters": [
+    [
+     3,
+     "STEP 01 근무스케쥴생성"
+    ],
+    [
+     30,
+     "STEP 02 근무 일정 확인"
+    ],
+    [
+     42,
+     "STEP 03 정산구간 확인"
+    ]
+   ],
+   "length": "57초",
+   "group": "tam_y"
+  },
+  "tam3": {
+   "file": "tam3.bin",
+   "iv": "m6zSfw0aTaY3wgrE",
+   "size": 6359911,
+   "title": "일근태생성",
+   "chapters": [
+    [
+     3,
+     "STEP 01 전 직원 일근태 생성"
+    ],
+    [
+     32,
+     "STEP 02 중도입사자 일근태 생성"
+    ],
+    [
+     50,
+     "STEP 03 생성이력 확인"
+    ]
+   ],
+   "length": "1분 5초",
+   "group": "tam_y"
   }
  },
  "groups": {
