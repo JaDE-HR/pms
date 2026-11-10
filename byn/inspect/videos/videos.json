@@ -640,6 +640,54 @@
    ],
    "length": "1분 11초",
    "group": "pay_b"
+  },
+  "apl1": {
+   "file": "apl1.bin",
+   "iv": "H93YIL5SmSiXlqTc",
+   "size": 22780343,
+   "title": "신청서 생성 및 결재선 기준",
+   "chapters": [
+    [
+     3,
+     "STEP 01 신청서 추가"
+    ],
+    [
+     35,
+     "STEP 02 신청서 연결"
+    ],
+    [
+     70,
+     "STEP 03 기본결재선"
+    ],
+    [
+     115,
+     "STEP 04 HR결재와 승인"
+    ]
+   ],
+   "length": "2분 42초",
+   "group": "apl_s"
+  },
+  "apl2": {
+   "file": "apl2.bin",
+   "iv": "GSZrEpeitcDxMKBM",
+   "size": 12972229,
+   "title": "신청서 옵션 설정",
+   "chapters": [
+    [
+     4,
+     "STEP 01 신청서 노출 / 입력 항목"
+    ],
+    [
+     24,
+     "STEP 02 안내 문구"
+    ],
+    [
+     63,
+     "STEP 03 메일참조"
+    ]
+   ],
+   "length": "1분 36초",
+   "group": "apl_s"
   }
  },
  "groups": {
@@ -783,6 +831,19 @@
     {
      "id": "shift5",
      "name": "결과 확인"
+    }
+   ]
+  },
+  "apl_s": {
+   "title": "신청서 기준설정",
+   "eps": [
+    {
+     "id": "apl1",
+     "name": "신청서 생성 및 결재선 기준"
+    },
+    {
+     "id": "apl2",
+     "name": "신청서 옵션 설정"
     }
    ]
   }
