@@ -43,8 +43,8 @@
   },
   "org1": {
    "file": "org1.bin",
-   "iv": "tktekzpsTzZtrKkr",
-   "size": 5181828,
+   "iv": "HNVogvj7L4tZh+G3",
+   "size": 6123772,
    "title": "조직 등록",
    "chapters": [
     [
@@ -52,15 +52,15 @@
      "STEP 01 기준일 조회"
     ],
     [
-     14,
+     15,
      "STEP 02 하위조직 추가"
     ],
     [
-     36,
+     37,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 49초",
+   "length": "0분 50초",
    "group": "org_m"
   },
   "tam2": {
@@ -113,8 +113,8 @@
   },
   "org2": {
    "file": "org2.bin",
-   "iv": "ceZQqRh+ozdEgazQ",
-   "size": 5293969,
+   "iv": "w49PTKfRpb/1Fa2/",
+   "size": 6212080,
    "title": "조직장 등록",
    "chapters": [
     [
@@ -126,7 +126,7 @@
      "STEP 02 조직장 지정"
     ],
     [
-     35,
+     36,
      "STEP 03 저장 / 확인"
     ]
    ],
@@ -135,8 +135,8 @@
   },
   "org3": {
    "file": "org3.bin",
-   "iv": "tfQtAwk0xH329w5F",
-   "size": 4557924,
+   "iv": "wN9hbynje1wV5HTp",
+   "size": 5642765,
    "title": "조직명 변경",
    "chapters": [
     [
@@ -148,17 +148,17 @@
      "STEP 02 새 명칭 추가"
     ],
     [
-     31,
+     40,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 52초",
+   "length": "0분 59초",
    "group": "org_m"
   },
   "org4": {
    "file": "org4.bin",
-   "iv": "TnahDEVoqEeQlRRv",
-   "size": 4335247,
+   "iv": "XW0SNBe5Hk9Hvxuz",
+   "size": 4959425,
    "title": "조직 개편 발령",
    "chapters": [
     [
@@ -179,8 +179,8 @@
   },
   "org5": {
    "file": "org5.bin",
-   "iv": "Yeed7g2OnZw01rUa",
-   "size": 4227627,
+   "iv": "JXLUdfhl4WhnXnz8",
+   "size": 7009278,
    "title": "조직 폐쇄",
    "chapters": [
     [
@@ -189,14 +189,18 @@
     ],
     [
      11,
-     "STEP 02 조직 폐쇄"
+     "STEP 02 소속 직원 확인"
     ],
     [
-     24,
-     "STEP 03 폐쇄 확인"
+     26,
+     "STEP 03 조직 폐쇄"
+    ],
+    [
+     34,
+     "STEP 04 폐쇄 확인"
     ]
    ],
-   "length": "0분 35초",
+   "length": "0분 46초",
    "group": "org_m"
   }
  },
