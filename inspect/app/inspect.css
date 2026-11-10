@@ -363,21 +363,40 @@ body{margin:0}
 a.brand{text-decoration:none;color:inherit;cursor:pointer}
 .toast{color:#d0021b;font-weight:600}
 
-/* v17 영상 매뉴얼 */
+/* v18 영상 매뉴얼 (DC형 영상 매뉴얼 팝업 A안 다크와 같은 모양) */
 .vbtn{display:inline-flex;align-items:center;gap:.35rem;margin:.45rem 0 .1rem;padding:.28rem .7rem .28rem .55rem;border:1px solid var(--hairline,#d5dbe2);border-radius:999px;background:#fff;color:#1f2a33;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
-.vbtn i{width:0;height:0;border-left:.5rem solid #1f6fd1;border-top:.32rem solid transparent;border-bottom:.32rem solid transparent}
-.vbtn:hover{border-color:#1f6fd1}
-.vmodal{position:fixed;inset:0;z-index:1000;background:rgba(15,20,26,.62);display:flex;align-items:center;justify-content:center;padding:2vh 2vw}
-.vpanel{background:#fff;border-radius:14px;width:min(1180px,96vw);max-height:96vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.35)}
-.vhead{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem .8rem 1.2rem;border-bottom:1px solid #e6e9eb}
-.vhead b{font-size:1rem}
-.vx{border:0;background:none;font-size:1.6rem;line-height:1;cursor:pointer;color:#55606a;padding:0 .3rem}
-.vbody{padding:1rem 1.2rem 1.2rem;overflow:auto}
-.vscreen{position:relative;background:#0f141a;border-radius:8px;overflow:hidden;aspect-ratio:16/9}
-.vscreen video{width:100%;height:100%;display:block;background:#0f141a}
-.vload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.95rem}
+.vbtn i{width:0;height:0;border-left:.5rem solid #14a89a;border-top:.32rem solid transparent;border-bottom:.32rem solid transparent}
+.vbtn:hover{border-color:#14a89a}
+.vmodal{position:fixed;inset:0;z-index:1000;background:rgba(10,14,16,.6);display:flex;align-items:center;justify-content:center}
+.vpanel{width:min(1800px,96vw);height:min(980px,94vh);background:#1c2326;color:#e7ecee;border-radius:16px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.55);display:flex;flex-direction:column;font-family:"Noto Sans KR","Malgun Gothic",sans-serif}
+.vbar{flex:0 0 46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#151b1d;border-bottom:1px solid #2a3337}
+.vbar b{font-size:17px;font-weight:600;color:#e7ecee}
+.vx{position:relative;width:22px;height:22px;border:0;background:none;cursor:pointer;opacity:.75}
+.vx:hover{opacity:1}
+.vx::before,.vx::after{content:"";position:absolute;left:2px;right:2px;top:10px;height:2px;background:#e7ecee;border-radius:1px}
+.vx::before{transform:rotate(45deg)}.vx::after{transform:rotate(-45deg)}
+.vmIn{flex:1;min-height:0;box-sizing:border-box;padding:10px 30px 20px;display:flex;flex-direction:column}
+.vmHead{display:flex;align-items:baseline;gap:12px;height:30px;margin:0 0 12px;overflow:hidden}
+.vmTit{font-size:21px;font-weight:700;line-height:30px;color:#fff}
+.vmHead small{font-size:13.5px;line-height:30px;color:#8c989d}
+.vmBody{flex:1;min-height:0;display:flex;gap:18px;align-items:stretch}
+.vmVideo{position:relative;flex:0 0 77%;align-self:flex-start;aspect-ratio:16/9;max-height:100%;background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px #34404a,0 14px 40px rgba(0,0,0,.5)}
+.vmVideo video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+.vload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#c8d1d4;font-size:15px;background:#000}
 .vload[hidden]{display:none}
-.vch{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}
-.vch button{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #d5dbe2;border-radius:8px;background:#fff;padding:.45rem .75rem;font:inherit;font-size:.85rem;cursor:pointer;color:#1f2a33}
-.vch button time{color:#6b7683;font-variant-numeric:tabular-nums}
-.vch button.on{border-color:#1f6fd1;background:#f2f8ff}
+.vmSide{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
+.vmChap{flex:1;background:#242d31;border:1px solid #303b40;border-radius:12px;overflow:auto}
+.vmChap b{display:block;padding:16px 18px 12px;font-size:15px;color:#fff}
+.vmChap button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:none;border-top:1px solid #303b40;padding:14px 18px;font:inherit;color:#c8d1d4;cursor:pointer;line-height:1.35}
+.vmChap button i{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:#33404a;color:#c8d1d4;font-style:normal;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800}
+.vmChap button em{font-style:normal;display:block;font-size:14px;font-weight:700}
+.vmChap button span{display:block;color:#8c989d;font-size:12.5px;margin-top:2px}
+.vmChap button:hover{background:#2b363b}
+.vmChap button.on{background:#0f3d3a;color:#2fe0c7}
+.vmChap button.on i{background:#14a89a;color:#fff}
+.vmChap button.on span{color:#7fe8d8}
+.vmEps{display:flex;flex-direction:column;gap:8px}
+.vmEps button{padding:11px 16px;border-radius:10px;border:1px solid #303b40;background:#242d31;font:inherit;font-size:13.5px;color:#c8d1d4;text-align:left;cursor:pointer}
+.vmEps button:hover{background:#2b363b}
+.vmEps button.on{background:#14a89a;border-color:#14a89a;color:#fff;font-weight:700}
+.vmEps button:disabled{color:#5c686d;cursor:default;background:#242d31}

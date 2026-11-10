@@ -18,7 +18,7 @@
   "tam1": {
    "file": "tam1.bin",
    "iv": "ioivyMvOxJwZA4g4",
-   "title": "1편 휴일관리",
+   "title": "휴일관리",
    "chapters": [
     [
      3,
@@ -37,7 +37,28 @@
      "STEP 04 2027년 휴일 추가"
     ]
    ],
-   "size": 9024022
+   "size": 9024022,
+   "length": "1분 23초",
+   "group": "tam_y"
+  }
+ },
+ "groups": {
+  "tam_y": {
+   "title": "연간 스케쥴 생성",
+   "eps": [
+    {
+     "id": "tam1",
+     "name": "휴일관리"
+    },
+    {
+     "id": "tam2",
+     "name": "근무스케쥴생성"
+    },
+    {
+     "id": "tam3",
+     "name": "일근태생성"
+    }
+   ]
   }
  }
 }

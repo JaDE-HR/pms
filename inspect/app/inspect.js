@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "17";
+  const VER = "18";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -555,42 +555,72 @@
     }
     throw new Error("이 비밀번호로는 영상을 열 수 없습니다.");
   }
+  // DC형 영상 매뉴얼 팝업(c2608010_rt_pen_manual_p01.jsp, A안 다크)과 같은 모양:
+  // 어두운 틀 / 왼쪽 영상(16:9, 약 77%) / 오른쪽 목차(번호 원, 누르면 그 시간으로, 재생 위치에 맞춰 강조) / 아래 편 전환
   function closeVideo() {
     const m = $("#vmodal"); if (!m) return;
     const v = m.querySelector("video"); if (v) { v.pause(); v.removeAttribute("src"); v.load(); }
-    m.remove(); document.removeEventListener("keydown", vEsc);
+    m.remove(); document.removeEventListener("keydown", vEsc); document.body.style.overflow = "";
   }
   const vEsc = e => { if (e.key === "Escape") closeVideo(); };
+  const vFmt = t => String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(Math.floor(t % 60)).padStart(2, "0");
+  const vLen = d => `${Math.floor(d / 60)}분 ${Math.round(d % 60)}초`;
   async function openVideo(id, t) {
     closeVideo();
     document.body.insertAdjacentHTML("beforeend", `<div class="vmodal" id="vmodal" role="dialog" aria-modal="true" aria-label="영상 매뉴얼">
-      <div class="vpanel"><div class="vhead"><b id="vtitle">영상 매뉴얼</b><button type="button" class="vx" id="vx" aria-label="닫기">×</button></div>
-      <div class="vbody"><div class="vscreen"><video id="vplayer" controls playsinline preload="auto"></video><div class="vload" id="vload">영상을 불러오는 중입니다</div></div>
-      <div class="vch" id="vch"></div></div></div></div>`);
+      <div class="vpanel"><div class="vbar"><b>영상 매뉴얼</b><button type="button" class="vx" id="vx" aria-label="닫기"></button></div>
+      <div class="vmIn"><div class="vmHead"><span class="vmTit" id="vmTitle"></span><small id="vmSub"></small></div>
+      <div class="vmBody"><div class="vmVideo"><video id="vplayer" controls playsinline preload="auto"></video><div class="vload" id="vload">영상을 불러오는 중입니다</div></div>
+      <div class="vmSide"><div class="vmChap" id="vmChap"><b>목차</b></div><div class="vmEps" id="vmEps"></div></div></div></div></div></div>`);
+    document.body.style.overflow = "hidden";
     document.addEventListener("keydown", vEsc);
     $("#vx").addEventListener("click", closeVideo);
     $("#vmodal").addEventListener("click", e => { if (e.target.id === "vmodal") closeVideo(); });
+    $("#vplayer").addEventListener("timeupdate", vMark);
     try {
-      const key = await videoKey(), meta = vman.videos[id];
-      if (!meta) throw new Error("영상이 아직 등록되지 않았습니다.");
-      $("#vtitle").textContent = meta.title;
-      const v = $("#vplayer"), chs = meta.chapters || [];
-      $("#vch").innerHTML = chs.map(([s, label]) => `<button type="button" data-s="${s}"><time>${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}</time>${esc(label)}</button>`).join("");
-      $("#vch").addEventListener("click", e => { const b = e.target.closest("[data-s]"); if (b) { v.currentTime = Number(b.dataset.s); v.play(); } });
-      v.addEventListener("timeupdate", () => {
-        let cur = -1; chs.forEach(([s], i) => { if (v.currentTime >= s - 0.3) cur = i; });
-        document.querySelectorAll("#vch button").forEach((b, i) => b.classList.toggle("on", i === cur));
-      });
-      if (!vcache[id]) {
-        const r = await fetch(VDIR + meta.file); if (!r.ok) throw new Error("영상을 불러오지 못했습니다.");
-        const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: ub64(meta.iv), additionalData: new TextEncoder().encode(id) }, key, await r.arrayBuffer());
-        vcache[id] = URL.createObjectURL(new Blob([plain], { type: "video/mp4" }));
-      }
-      if (!$("#vmodal")) return;
-      v.src = vcache[id];
-      v.addEventListener("loadedmetadata", () => { v.currentTime = t || 0; v.play().catch(() => {}); }, { once: true });
-      $("#vload").hidden = true;
-    } catch (err) { const l = $("#vload"); if (l) l.textContent = err.message || "영상을 열지 못했습니다."; }
+      await videoKey();
+      await vLoad(id, t);
+    } catch (err) { const l = $("#vload"); if (l) { l.hidden = false; l.textContent = err.message || "영상을 열지 못했습니다."; } }
+  }
+  let vCur = null;
+  function vChapters(meta) {
+    return (meta.chapters || []).map(([s, label]) => { const m = String(label).match(/^(STEP\s*\d+)\s*(.*)$/); return { t: s, step: m ? m[1] : label, name: m ? m[2] : "" }; });
+  }
+  async function vLoad(id, t) {
+    const meta = vman.videos[id];
+    if (!meta || !meta.file) throw new Error("영상이 아직 등록되지 않았습니다.");
+    vCur = id;
+    const v = $("#vplayer"), grp = (vman.groups || {})[meta.group];
+    const eps = grp ? grp.eps : [{ id, name: meta.title }];
+    const n = eps.findIndex(e => e.id === id) + 1;
+    $("#vmTitle").textContent = meta.title;
+    $("#vmSub").textContent = (n ? n + "편 / " : "") + (meta.length || "");
+    const chs = vChapters(meta);
+    $("#vmChap").innerHTML = "<b>목차</b>" + chs.map((c, i) =>
+      `<button type="button" data-i="${i}" data-s="${c.t}"><i>${i + 1}</i><div><em>${esc(c.step)}</em><span>${esc(c.name)}${c.name ? " / " : ""}${vFmt(c.t)}</span></div></button>`).join("");
+    $("#vmChap").onclick = e => { const b = e.target.closest("[data-s]"); if (b) { v.currentTime = Number(b.dataset.s); v.play().catch(() => {}); vMark(); } };
+    $("#vmEps").innerHTML = grp ? eps.map((e, i) => { const ok = vman.videos[e.id] && vman.videos[e.id].file;
+      return `<button type="button" data-ep="${esc(e.id)}" class="${e.id === id ? "on" : ""}" ${ok ? "" : "disabled"}>${i + 1}편 ${esc(e.name)}${ok ? "" : " (준비중)"}</button>`; }).join("") : "";
+    $("#vmEps").onclick = e => { const b = e.target.closest("[data-ep]"); if (b && !b.disabled && b.dataset.ep !== vCur) vLoad(b.dataset.ep, 0).catch(err => { $("#vload").hidden = false; $("#vload").textContent = err.message; }); };
+    $("#vload").hidden = false; $("#vload").textContent = "영상을 불러오는 중입니다";
+    v.pause();
+    if (!vcache[id]) {
+      const r = await fetch(VDIR + meta.file); if (!r.ok) throw new Error("영상을 불러오지 못했습니다.");
+      const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: ub64(meta.iv), additionalData: new TextEncoder().encode(id) }, vkey, await r.arrayBuffer());
+      vcache[id] = URL.createObjectURL(new Blob([plain], { type: "video/mp4" }));
+    }
+    if (!$("#vmodal") || vCur !== id) return;
+    v.src = vcache[id];
+    v.addEventListener("loadedmetadata", () => {
+      if (!meta.length) $("#vmSub").textContent = (n ? n + "편 / " : "") + vLen(v.duration);
+      v.currentTime = t || 0; v.play().catch(() => {}); vMark();
+    }, { once: true });
+    $("#vload").hidden = true;
+  }
+  function vMark() {
+    const v = $("#vplayer"), meta = vman && vman.videos[vCur]; if (!v || !meta) return;
+    let cur = 0; vChapters(meta).forEach((c, i) => { if ((v.currentTime || 0) >= c.t - 0.2) cur = i; });
+    document.querySelectorAll("#vmChap button").forEach(b => b.classList.toggle("on", +b.dataset.i === cur));
   }
 
   // ── 시작 ──────────────────────────────────────────

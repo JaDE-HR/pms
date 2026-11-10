@@ -10,6 +10,9 @@
 사용:
   python inspect/tools/pack_video.py byn tam1 "C:\\...\\1편_휴일관리.mp4" --title "1편 휴일관리" --chapters "3=STEP 01 전년도 자료 복사|24=STEP 02 음력 휴일 확인"
   python inspect/tools/pack_video.py byn --rewrap      (비밀번호를 바꾼 뒤 영상 키만 다시 잠그기)
+  묶음(편 전환): --group tam_y --group-title "연간 스케쥴 생성" --plan "tam1=휴일관리|tam2=근무스케쥴생성|tam3=일근태생성"
+    팝업 오른쪽 아래에 1편 / 2편 / 3편 버튼이 생기고, 아직 없는 편은 (준비중)으로 보인다.
+  영상 파일 없이 정보만 고치기: pack_video.py byn tam1 --title "..." --chapters "..."   (mp4 생략)
 """
 import os, re, sys, json, base64, argparse
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -48,6 +51,8 @@ def main():
     ap.add_argument('key'); ap.add_argument('id', nargs='?'); ap.add_argument('mp4', nargs='?')
     ap.add_argument('--title', default=''); ap.add_argument('--chapters', default='')
     ap.add_argument('--rewrap', action='store_true')
+    ap.add_argument('--group', default=''); ap.add_argument('--group-title', default=''); ap.add_argument('--plan', default='')
+    ap.add_argument('--length', default='')
     a = ap.parse_args()
     d = os.path.join(ROOT, a.key, 'inspect')
     vd = os.path.join(d, 'videos'); os.makedirs(vd, exist_ok=True)
@@ -59,17 +64,29 @@ def main():
     man = json.load(open(mf, encoding='utf-8')) if os.path.exists(mf) else {'v': 1, 'keys': [], 'videos': {}}
     if a.rewrap or not man['keys']:
         man['keys'] = [wrap(vkey, pw) for _, pw in passwords(a.key)]
-    if a.id and a.mp4:
-        iv = os.urandom(12)
-        data = open(a.mp4, 'rb').read()
-        open(os.path.join(vd, a.id + '.bin'), 'wb').write(AESGCM(vkey).encrypt(iv, data, a.id.encode()))
-        ch = []
-        for part in filter(None, a.chapters.split('|')):
-            t, label = part.split('=', 1)
-            ch.append([int(t), label.strip()])
-        man['videos'][a.id] = {'file': a.id + '.bin', 'iv': b64(iv), 'title': a.title or a.id, 'chapters': ch,
-                               'size': len(data)}
-        print('%s: %.1fMB 암호화' % (a.id, len(data) / 1048576))
+    man.setdefault('groups', {})
+    if a.group:
+        g = man['groups'].setdefault(a.group, {'title': '', 'eps': []})
+        if a.group_title:
+            g['title'] = a.group_title
+        if a.plan:
+            g['eps'] = [dict(zip(('id', 'name'), x.split('=', 1))) for x in a.plan.split('|') if x]
+    if a.id:
+        meta = man['videos'].setdefault(a.id, {})
+        if a.mp4:
+            iv = os.urandom(12)
+            data = open(a.mp4, 'rb').read()
+            open(os.path.join(vd, a.id + '.bin'), 'wb').write(AESGCM(vkey).encrypt(iv, data, a.id.encode()))
+            meta.update({'file': a.id + '.bin', 'iv': b64(iv), 'size': len(data)})
+            print('%s: %.1fMB 암호화' % (a.id, len(data) / 1048576))
+        if a.title:
+            meta['title'] = a.title
+        if a.chapters:
+            meta['chapters'] = [[int(t), label.strip()] for t, label in (x.split('=', 1) for x in a.chapters.split('|') if x)]
+        if a.length:
+            meta['length'] = a.length
+        if a.group:
+            meta['group'] = a.group
     json.dump(man, open(mf, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print('videos.json: 영상 %d개, 잠금 %d개' % (len(man['videos']), len(man['keys'])))
 
