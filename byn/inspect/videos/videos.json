@@ -261,8 +261,8 @@
   },
   "adj2": {
    "file": "adj2.bin",
-   "iv": "Hoc8ntUFaJ5VTaXz",
-   "size": 6821678,
+   "iv": "HSUkktQ+39eOhn4N",
+   "size": 5032686,
    "title": "출퇴근기록 조정 (계획)",
    "chapters": [
     [
@@ -270,25 +270,21 @@
      "STEP 01 계획 시각 조회"
     ],
     [
-     21,
+     20,
      "STEP 02 계획 시각 조정"
     ],
     [
-     36,
+     35,
      "STEP 03 일근태 확인"
-    ],
-    [
-     53,
-     "STEP 04 계획 되돌리기"
     ]
    ],
-   "length": "1분 19초",
+   "length": "0분 59초",
    "group": "tam_adj"
   },
   "adj3": {
    "file": "adj3.bin",
-   "iv": "57ERctRZa5fKha+R",
-   "size": 7835623,
+   "iv": "rrqhTYxKU7qKySUu",
+   "size": 5002149,
    "title": "출퇴근기록 조정 (확정 강제)",
    "chapters": [
     [
@@ -300,21 +296,17 @@
      "STEP 02 확정 출근 강제 조정"
     ],
     [
-     30,
+     29,
      "STEP 03 근로시간 계산"
-    ],
-    [
-     52,
-     "STEP 04 강제 조정 지우기"
     ]
    ],
-   "length": "1분 21초",
+   "length": "0분 54초",
    "group": "tam_adj"
   },
   "adj4": {
    "file": "adj4.bin",
-   "iv": "KLGiSh81+k17o8uC",
-   "size": 7679724,
+   "iv": "DnIIw5F22pG+pQmE",
+   "size": 4681685,
    "title": "근태코드관리",
    "chapters": [
     [
@@ -322,45 +314,37 @@
      "STEP 01 대상자 조회와 행 추가"
     ],
     [
-     28,
-     "STEP 02 휴게시간근무 등록"
+     23,
+     "STEP 02 시간연차 등록"
     ],
     [
-     45,
-     "STEP 03 근로시간 계산"
-    ],
-    [
-     68,
-     "STEP 04 등록한 행 삭제"
+     43,
+     "STEP 03 개인 연차현황 확인"
     ]
    ],
-   "length": "1분 34초",
+   "length": "1분 5초",
    "group": "tam_adj"
   },
   "adj5": {
    "file": "adj5.bin",
-   "iv": "sAoynXhzCPgihtQS",
-   "size": 6369158,
+   "iv": "NO/FIAf8dmaSS8vQ",
+   "size": 5192506,
    "title": "사전근무 신청내역",
    "chapters": [
     [
      3,
-     "STEP 01 대상자 조회와 행 추가"
+     "STEP 01 승인된 신청 조회"
     ],
     [
      21,
-     "STEP 02 사전근무 등록"
+     "STEP 02 담당자 직접 추가"
     ],
     [
-     42,
+     47,
      "STEP 03 일근태 확인"
-    ],
-    [
-     60,
-     "STEP 04 등록한 행 삭제"
     ]
    ],
-   "length": "1분 24초",
+   "length": "1분 8초",
    "group": "tam_adj"
   },
   "punch1": {
