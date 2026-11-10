@@ -120,6 +120,7 @@ ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;font-size:
 .place .chip{display:inline-block;margin-top:.15rem;padding:.12rem .6rem;border-radius:.4rem;background:var(--blue-soft);color:var(--primary);font-size:.92rem;font-weight:700;word-break:keep-all}
 .place div+div{margin-top:.55rem}
 .place>.who{display:inline-block;margin-top:.7rem;padding:.08rem .6rem;border-radius:9999px;background:#ececef;color:#555;font-size:.8rem;font-weight:600}
+.place>.who:empty{display:none}
 ol.steps{gap:.55rem}
 ol.steps li{padding-left:2.1rem}
 ol.steps li::before{top:.05em;width:1.45rem;height:1.45rem;border-radius:50%;background:var(--blue-soft);color:var(--primary);font-size:.8rem;font-weight:700;line-height:1.45rem;text-align:center}
