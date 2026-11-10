@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "19";
+  const VER = "20";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -153,9 +153,12 @@
     $("#homeBtn").addEventListener("click", e => { e.preventDefault(); gate(); });
     renderAll();
     pollTimer = setInterval(poll, POLL_MS);
+    $("#rows").addEventListener("mouseover", vPrefetch);
+    $("#rows").addEventListener("focusin", vPrefetch);
+    setTimeout(vWarm, 800);
   }
 
-  function selectMod(id) { mod = id; filter = "all"; store.set("inspect-mod:" + CFG.key, id); renderAll(); }
+  function selectMod(id) { mod = id; filter = "all"; store.set("inspect-mod:" + CFG.key, id); renderAll(); setTimeout(vWarm, 300); }
 
   // ── 계산 ──────────────────────────────────────────
   const modRows = m => S.rows.filter(r => r.m === m);
@@ -538,7 +541,7 @@
   // 만드는 법: python inspect/tools/pack_video.py <키> <영상ID> <mp4> --title ... --chapters "초=제목|..."
   const VDIR = String(CFG.videos || "videos/").replace(/\/?$/, "/");
   const ub64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-  const vcache = {};
+  const vcache = {}, vpend = {};
   let vman = null, vkey = null, vkeyPass = "";
   async function videoKey() {
     if (!vman) { const r = await fetch(VDIR + "videos.json", { cache: "no-store" }); if (!r.ok) throw new Error("영상 목록을 불러오지 못했습니다."); vman = await r.json(); }
@@ -604,18 +607,49 @@
     $("#vmEps").onclick = e => { const b = e.target.closest("[data-ep]"); if (b && !b.disabled && b.dataset.ep !== vCur) vLoad(b.dataset.ep, 0).catch(err => { $("#vload").hidden = false; $("#vload").textContent = err.message; }); };
     $("#vload").hidden = false; $("#vload").textContent = "영상을 불러오는 중입니다";
     v.pause();
-    if (!vcache[id]) {
-      const r = await fetch(VDIR + meta.file); if (!r.ok) throw new Error("영상을 불러오지 못했습니다.");
-      const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: ub64(meta.iv), additionalData: new TextEncoder().encode(id) }, vkey, await r.arrayBuffer());
-      vcache[id] = URL.createObjectURL(new Blob([plain], { type: "video/mp4" }));
-    }
+    const url = await vFetch(id);
     if (!$("#vmodal") || vCur !== id) return;
-    v.src = vcache[id];
+    v.src = url;
     v.addEventListener("loadedmetadata", () => {
       if (!meta.length) $("#vmSub").textContent = (n ? n + "편 / " : "") + vLen(v.duration);
       v.currentTime = t || 0; v.play().catch(() => {}); vMark();
     }, { once: true });
-    $("#vload").hidden = true;
+    // 재생이 실제로 시작될 때까지 "불러오는 중" 을 유지한다 (검은 화면이 보이지 않게)
+    v.addEventListener("playing", () => { const l = $("#vload"); if (l) l.hidden = true; }, { once: true });
+    setTimeout(() => { const l = $("#vload"); if (l && vCur === id && v.readyState >= 2) l.hidden = true; }, 2500);
+  }
+  // 영상 파일 받기 + 풀기. 같은 영상은 한 번만 (미리 받기와 버튼 클릭이 같은 작업을 같이 기다린다)
+  // 영상을 다시 올리면 파일이 바뀌므로 주소에 버전(iv)을 붙여 브라우저 캐시의 옛 파일을 쓰지 않는다. 그래도 풀리지 않으면 한 번 새로 받는다
+  function vFetch(id) {
+    if (vcache[id]) return Promise.resolve(vcache[id]);
+    if (vpend[id]) return vpend[id];
+    vpend[id] = (async () => {
+      await videoKey();
+      const meta = vman.videos[id];
+      if (!meta || !meta.file) throw new Error("영상이 아직 등록되지 않았습니다.");
+      const src = VDIR + meta.file + "?v=" + encodeURIComponent(meta.iv);
+      const open = async init => {
+        const r = await fetch(src, init); if (!r.ok) throw new Error("영상을 불러오지 못했습니다.");
+        return crypto.subtle.decrypt({ name: "AES-GCM", iv: ub64(meta.iv), additionalData: new TextEncoder().encode(id) }, vkey, await r.arrayBuffer());
+      };
+      let plain;
+      try { plain = await open({}); } catch (e) { plain = await open({ cache: "reload" }); }
+      vcache[id] = URL.createObjectURL(new Blob([plain], { type: "video/mp4" }));
+      return vcache[id];
+    })();
+    vpend[id].catch(() => { delete vpend[id]; });
+    return vpend[id];
+  }
+  // 로그인 / 모듈 이동 뒤: 열쇠를 미리 계산하고, 지금 모듈의 영상을 하나씩 미리 받아 둔다 (버튼을 누르면 바로 재생)
+  async function vWarm() {
+    const ids = [...new Set(S.rows.filter(r => r.m === mod && r.video).map(r => r.video.id))];
+    if (!ids.length) return;
+    try { await videoKey(); for (const id of ids) await vFetch(id); } catch (e) { /* 미리 받기는 실패해도 조용히 넘어간다 */ }
+  }
+  // 버튼에 마우스를 올리면 미리 받기 시작
+  function vPrefetch(e) {
+    const b = e.target.closest && e.target.closest("[data-video]");
+    if (b) vFetch(b.dataset.video).catch(() => {});
   }
   function vMark() {
     const v = $("#vplayer"), meta = vman && vman.videos[vCur]; if (!v || !meta) return;

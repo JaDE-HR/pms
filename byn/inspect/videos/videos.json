@@ -17,7 +17,7 @@
  "videos": {
   "tam1": {
    "file": "tam1.bin",
-   "iv": "e7ezX20t2PfGq2vO",
+   "iv": "xFCVSgIQ5csvnnQd",
    "title": "휴일관리",
    "chapters": [
     [
@@ -37,7 +37,7 @@
      "STEP 04 2027년 휴일 추가"
     ]
    ],
-   "size": 8835660,
+   "size": 10651166,
    "length": "1분 20초",
    "group": "tam_y"
   },
@@ -65,8 +65,8 @@
   },
   "tam2": {
    "file": "tam2.bin",
-   "iv": "DURM6y80XFdTkBeK",
-   "size": 7558638,
+   "iv": "sHFnKpGumhJrVUPp",
+   "size": 9065891,
    "title": "근무스케쥴생성",
    "chapters": [
     [
@@ -91,8 +91,8 @@
   },
   "tam3": {
    "file": "tam3.bin",
-   "iv": "QIEz7+d899DGykWF",
-   "size": 6930372,
+   "iv": "Vi+umZyfn9sDdp0F",
+   "size": 8247272,
    "title": "일근태생성",
    "chapters": [
     [
