@@ -227,7 +227,7 @@
     const cls = reviewed(r) ? "st-reviewed" : "st-" + ST[statusOf(r)].cls;
     return `<article class="row ${cls}" data-id="${esc(r.id)}">
       <div class="who-col"><div class="name">${nameHtml(r.n)}</div>${r.risk ? '<span class="risk">운영 영향</span>' : ""}
-        <div class="place">${r.menu.map(m => { const p = m.split(" > "); const last = p.pop(); return `<div><span class="crumb">${esc(p.join(" > "))}</span><span class="chip">${esc(last)}</span></div>`; }).join("")}<span class="who">${esc(r.who || who)}</span>${r.video ? `<button type="button" class="vbtn" data-video="${esc(r.video.id)}" data-t="${Number(r.video.t) || 0}"><i></i>영상 매뉴얼</button>` : ""}</div></div>
+        <div class="place">${r.menu.map(m => { const p = m.split(" > "); const last = p.pop(); return `<div><span class="crumb">${esc(p.join(" > "))}</span><span class="chip">${esc(last)}</span></div>`; }).join("")}<span class="who">${esc(r.who || who || "")}</span>${r.video ? `<button type="button" class="vbtn" data-video="${esc(r.video.id)}" data-t="${Number(r.video.t) || 0}"><i></i>영상 매뉴얼</button>` : ""}</div></div>
       <div class="desc"><ol class="steps">${r.steps.map(t => `<li>${lineHtml(t)}</li>`).join("")}</ol>
         <div class="result"><b>기대 결과</b><span>${linesHtml(r.expect)}</span></div>${notesHtml(r.note, r.risk)}</div>
       <div class="check">${testHtml(r)}</div>
