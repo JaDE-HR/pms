@@ -65,30 +65,34 @@
   },
   "tam2": {
    "file": "tam2.bin",
-   "iv": "5yWFoLEqcSKCWYod",
-   "size": 8210180,
+   "iv": "DURM6y80XFdTkBeK",
+   "size": 7558638,
    "title": "근무스케쥴생성",
    "chapters": [
     [
      3,
-     "STEP 01 근무스케쥴생성"
+     "STEP 01 2027년 조회"
     ],
     [
-     30,
-     "STEP 02 근무 일정 확인"
+     15,
+     "STEP 02 근무조 전체 생성"
     ],
     [
-     42,
-     "STEP 03 정산구간 확인"
+     35,
+     "STEP 03 근무 일정 확인"
+    ],
+    [
+     51,
+     "STEP 04 정산구간 확인"
     ]
    ],
-   "length": "57초",
+   "length": "1분 7초",
    "group": "tam_y"
   },
   "tam3": {
    "file": "tam3.bin",
-   "iv": "m6zSfw0aTaY3wgrE",
-   "size": 6359911,
+   "iv": "gdIvXu5Fbo1AaDRf",
+   "size": 7051715,
    "title": "일근태생성",
    "chapters": [
     [
@@ -100,11 +104,11 @@
      "STEP 02 중도입사자 일근태 생성"
     ],
     [
-     50,
+     62,
      "STEP 03 생성이력 확인"
     ]
    ],
-   "length": "1분 5초",
+   "length": "1분 19초",
    "group": "tam_y"
   },
   "org2": {
