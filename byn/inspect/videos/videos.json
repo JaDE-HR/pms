@@ -688,6 +688,156 @@
    ],
    "length": "1분 36초",
    "group": "apl_s"
+  },
+  "hr1": {
+   "file": "hr1.bin",
+   "iv": "8FB5GRBe2mdHB6f2",
+   "size": 6226419,
+   "title": "인사정보 등록",
+   "chapters": [
+    [
+     3,
+     "STEP 01 직원 조회"
+    ],
+    [
+     11,
+     "STEP 02 주소 / 학력 / 가족 입력"
+    ],
+    [
+     49,
+     "STEP 03 인사자료에서 확인"
+    ]
+   ],
+   "length": "1분 8초",
+   "group": "hr_o"
+  },
+  "hr2": {
+   "file": "hr2.bin",
+   "iv": "CH6+U6KfLaKoGjNk",
+   "size": 5516018,
+   "title": "개인별 발령 등록",
+   "chapters": [
+    [
+     4,
+     "STEP 01 직원 조회"
+    ],
+    [
+     12,
+     "STEP 02 새 발령 만들기"
+    ],
+    [
+     42,
+     "STEP 03 저장 / 확인"
+    ]
+   ],
+   "length": "1분 6초",
+   "group": "hr_o"
+  },
+  "hr3": {
+   "file": "hr3.bin",
+   "iv": "+t+XTVWQE2DgLw2p",
+   "size": 4708943,
+   "title": "발령 일괄 등록",
+   "chapters": [
+    [
+     3,
+     "STEP 01 대상자 사번 복사"
+    ],
+    [
+     14,
+     "STEP 02 사번 붙여넣기"
+    ],
+    [
+     26,
+     "STEP 03 일괄 발령 / 저장"
+    ]
+   ],
+   "length": "0분 49초",
+   "group": "hr_o"
+  },
+  "hr4": {
+   "file": "hr4.bin",
+   "iv": "ZIRgZky9Z1YRdBUD",
+   "size": 4684401,
+   "title": "휴직 발령",
+   "chapters": [
+    [
+     3,
+     "STEP 01 직원 조회"
+    ],
+    [
+     9,
+     "STEP 02 휴직 발령 만들기"
+    ],
+    [
+     23,
+     "STEP 03 저장 / 확인"
+    ]
+   ],
+   "length": "0분 47초",
+   "group": "hr_o"
+  },
+  "hr5": {
+   "file": "hr5.bin",
+   "iv": "urmN2IDjLA1YMrtG",
+   "size": 4286560,
+   "title": "퇴직 발령",
+   "chapters": [
+    [
+     3,
+     "STEP 01 직원 조회"
+    ],
+    [
+     11,
+     "STEP 02 퇴직 발령 만들기"
+    ],
+    [
+     25,
+     "STEP 03 저장 / 확인"
+    ]
+   ],
+   "length": "0분 47초",
+   "group": "hr_o"
+  },
+  "hr6": {
+   "file": "hr6.bin",
+   "iv": "wXTJV8Xews3QzTGX",
+   "size": 3252106,
+   "title": "인사카드",
+   "chapters": [
+    [
+     3,
+     "STEP 01 직원 조회"
+    ],
+    [
+     11,
+     "STEP 02 출력 항목"
+    ],
+    [
+     16,
+     "STEP 03 카드 출력"
+    ]
+   ],
+   "length": "0분 35초",
+   "group": "hr_o"
+  },
+  "hr7": {
+   "file": "hr7.bin",
+   "iv": "12pje+5k+4zgeFHf",
+   "size": 2237871,
+   "title": "인원명부",
+   "chapters": [
+    [
+     3,
+     "STEP 01 조건 입력"
+    ],
+    [
+     11,
+     "STEP 02 소속 / 재직상태 확인"
+    ]
+   ],
+   "length": "0분 29초",
+   "group": "hr_o"
   }
  },
  "groups": {
@@ -844,6 +994,39 @@
     {
      "id": "apl2",
      "name": "신청서 옵션 설정"
+    }
+   ]
+  },
+  "hr_o": {
+   "title": "인사 발령",
+   "eps": [
+    {
+     "id": "hr1",
+     "name": "인사정보 등록"
+    },
+    {
+     "id": "hr2",
+     "name": "개인별 발령 등록"
+    },
+    {
+     "id": "hr3",
+     "name": "발령 일괄 등록"
+    },
+    {
+     "id": "hr4",
+     "name": "휴직 발령"
+    },
+    {
+     "id": "hr5",
+     "name": "퇴직 발령"
+    },
+    {
+     "id": "hr6",
+     "name": "인사카드"
+    },
+    {
+     "id": "hr7",
+     "name": "인원명부"
     }
    ]
   }
