@@ -610,6 +610,36 @@
    ],
    "length": "0분 53초",
    "group": "pay_b"
+  },
+  "pay2": {
+   "file": "pay2.bin",
+   "iv": "Dh6Op6xtUD4YoPkv",
+   "size": 8334755,
+   "title": "연봉관리",
+   "chapters": [
+    [
+     3,
+     "STEP 01 연봉 미입력자 확인"
+    ],
+    [
+     14,
+     "STEP 02 연봉 행 추가"
+    ],
+    [
+     21,
+     "STEP 03 연봉 입력"
+    ],
+    [
+     32,
+     "STEP 04 월 금액 입력과 저장"
+    ],
+    [
+     53,
+     "STEP 05 지급금액업데이트"
+    ]
+   ],
+   "length": "1분 12초",
+   "group": "pay_b"
   }
  },
  "groups": {
