@@ -113,8 +113,8 @@
   },
   "org2": {
    "file": "org2.bin",
-   "iv": "4iAyGKBbUV36ZFf3",
-   "size": 4799646,
+   "iv": "ceZQqRh+ozdEgazQ",
+   "size": 5293969,
    "title": "조직장 등록",
    "chapters": [
     [
@@ -122,11 +122,11 @@
      "STEP 01 조직장관리 열기"
     ],
     [
-     16,
+     15,
      "STEP 02 조직장 지정"
     ],
     [
-     37,
+     35,
      "STEP 03 저장 / 확인"
     ]
    ],
@@ -135,8 +135,8 @@
   },
   "org3": {
    "file": "org3.bin",
-   "iv": "K/MMoRtm4895fZsF",
-   "size": 4332397,
+   "iv": "tfQtAwk0xH329w5F",
+   "size": 4557924,
    "title": "조직명 변경",
    "chapters": [
     [
@@ -157,8 +157,8 @@
   },
   "org4": {
    "file": "org4.bin",
-   "iv": "iElF9xKNRlxFMG49",
-   "size": 3829448,
+   "iv": "TnahDEVoqEeQlRRv",
+   "size": 4335247,
    "title": "조직 개편 발령",
    "chapters": [
     [
@@ -174,7 +174,7 @@
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 49초",
+   "length": "0분 50초",
    "group": "org_m"
   },
   "org5": {
