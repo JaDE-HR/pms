@@ -40,6 +40,28 @@
    "size": 9024022,
    "length": "1분 23초",
    "group": "tam_y"
+  },
+  "org1": {
+   "file": "org1.bin",
+   "iv": "tktekzpsTzZtrKkr",
+   "size": 5181828,
+   "title": "조직 등록",
+   "chapters": [
+    [
+     3,
+     "STEP 01 기준일 조회"
+    ],
+    [
+     14,
+     "STEP 02 하위조직 추가"
+    ],
+    [
+     36,
+     "STEP 03 저장 / 확인"
+    ]
+   ],
+   "length": "0분 49초",
+   "group": "org_m"
   }
  },
  "groups": {
@@ -57,6 +79,31 @@
     {
      "id": "tam3",
      "name": "일근태생성"
+    }
+   ]
+  },
+  "org_m": {
+   "title": "조직 관리",
+   "eps": [
+    {
+     "id": "org1",
+     "name": "조직 등록"
+    },
+    {
+     "id": "org2",
+     "name": "조직장 등록"
+    },
+    {
+     "id": "org3",
+     "name": "조직명 변경"
+    },
+    {
+     "id": "org4",
+     "name": "조직 개편 발령"
+    },
+    {
+     "id": "org5",
+     "name": "조직 폐쇄"
     }
    ]
   }
