@@ -566,6 +566,50 @@
    ],
    "length": "0분 51초",
    "group": "tam_shift"
+  },
+  "pay3": {
+   "file": "pay3.bin",
+   "iv": "KckQH0O+DBOrLfv/",
+   "size": 4715961,
+   "title": "고정급",
+   "chapters": [
+    [
+     3,
+     "STEP 01 고정급 조회"
+    ],
+    [
+     18,
+     "STEP 02 연봉 금액 확인"
+    ],
+    [
+     34,
+     "STEP 03 비어 있을 때"
+    ]
+   ],
+   "length": "0분 48초",
+   "group": "pay_b"
+  },
+  "pay4": {
+   "file": "pay4.bin",
+   "iv": "fEsml9/iPhHjKuSi",
+   "size": 3470129,
+   "title": "예외급",
+   "chapters": [
+    [
+     3,
+     "STEP 01 귀속월 조회"
+    ],
+    [
+     16,
+     "STEP 02 행 추가와 입력"
+    ],
+    [
+     32,
+     "STEP 03 저장과 확인"
+    ]
+   ],
+   "length": "0분 53초",
+   "group": "pay_b"
   }
  },
  "groups": {
