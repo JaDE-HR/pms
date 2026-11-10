@@ -1,0 +1,43 @@
+{
+ "v": 1,
+ "keys": [
+  {
+   "salt": "xHkGrSUnXG7ae3rwWp4BwA==",
+   "iv": "JS42mTTaHaW2Hmh7",
+   "iter": 200000,
+   "wk": "Lscl6/eJUIpqrkwtmlSzd0/ZT92aguD4cYxY1hyzqN0ocJiemVcHYnzYyOKhqV5+"
+  },
+  {
+   "salt": "7zZYmRPa0Owar4oL67stgQ==",
+   "iv": "Jx/tNvTBPPM9y7HH",
+   "iter": 200000,
+   "wk": "tBjQjBNZ3QsT6KfATfvlQ80GLBLRb3UmWeSpTFBxnNljA+ask8Bh2377YZ6+24wv"
+  }
+ ],
+ "videos": {
+  "tam1": {
+   "file": "tam1.bin",
+   "iv": "ioivyMvOxJwZA4g4",
+   "title": "1편 휴일관리",
+   "chapters": [
+    [
+     3,
+     "STEP 01 전년도 자료 복사"
+    ],
+    [
+     24,
+     "STEP 02 음력 휴일 확인"
+    ],
+    [
+     35,
+     "STEP 03 맞지 않는 행 삭제"
+    ],
+    [
+     53,
+     "STEP 04 2027년 휴일 추가"
+    ]
+   ],
+   "size": 9024022
+  }
+ }
+}

@@ -3,7 +3,7 @@
 // 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
-  const VER = "16";
+  const VER = "17";
   const CFG = window.INSPECT || {};
   const API = String(CFG.api || "").replace(/\/$/, "") + "/api/" + CFG.key;
   const PASS_KEY = "inspect-pass:" + CFG.key;
@@ -223,7 +223,7 @@
   function rowHtml(r, who) {
     const cls = reviewed(r) ? "st-reviewed" : "st-" + ST[statusOf(r)].cls;
     return `<article class="row ${cls}" data-id="${esc(r.id)}">
-      <div class="who-col"><div class="name">${nameHtml(r.n)}</div>${r.risk ? '<span class="risk">운영 영향</span>' : ""}
+      <div class="who-col"><div class="name">${nameHtml(r.n)}</div>${r.video ? `<button type="button" class="vbtn" data-video="${esc(r.video.id)}" data-t="${Number(r.video.t) || 0}"><i></i>영상 매뉴얼</button>` : ""}${r.risk ? '<span class="risk">운영 영향</span>' : ""}
         <div class="place">${r.menu.map(m => { const p = m.split(" > "); const last = p.pop(); return `<div><span class="crumb">${esc(p.join(" > "))}</span><span class="chip">${esc(last)}</span></div>`; }).join("")}<span class="who">${esc(r.who || who)}</span></div></div>
       <div class="desc"><ol class="steps">${r.steps.map(t => `<li>${lineHtml(t)}</li>`).join("")}</ol>
         <div class="result"><b>기대 결과</b><span>${linesHtml(r.expect)}</span></div>${notesHtml(r.note, r.risk)}</div>
@@ -380,6 +380,8 @@
   }
 
   async function onRowClick(e) {
+    const vb = e.target.closest("[data-video]");
+    if (vb) return openVideo(vb.dataset.video, Number(vb.dataset.t) || 0);
     const rb = e.target.closest("[data-status]");
     if (rb) return setResult(rb.dataset.item, rb.dataset.status);
     const add = e.target.closest("[data-add]");
@@ -529,6 +531,66 @@
       setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch (err) { toast(err.message || "엑셀을 만들지 못했습니다."); }
     finally { btn.disabled = false; }
+  }
+
+  // ── 영상 매뉴얼 (암호화된 영상을 로그인한 비밀번호로 풀어서 재생) ──
+  // <키>/inspect/videos/videos.json: 영상 키를 비밀번호별로 잠근 것 + 영상 목록(제목 / 목차). 영상 파일(.bin)은 AES-256-GCM.
+  // 만드는 법: python inspect/tools/pack_video.py <키> <영상ID> <mp4> --title ... --chapters "초=제목|..."
+  const VDIR = String(CFG.videos || "videos/").replace(/\/?$/, "/");
+  const ub64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const vcache = {};
+  let vman = null, vkey = null, vkeyPass = "";
+  async function videoKey() {
+    if (!vman) { const r = await fetch(VDIR + "videos.json", { cache: "no-store" }); if (!r.ok) throw new Error("영상 목록을 불러오지 못했습니다."); vman = await r.json(); }
+    if (vkey && vkeyPass === pass) return vkey;
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    for (const k of vman.keys) {
+      try {
+        const kek = await crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: ub64(k.salt), iterations: k.iter }, base,
+          { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+        const raw = await crypto.subtle.decrypt({ name: "AES-GCM", iv: ub64(k.iv), additionalData: new TextEncoder().encode("jvid-key") }, kek, ub64(k.wk));
+        vkey = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]); vkeyPass = pass;
+        return vkey;
+      } catch (e) { /* 다른 비밀번호용 잠금 */ }
+    }
+    throw new Error("이 비밀번호로는 영상을 열 수 없습니다.");
+  }
+  function closeVideo() {
+    const m = $("#vmodal"); if (!m) return;
+    const v = m.querySelector("video"); if (v) { v.pause(); v.removeAttribute("src"); v.load(); }
+    m.remove(); document.removeEventListener("keydown", vEsc);
+  }
+  const vEsc = e => { if (e.key === "Escape") closeVideo(); };
+  async function openVideo(id, t) {
+    closeVideo();
+    document.body.insertAdjacentHTML("beforeend", `<div class="vmodal" id="vmodal" role="dialog" aria-modal="true" aria-label="영상 매뉴얼">
+      <div class="vpanel"><div class="vhead"><b id="vtitle">영상 매뉴얼</b><button type="button" class="vx" id="vx" aria-label="닫기">×</button></div>
+      <div class="vbody"><div class="vscreen"><video id="vplayer" controls playsinline preload="auto"></video><div class="vload" id="vload">영상을 불러오는 중입니다</div></div>
+      <div class="vch" id="vch"></div></div></div></div>`);
+    document.addEventListener("keydown", vEsc);
+    $("#vx").addEventListener("click", closeVideo);
+    $("#vmodal").addEventListener("click", e => { if (e.target.id === "vmodal") closeVideo(); });
+    try {
+      const key = await videoKey(), meta = vman.videos[id];
+      if (!meta) throw new Error("영상이 아직 등록되지 않았습니다.");
+      $("#vtitle").textContent = meta.title;
+      const v = $("#vplayer"), chs = meta.chapters || [];
+      $("#vch").innerHTML = chs.map(([s, label]) => `<button type="button" data-s="${s}"><time>${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}</time>${esc(label)}</button>`).join("");
+      $("#vch").addEventListener("click", e => { const b = e.target.closest("[data-s]"); if (b) { v.currentTime = Number(b.dataset.s); v.play(); } });
+      v.addEventListener("timeupdate", () => {
+        let cur = -1; chs.forEach(([s], i) => { if (v.currentTime >= s - 0.3) cur = i; });
+        document.querySelectorAll("#vch button").forEach((b, i) => b.classList.toggle("on", i === cur));
+      });
+      if (!vcache[id]) {
+        const r = await fetch(VDIR + meta.file); if (!r.ok) throw new Error("영상을 불러오지 못했습니다.");
+        const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: ub64(meta.iv), additionalData: new TextEncoder().encode(id) }, key, await r.arrayBuffer());
+        vcache[id] = URL.createObjectURL(new Blob([plain], { type: "video/mp4" }));
+      }
+      if (!$("#vmodal")) return;
+      v.src = vcache[id];
+      v.addEventListener("loadedmetadata", () => { v.currentTime = t || 0; v.play().catch(() => {}); }, { once: true });
+      $("#vload").hidden = true;
+    } catch (err) { const l = $("#vload"); if (l) l.textContent = err.message || "영상을 열지 못했습니다."; }
   }
 
   // ── 시작 ──────────────────────────────────────────

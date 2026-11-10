@@ -11,3 +11,4 @@ _tools/package-lock.json
 _passwords.local.md
 *.local.md
 *.local.json
+*.local.key

@@ -362,3 +362,22 @@ body{margin:0}
 /* v15 */
 a.brand{text-decoration:none;color:inherit;cursor:pointer}
 .toast{color:#d0021b;font-weight:600}
+
+/* v17 영상 매뉴얼 */
+.vbtn{display:inline-flex;align-items:center;gap:.35rem;margin:.45rem 0 .1rem;padding:.28rem .7rem .28rem .55rem;border:1px solid var(--hairline,#d5dbe2);border-radius:999px;background:#fff;color:#1f2a33;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
+.vbtn i{width:0;height:0;border-left:.5rem solid #1f6fd1;border-top:.32rem solid transparent;border-bottom:.32rem solid transparent}
+.vbtn:hover{border-color:#1f6fd1}
+.vmodal{position:fixed;inset:0;z-index:1000;background:rgba(15,20,26,.62);display:flex;align-items:center;justify-content:center;padding:2vh 2vw}
+.vpanel{background:#fff;border-radius:14px;width:min(1180px,96vw);max-height:96vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.vhead{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem .8rem 1.2rem;border-bottom:1px solid #e6e9eb}
+.vhead b{font-size:1rem}
+.vx{border:0;background:none;font-size:1.6rem;line-height:1;cursor:pointer;color:#55606a;padding:0 .3rem}
+.vbody{padding:1rem 1.2rem 1.2rem;overflow:auto}
+.vscreen{position:relative;background:#0f141a;border-radius:8px;overflow:hidden;aspect-ratio:16/9}
+.vscreen video{width:100%;height:100%;display:block;background:#0f141a}
+.vload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.95rem}
+.vload[hidden]{display:none}
+.vch{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}
+.vch button{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #d5dbe2;border-radius:8px;background:#fff;padding:.45rem .75rem;font:inherit;font-size:.85rem;cursor:pointer;color:#1f2a33}
+.vch button time{color:#6b7683;font-variant-numeric:tabular-nums}
+.vch button.on{border-color:#1f6fd1;background:#f2f8ff}
