@@ -1024,6 +1024,90 @@
    ],
    "length": "1분 9초",
    "group": "pay_c"
+  },
+  "pay7": {
+   "file": "pay7.bin",
+   "iv": "ErWTQKZZ0XA8ijrs",
+   "size": 3795953,
+   "title": "급여변동내역검증",
+   "chapters": [
+    [
+     3,
+     "STEP 01 변동 내역 조회"
+    ],
+    [
+     15,
+     "STEP 02 변동 직원 확인"
+    ],
+    [
+     30,
+     "STEP 03 변동 항목 확인"
+    ]
+   ],
+   "length": "0분 47초",
+   "group": "pay_r"
+  },
+  "pay8": {
+   "file": "pay8.bin",
+   "iv": "YaZclbXUwWr8rlc8",
+   "size": 3190955,
+   "title": "급여대장(기간별)",
+   "chapters": [
+    [
+     3,
+     "STEP 01 급여대장 조회"
+    ],
+    [
+     15,
+     "STEP 02 지급 / 공제 항목"
+    ],
+    [
+     26,
+     "STEP 03 계산 결과와 비교"
+    ]
+   ],
+   "length": "0분 38초",
+   "group": "pay_r"
+  },
+  "pay9": {
+   "file": "pay9.bin",
+   "iv": "TqW+mgwoidbThHRV",
+   "size": 2746499,
+   "title": "급여명세서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 명세서 조회"
+    ],
+    [
+     11,
+     "STEP 02 금액 확인"
+    ],
+    [
+     19,
+     "STEP 03 명세서 출력"
+    ]
+   ],
+   "length": "0분 39초",
+   "group": "pay_r"
+  },
+  "pay10": {
+   "file": "pay10.bin",
+   "iv": "GH5E80PlQ/onCjOe",
+   "size": 2062413,
+   "title": "급여이체내역",
+   "chapters": [
+    [
+     3,
+     "STEP 01 급여일 선택"
+    ],
+    [
+     14,
+     "STEP 02 이체 금액 확인"
+    ]
+   ],
+   "length": "0분 29초",
+   "group": "pay_r"
   }
  },
  "groups": {
@@ -1259,6 +1343,27 @@
     {
      "id": "pay6",
      "name": "급여계산"
+    }
+   ]
+  },
+  "pay_r": {
+   "title": "급여 검증 / 결과",
+   "eps": [
+    {
+     "id": "pay7",
+     "name": "급여변동내역검증"
+    },
+    {
+     "id": "pay8",
+     "name": "급여대장(기간별)"
+    },
+    {
+     "id": "pay9",
+     "name": "급여명세서"
+    },
+    {
+     "id": "pay10",
+     "name": "급여이체내역"
     }
    ]
   }
