@@ -914,6 +914,72 @@
    ],
    "length": "1분 7초",
    "group": "tam_shift"
+  },
+  "bill1": {
+   "file": "bill1.bin",
+   "iv": "S66eLBSsVFufJ1na",
+   "size": 5933011,
+   "title": "급여 전표 집계",
+   "chapters": [
+    [
+     3,
+     "STEP 01 전표대상 추가"
+    ],
+    [
+     28,
+     "STEP 02 전표집계"
+    ],
+    [
+     41,
+     "STEP 03 계정별 금액 확인"
+    ]
+   ],
+   "length": "1분 3초",
+   "group": "bill"
+  },
+  "bill2": {
+   "file": "bill2.bin",
+   "iv": "WuqCm6UliJpgO0qj",
+   "size": 4787161,
+   "title": "퇴직충당금 전표 집계",
+   "chapters": [
+    [
+     3,
+     "STEP 01 전표대상 추가"
+    ],
+    [
+     28,
+     "STEP 02 전표집계"
+    ],
+    [
+     41,
+     "STEP 03 계정별 금액 확인"
+    ]
+   ],
+   "length": "0분 56초",
+   "group": "bill"
+  },
+  "bill3": {
+   "file": "bill3.bin",
+   "iv": "ZbrlnIoYFpanqKDP",
+   "size": 3565650,
+   "title": "일용직 전표 집계",
+   "chapters": [
+    [
+     3,
+     "STEP 01 집계된 전표 조회"
+    ],
+    [
+     17,
+     "STEP 02 계정별 금액 확인"
+    ],
+    [
+     28,
+     "STEP 03 집계 전일 때만"
+    ]
+   ],
+   "length": "0분 44초",
+   "group": "bill"
   }
  },
  "groups": {
@@ -1119,6 +1185,23 @@
     {
      "id": "hr7",
      "name": "인원명부"
+    }
+   ]
+  },
+  "bill": {
+   "title": "전표 집계",
+   "eps": [
+    {
+     "id": "bill1",
+     "name": "급여 전표 집계"
+    },
+    {
+     "id": "bill2",
+     "name": "퇴직충당금 전표 집계"
+    },
+    {
+     "id": "bill3",
+     "name": "일용직 전표 집계"
     }
    ]
   }
