@@ -667,8 +667,8 @@
   },
   "hr1": {
    "file": "hr1.bin",
-   "iv": "8FB5GRBe2mdHB6f2",
-   "size": 6226419,
+   "iv": "xinGWJrICFGPDf6S",
+   "size": 6479669,
    "title": "인사정보 등록",
    "chapters": [
     [
@@ -680,61 +680,69 @@
      "STEP 02 주소 / 학력 / 가족 입력"
     ],
     [
-     49,
+     47,
      "STEP 03 인사자료에서 확인"
-    ]
-   ],
-   "length": "1분 8초",
-   "group": "hr_o"
-  },
-  "hr2": {
-   "file": "hr2.bin",
-   "iv": "CH6+U6KfLaKoGjNk",
-   "size": 5516018,
-   "title": "개인별 발령 등록",
-   "chapters": [
-    [
-     4,
-     "STEP 01 직원 조회"
-    ],
-    [
-     12,
-     "STEP 02 새 발령 만들기"
-    ],
-    [
-     42,
-     "STEP 03 저장 / 확인"
     ]
    ],
    "length": "1분 6초",
    "group": "hr_o"
   },
+  "hr2": {
+   "file": "hr2.bin",
+   "iv": "7K0gfAUhtdkiT6K8",
+   "size": 7040812,
+   "title": "개인별 발령 등록",
+   "chapters": [
+    [
+     3,
+     "STEP 01 직원 조회"
+    ],
+    [
+     11,
+     "STEP 02 승진 발령"
+    ],
+    [
+     23,
+     "STEP 03 같은 날 부서이동"
+    ],
+    [
+     42,
+     "STEP 04 저장 / 확인"
+    ]
+   ],
+   "length": "1분 12초",
+   "group": "hr_o"
+  },
   "hr3": {
    "file": "hr3.bin",
-   "iv": "+t+XTVWQE2DgLw2p",
-   "size": 4708943,
+   "iv": "hlMKSS6IR+JbmeWF",
+   "size": 6197348,
    "title": "발령 일괄 등록",
    "chapters": [
     [
      3,
-     "STEP 01 대상자 사번 복사"
+     "STEP 01 대상자 조회"
     ],
     [
-     14,
-     "STEP 02 사번 붙여넣기"
+     8,
+     "STEP 02 상세검색"
     ],
     [
-     26,
+     18,
      "STEP 03 일괄 발령 / 저장"
+    ],
+    [
+     35,
+     "STEP 04 사번직접추가"
     ]
    ],
-   "length": "0분 49초",
+   "length": "0분 51초",
    "group": "hr_o"
   },
   "hr4": {
    "file": "hr4.bin",
-   "iv": "ZIRgZky9Z1YRdBUD",
-   "size": 4684401,
+   "iv": "W3bJ3CPVEe6qXp2U",
+   "size": 5611432,
    "title": "휴직 발령",
    "chapters": [
     [
@@ -742,21 +750,25 @@
      "STEP 01 직원 조회"
     ],
     [
-     9,
+     8,
      "STEP 02 휴직 발령 만들기"
     ],
     [
-     23,
-     "STEP 03 저장 / 확인"
+     19,
+     "STEP 03 저장 / 재직상태 확인"
+    ],
+    [
+     31,
+     "STEP 04 종료예정 / 휴직자 확인"
     ]
    ],
-   "length": "0분 47초",
+   "length": "0분 54초",
    "group": "hr_o"
   },
   "hr5": {
    "file": "hr5.bin",
-   "iv": "urmN2IDjLA1YMrtG",
-   "size": 4286560,
+   "iv": "+9phk7yW+p8W0z12",
+   "size": 4791650,
    "title": "퇴직 발령",
    "chapters": [
     [
@@ -768,11 +780,11 @@
      "STEP 02 퇴직 발령 만들기"
     ],
     [
-     25,
+     28,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 47초",
+   "length": "0분 53초",
    "group": "hr_o"
   },
   "hr6": {
@@ -799,20 +811,24 @@
   },
   "hr7": {
    "file": "hr7.bin",
-   "iv": "12pje+5k+4zgeFHf",
-   "size": 2237871,
+   "iv": "TDN5dKwoLvbZVE3N",
+   "size": 3522118,
    "title": "인원명부",
    "chapters": [
     [
      3,
-     "STEP 01 조건 입력"
+     "STEP 01 기본 조회"
     ],
     [
      11,
-     "STEP 02 소속 / 재직상태 확인"
+     "STEP 02 근속년수로 찾기"
+    ],
+    [
+     22,
+     "STEP 03 직급으로 찾기"
     ]
    ],
-   "length": "0분 29초",
+   "length": "0분 37초",
    "group": "hr_o"
   },
   "punch3": {
