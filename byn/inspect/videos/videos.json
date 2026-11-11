@@ -349,8 +349,8 @@
   },
   "punch1": {
    "file": "punch1.bin",
-   "iv": "kGZTJKH0Vluc04xR",
-   "size": 9800410,
+   "iv": "VATvHycV1mfR4zWf",
+   "size": 10112115,
    "title": "정시 출근 / 정시 퇴근",
    "chapters": [
     [
@@ -358,21 +358,21 @@
      "STEP 01 출근 기록"
     ],
     [
-     33,
+     37,
      "STEP 02 퇴근 기록"
     ],
     [
-     46,
+     50,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 30초",
+   "length": "1분 34초",
    "group": "tam_punch"
   },
   "punch2": {
    "file": "punch2.bin",
-   "iv": "bB/et4DhZbOXYYpN",
-   "size": 9900724,
+   "iv": "fvkMA+AfBK7kpHGw",
+   "size": 9503362,
    "title": "일찍 출근",
    "chapters": [
     [
@@ -380,15 +380,15 @@
      "STEP 01 출근 기록"
     ],
     [
-     29,
+     27,
      "STEP 02 퇴근 기록"
     ],
     [
-     42,
+     40,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 32초",
+   "length": "1분 27초",
    "group": "tam_punch"
   },
   "month1": {
@@ -813,8 +813,8 @@
   },
   "punch3": {
    "file": "punch3.bin",
-   "iv": "MFzXSM4uXHROkUkj",
-   "size": 9717029,
+   "iv": "9wfTErjjX0aaxDtX",
+   "size": 9436482,
    "title": "일찍 퇴근",
    "chapters": [
     [
@@ -822,21 +822,21 @@
      "STEP 01 출근 기록"
     ],
     [
-     29,
+     27,
      "STEP 02 퇴근 기록"
     ],
     [
-     42,
+     40,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 29초",
+   "length": "1분 28초",
    "group": "tam_punch"
   },
   "punch4": {
    "file": "punch4.bin",
-   "iv": "Jgu0Uv3Dt1PQR3Qa",
-   "size": 9788576,
+   "iv": "aYCNmD99lJtly7ou",
+   "size": 9640050,
    "title": "늦게 출근",
    "chapters": [
     [
@@ -844,21 +844,21 @@
      "STEP 01 출근 기록"
     ],
     [
-     29,
+     27,
      "STEP 02 퇴근 기록"
     ],
     [
-     42,
+     40,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 29초",
+   "length": "1분 28초",
    "group": "tam_punch"
   },
   "punch5": {
    "file": "punch5.bin",
-   "iv": "IxK9hMy41NKbWwr5",
-   "size": 9744326,
+   "iv": "MtUOITOQ2TIqg/iV",
+   "size": 10368842,
    "title": "늦게 퇴근",
    "chapters": [
     [
@@ -866,15 +866,15 @@
      "STEP 01 출근 기록"
     ],
     [
-     29,
+     27,
      "STEP 02 퇴근 기록"
     ],
     [
-     42,
+     40,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 33초",
+   "length": "1분 39초",
    "group": "tam_punch"
   }
  },
