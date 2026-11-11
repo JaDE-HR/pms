@@ -980,6 +980,50 @@
    ],
    "length": "0분 44초",
    "group": "bill"
+  },
+  "pay5": {
+   "file": "pay5.bin",
+   "iv": "QttaWVribDhrCIpk",
+   "size": 5364382,
+   "title": "급여일관리",
+   "chapters": [
+    [
+     3,
+     "STEP 01 급여일 조회"
+    ],
+    [
+     17,
+     "STEP 02 테스트 급여일 추가"
+    ],
+    [
+     44,
+     "STEP 03 저장과 확인"
+    ]
+   ],
+   "length": "1분 1초",
+   "group": "pay_c"
+  },
+  "pay6": {
+   "file": "pay6.bin",
+   "iv": "cDR7+cIyRDrUHNHL",
+   "size": 5425026,
+   "title": "급여계산",
+   "chapters": [
+    [
+     3,
+     "STEP 01 테스트 급여일 선택"
+    ],
+    [
+     25,
+     "STEP 02 테스트2 지정과 계산"
+    ],
+    [
+     41,
+     "STEP 03 계산 결과 확인"
+    ]
+   ],
+   "length": "1분 9초",
+   "group": "pay_c"
   }
  },
  "groups": {
@@ -1202,6 +1246,19 @@
     {
      "id": "bill3",
      "name": "일용직 전표 집계"
+    }
+   ]
+  },
+  "pay_c": {
+   "title": "급여 계산",
+   "eps": [
+    {
+     "id": "pay5",
+     "name": "급여일관리"
+    },
+    {
+     "id": "pay6",
+     "name": "급여계산"
     }
    ]
   }
