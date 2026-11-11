@@ -349,58 +349,46 @@
   },
   "punch1": {
    "file": "punch1.bin",
-   "iv": "lD0fl1Yif+VZqLGS",
-   "size": 10695180,
-   "title": "출퇴근 기록",
+   "iv": "kGZTJKH0Vluc04xR",
+   "size": 9800410,
+   "title": "정시 출근 / 정시 퇴근",
    "chapters": [
     [
      3,
-     "STEP 01 일근태 확인"
+     "STEP 01 출근 기록"
     ],
     [
-     32,
-     "STEP 02 출근 기록"
+     33,
+     "STEP 02 퇴근 기록"
     ],
     [
-     60,
-     "STEP 03 퇴근 기록"
-    ],
-    [
-     76,
-     "STEP 04 나머지 4가지 경우"
+     46,
+     "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 39초",
+   "length": "1분 30초",
    "group": "tam_punch"
   },
   "punch2": {
    "file": "punch2.bin",
-   "iv": "oHdGwEdqp5q4fexn",
-   "size": 8417597,
-   "title": "근로시간 확인",
+   "iv": "bB/et4DhZbOXYYpN",
+   "size": 9900724,
+   "title": "일찍 출근",
    "chapters": [
     [
      3,
-     "STEP 01 일근태 조회"
+     "STEP 01 출근 기록"
     ],
     [
-     18,
-     "STEP 02 정시 출근 / 정시 퇴근"
-    ],
-    [
-     27,
-     "STEP 03 일찍 출근 / 일찍 퇴근"
+     29,
+     "STEP 02 퇴근 기록"
     ],
     [
      42,
-     "STEP 04 늦게 출근 / 늦게 퇴근"
-    ],
-    [
-     61,
-     "STEP 05 마감은 쓰지 않음"
+     "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 16초",
+   "length": "1분 32초",
    "group": "tam_punch"
   },
   "month1": {
@@ -822,6 +810,72 @@
    ],
    "length": "0분 29초",
    "group": "hr_o"
+  },
+  "punch3": {
+   "file": "punch3.bin",
+   "iv": "MFzXSM4uXHROkUkj",
+   "size": 9717029,
+   "title": "일찍 퇴근",
+   "chapters": [
+    [
+     3,
+     "STEP 01 출근 기록"
+    ],
+    [
+     29,
+     "STEP 02 퇴근 기록"
+    ],
+    [
+     42,
+     "STEP 03 근로시간 산정 확인"
+    ]
+   ],
+   "length": "1분 29초",
+   "group": "tam_punch"
+  },
+  "punch4": {
+   "file": "punch4.bin",
+   "iv": "Jgu0Uv3Dt1PQR3Qa",
+   "size": 9788576,
+   "title": "늦게 출근",
+   "chapters": [
+    [
+     3,
+     "STEP 01 출근 기록"
+    ],
+    [
+     29,
+     "STEP 02 퇴근 기록"
+    ],
+    [
+     42,
+     "STEP 03 근로시간 산정 확인"
+    ]
+   ],
+   "length": "1분 29초",
+   "group": "tam_punch"
+  },
+  "punch5": {
+   "file": "punch5.bin",
+   "iv": "IxK9hMy41NKbWwr5",
+   "size": 9744326,
+   "title": "늦게 퇴근",
+   "chapters": [
+    [
+     3,
+     "STEP 01 출근 기록"
+    ],
+    [
+     29,
+     "STEP 02 퇴근 기록"
+    ],
+    [
+     42,
+     "STEP 03 근로시간 산정 확인"
+    ]
+   ],
+   "length": "1분 33초",
+   "group": "tam_punch"
   }
  },
  "groups": {
@@ -918,11 +972,23 @@
    "eps": [
     {
      "id": "punch1",
-     "name": "출퇴근 기록"
+     "name": "정시 출근 / 정시 퇴근"
     },
     {
      "id": "punch2",
-     "name": "근로시간 확인"
+     "name": "일찍 출근"
+    },
+    {
+     "id": "punch3",
+     "name": "일찍 퇴근"
+    },
+    {
+     "id": "punch4",
+     "name": "늦게 출근"
+    },
+    {
+     "id": "punch5",
+     "name": "늦게 퇴근"
     }
    ]
   },
