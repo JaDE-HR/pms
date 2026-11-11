@@ -411,20 +411,16 @@
   },
   "month2": {
    "file": "month2.bin",
-   "iv": "It8u9vCeyurZ/3jV",
-   "size": 5874705,
+   "iv": "sLT35IcK7XUUtZv9",
+   "size": 4111630,
    "title": "월근태집계 결과 확인",
    "chapters": [
     [
      3,
-     "STEP 01 집계 결과 조회"
-    ],
-    [
-     24,
-     "STEP 02 근로시간 확인"
+     "STEP 01 근로시간 확인"
     ]
    ],
-   "length": "1분 4초",
+   "length": "0분 42초",
    "group": "tam_month"
   },
   "month3": {
