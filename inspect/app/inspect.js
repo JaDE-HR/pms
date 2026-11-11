@@ -130,7 +130,7 @@
       <div class="bar"><div class="wrap"><div class="tablist" role="tablist" aria-label="모듈" id="tabs"></div></div></div>
       <main class="wrap">
         <div class="mhead">
-          <h2 id="modName"></h2><span class="tag" id="draftTag" hidden>시나리오 초안</span>
+          <h2 id="modName"></h2><span class="due" id="modDue" hidden></span><span class="tag" id="draftTag" hidden>시나리오 초안</span>
           <div class="filters" role="group" aria-label="항목 필터">
             <button type="button" class="fbtn" data-f="all">전체</button>
             <button type="button" class="fbtn" data-f="none">미실행</button>
@@ -269,11 +269,11 @@
   function renderShell() {
     const m = S.mods.find(x => x.id === mod) || {};
     // 모듈 칸은 한 번만 그리고 이후에는 숫자 / 막대만 바꾼다 (매번 다시 그리면 막대가 0부터 다시 차올라 버벅여 보인다)
-    const sig = JSON.stringify(S.mods.map(x => [x.id, x.name, !!x.prepare]));
+    const sig = JSON.stringify(S.mods.map(x => [x.id, x.name, !!x.prepare, x.due || ""]));
     if ($("#mods").dataset.sig !== sig) {
       $("#mods").dataset.sig = sig;
       $("#mods").innerHTML = `<div class="sc all"><div class="sc-l">전체 검수</div><div class="sc-v"><span id="pAll">0</span><small>%</small></div><div class="trk"><i id="bAll"></i></div><div class="sc-s" id="sAll"></div></div>`
-        + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}"><div class="sc-l">${esc(x.name)}${x.prepare ? "" : ` <span class="sc-done" data-done="${esc(x.id)}" hidden>검수 완료</span>`}</div>`
+        + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}"><div class="sc-l">${esc(x.name)}${x.due && !x.prepare ? ` <span class="sc-due">(${esc(x.due)})</span>` : ""}${x.prepare ? "" : ` <span class="sc-done" data-done="${esc(x.id)}" hidden>검수 완료</span>`}</div>`
           + (x.prepare ? '<div class="sc-ready">준비중</div>'
             : `<div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div>`) + `</button>`).join("");
       $("#tabs").innerHTML = S.mods.map(x => `<button type="button" class="tab" role="tab" data-m="${esc(x.id)}">${esc(x.name)}${x.prepare ? "<b>준비중</b>" : `<b data-c="${esc(x.id)}"></b>`}</button>`).join("");
@@ -281,6 +281,7 @@
     document.querySelectorAll("#mods [data-m]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === mod)));
     document.querySelectorAll("#tabs [data-m]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.m === mod)));
     $("#modName").textContent = m.name || "";
+    $("#modDue").textContent = m.due && !m.prepare ? `(${m.due})` : ""; $("#modDue").hidden = !m.due || !!m.prepare;
     $("#draftTag").hidden = !m.draft || !!m.prepare;
     document.querySelector(".filters").hidden = !!m.prepare;
     $("#prep").innerHTML = (m.prep || []).length ? `<b>시작 전 준비</b><ul>${m.prep.map(t => `<li>${prepItem(t)}</li>`).join("")}</ul>` : "";
