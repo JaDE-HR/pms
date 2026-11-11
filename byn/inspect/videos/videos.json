@@ -405,8 +405,8 @@
   },
   "month1": {
    "file": "month1.bin",
-   "iv": "4nIDzQI33q6iflFG",
-   "size": 9386412,
+   "iv": "jxWz6535GucttESk",
+   "size": 9802002,
    "title": "월근태집계 기준과 실행",
    "chapters": [
     [
@@ -414,17 +414,17 @@
      "STEP 01 월근태집계 기준"
     ],
     [
-     53,
+     50,
      "STEP 02 월근태집계 실행"
     ]
    ],
-   "length": "1분 35초",
+   "length": "1분 38초",
    "group": "tam_month"
   },
   "month2": {
    "file": "month2.bin",
-   "iv": "RSBf++LMunfM9pve",
-   "size": 5705222,
+   "iv": "It8u9vCeyurZ/3jV",
+   "size": 5874705,
    "title": "월근태집계 결과 확인",
    "chapters": [
     [
@@ -441,8 +441,8 @@
   },
   "month3": {
    "file": "month3.bin",
-   "iv": "e2G7e+crbPCseFHb",
-   "size": 6736270,
+   "iv": "GgownAxt1/P8DxwP",
+   "size": 6138661,
    "title": "월근태 마감",
    "chapters": [
     [
@@ -454,11 +454,11 @@
      "STEP 02 마감여부 체크 / 저장"
     ],
     [
-     37,
+     39,
      "STEP 03 마감 확인"
     ]
    ],
-   "length": "1분 0초",
+   "length": "1분 2초",
    "group": "tam_month"
   },
   "shift1": {
