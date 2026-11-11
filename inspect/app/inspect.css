@@ -403,4 +403,4 @@ a.brand{text-decoration:none;color:inherit;cursor:pointer}
 .vmEps button:disabled{color:#5c686d;cursor:default;background:#242d31}
 /* 모듈 테스트 기한: 제목 / 진척도 카드 옆 빨간 괄호 */
 .due{font-size:1rem;font-weight:700;color:#d92d20;white-space:nowrap}
-.sc-due{font-size:.85rem;font-weight:700;color:#ff6b5e;white-space:nowrap}
+.sc-due{min-height:1.2em;margin-top:.15rem;font-size:.85rem;font-weight:700;color:#ff6b5e;white-space:nowrap}

@@ -273,7 +273,8 @@
     if ($("#mods").dataset.sig !== sig) {
       $("#mods").dataset.sig = sig;
       $("#mods").innerHTML = `<div class="sc all"><div class="sc-l">전체 검수</div><div class="sc-v"><span id="pAll">0</span><small>%</small></div><div class="trk"><i id="bAll"></i></div><div class="sc-s" id="sAll"></div></div>`
-        + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}"><div class="sc-l">${esc(x.name)}${x.due && !x.prepare ? ` <span class="sc-due">(${esc(x.due)})</span>` : ""}${x.prepare ? "" : ` <span class="sc-done" data-done="${esc(x.id)}" hidden>검수 완료</span>`}</div>`
+        + S.mods.map(x => `<button type="button" class="sc" data-m="${esc(x.id)}"><div class="sc-l">${esc(x.name)}${x.prepare ? "" : ` <span class="sc-done" data-done="${esc(x.id)}" hidden>검수 완료</span>`}</div>`
+          + (S.mods.some(y => y.due && !y.prepare) ? `<div class="sc-due">${x.due && !x.prepare ? `(${esc(x.due)})` : ""}</div>` : "")
           + (x.prepare ? '<div class="sc-ready">준비중</div>'
             : `<div class="sc-v"><span data-p="${esc(x.id)}">0</span><small>%</small></div><div class="trk"><i data-b="${esc(x.id)}"></i></div><div class="sc-s" data-s="${esc(x.id)}"></div>`) + `</button>`).join("");
       $("#tabs").innerHTML = S.mods.map(x => `<button type="button" class="tab" role="tab" data-m="${esc(x.id)}">${esc(x.name)}${x.prepare ? "<b>준비중</b>" : `<b data-c="${esc(x.id)}"></b>`}</button>`).join("");
