@@ -1108,6 +1108,68 @@
    ],
    "length": "0분 29초",
    "group": "pay_r"
+  },
+  "ret1": {
+   "file": "ret1.bin",
+   "iv": "jOBhtK6I5ql5Omt5",
+   "size": 5284081,
+   "title": "퇴직금계산기준",
+   "chapters": [
+    [
+     3,
+     "STEP 01 계산방법 설정"
+    ],
+    [
+     28,
+     "STEP 02 가산율 설정"
+    ]
+   ],
+   "length": "0분 45초",
+   "group": "ret"
+  },
+  "ret2": {
+   "file": "ret2.bin",
+   "iv": "vd2KwwmJzb+QO3gg",
+   "size": 9471878,
+   "title": "퇴직금계산",
+   "chapters": [
+    [
+     3,
+     "STEP 01 대상자선정"
+    ],
+    [
+     28,
+     "STEP 02 계산 결과 확인"
+    ],
+    [
+     44,
+     "STEP 03 산정서와 영수증"
+    ],
+    [
+     60,
+     "STEP 04 퇴직금재계산"
+    ]
+   ],
+   "length": "1분 22초",
+   "group": "ret"
+  },
+  "ret3": {
+   "file": "ret3.bin",
+   "iv": "U5Ou7CwJSrvvIR3C",
+   "size": 1889399,
+   "title": "퇴직금계산결과조회",
+   "chapters": [
+    [
+     3,
+     "STEP 01 테스트3 조회"
+    ],
+    [
+     14,
+     "STEP 02 금액 확인"
+    ]
+   ],
+   "length": "0분 28초",
+   "group": "ret"
   }
  },
  "groups": {
@@ -1364,6 +1426,23 @@
     {
      "id": "pay10",
      "name": "급여이체내역"
+    }
+   ]
+  },
+  "ret": {
+   "title": "퇴직금",
+   "eps": [
+    {
+     "id": "ret1",
+     "name": "퇴직금계산기준"
+    },
+    {
+     "id": "ret2",
+     "name": "퇴직금계산"
+    },
+    {
+     "id": "ret3",
+     "name": "퇴직금계산결과조회"
     }
    ]
   }
