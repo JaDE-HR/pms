@@ -767,8 +767,8 @@
   },
   "hr5": {
    "file": "hr5.bin",
-   "iv": "4Bcobi5cnmgKc9CW",
-   "size": 6737500,
+   "iv": "8fWpqB/8MI+m73tq",
+   "size": 6176273,
    "title": "퇴직 발령",
    "chapters": [
     [
@@ -776,19 +776,19 @@
      "STEP 01 직원 조회"
     ],
     [
-     11,
+     8,
      "STEP 02 퇴직 발령 만들기"
     ],
     [
-     28,
+     25,
      "STEP 03 저장 / 확인"
     ],
     [
-     49,
+     37,
      "STEP 04 퇴직 되돌리기"
     ]
    ],
-   "length": "1분 8초",
+   "length": "0분 58초",
    "group": "hr_o"
   },
   "hr6": {
