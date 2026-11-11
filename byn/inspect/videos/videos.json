@@ -451,26 +451,34 @@
   },
   "shift1": {
    "file": "shift1.bin",
-   "iv": "wnsOOlhpe34HtWqF",
-   "size": 5997081,
-   "title": "관리자 / 대상자 설정",
+   "iv": "6cgX1j/7d/FIc6fm",
+   "size": 8610593,
+   "title": "관리자 / 그룹장 / 대상자 설정",
    "chapters": [
     [
      3,
-     "STEP 01 관리자 등록"
+     "STEP 01 역할과 권한"
+    ],
+    [
+     19,
+     "STEP 02 관리자 등록"
     ],
     [
      45,
-     "STEP 02 대상자 등록"
+     "STEP 03 근무그룹장 등록"
+    ],
+    [
+     64,
+     "STEP 04 대상자 등록"
     ]
    ],
-   "length": "1분 17초",
+   "length": "1분 30초",
    "group": "tam_shift"
   },
   "shift2": {
    "file": "shift2.bin",
-   "iv": "tllOgZdHnfdUOhtk",
-   "size": 4269685,
+   "iv": "sMtH1fBwKwptR3a6",
+   "size": 4869995,
    "title": "스케쥴관리",
    "chapters": [
     [
@@ -478,65 +486,65 @@
      "STEP 01 대상자 조회"
     ],
     [
-     19,
+     25,
      "STEP 02 근무유형 변경"
     ]
    ],
-   "length": "0분 46초",
+   "length": "0분 52초",
    "group": "tam_shift"
   },
   "shift3": {
    "file": "shift3.bin",
-   "iv": "G/uvTJP5bvdcA9q/",
-   "size": 5755099,
-   "title": "OT 사전 신청과 승인",
+   "iv": "v0ExqMoQq3/IgFfg",
+   "size": 4665730,
+   "title": "OT 사전 신청",
    "chapters": [
     [
-     4,
-     "STEP 01 OT 사전 신청"
+     3,
+     "STEP 01 연장근무 계획 입력"
     ],
     [
-     55,
-     "STEP 02 OT 사전 승인"
+     39,
+     "STEP 02 근무계획 승인신청"
     ]
    ],
-   "length": "1분 26초",
+   "length": "1분 0초",
    "group": "tam_shift"
   },
   "shift4": {
    "file": "shift4.bin",
-   "iv": "UC9256y82MLI1yyN",
-   "size": 6651717,
-   "title": "OT 사후 신청과 승인",
+   "iv": "+yKwPvFRil9jBGYk",
+   "size": 5509807,
+   "title": "OT 사전 승인",
    "chapters": [
     [
      3,
-     "STEP 01 OT 사후 신청"
+     "STEP 01 OT 사전 승인"
     ],
     [
-     54,
-     "STEP 02 OT 사후 승인"
+     31,
+     "STEP 02 반영 확인"
     ]
    ],
-   "length": "1분 26초",
+   "length": "1분 3초",
    "group": "tam_shift"
   },
   "shift5": {
    "file": "shift5.bin",
-   "iv": "M54GrJrpoF7Feqqt",
-   "size": 5031557,
-   "title": "결과 확인",
+   "iv": "LXHktO0wz5/WmOn0",
+   "size": 4810466,
+   "title": "OT 사후 신청",
    "chapters": [
     [
-     3,
-     "STEP 01 대상자 검색"
+     4,
+     "STEP 01 실제 근무 시각 입력"
     ],
     [
-     21,
-     "STEP 02 2026.11.18 확인"
+     43,
+     "STEP 02 근무결과 승인신청"
     ]
    ],
-   "length": "0분 51초",
+   "length": "1분 3초",
    "group": "tam_shift"
   },
   "pay3": {
@@ -876,6 +884,24 @@
    ],
    "length": "1분 39초",
    "group": "tam_punch"
+  },
+  "shift6": {
+   "file": "shift6.bin",
+   "iv": "OAA1Y2hS+Wm1PqZ6",
+   "size": 5988564,
+   "title": "OT 사후 승인",
+   "chapters": [
+    [
+     3,
+     "STEP 01 OT 사후 승인"
+    ],
+    [
+     33,
+     "STEP 02 반영 확인"
+    ]
+   ],
+   "length": "1분 7초",
+   "group": "tam_shift"
   }
  },
  "groups": {
@@ -1014,7 +1040,7 @@
    "eps": [
     {
      "id": "shift1",
-     "name": "관리자 / 대상자 설정"
+     "name": "관리자 / 그룹장 / 대상자 설정"
     },
     {
      "id": "shift2",
@@ -1022,15 +1048,19 @@
     },
     {
      "id": "shift3",
-     "name": "OT 사전 신청과 승인"
+     "name": "OT 사전 신청"
     },
     {
      "id": "shift4",
-     "name": "OT 사후 신청과 승인"
+     "name": "OT 사전 승인"
     },
     {
      "id": "shift5",
-     "name": "결과 확인"
+     "name": "OT 사후 신청"
+    },
+    {
+     "id": "shift6",
+     "name": "OT 사후 승인"
     }
    ]
   },
