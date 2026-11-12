@@ -1467,6 +1467,44 @@
     ]
    ],
    "group": "apl_x"
+  },
+  "apl12": {
+   "file": "apl12.bin",
+   "iv": "VMpUx3mB34Py/yFI",
+   "size": 5252699,
+   "title": "제증명 신청",
+   "chapters": [
+    [
+     3,
+     "STEP 01 제증명 신청"
+    ],
+    [
+     34,
+     "STEP 02 증명서 출력"
+    ],
+    [
+     45,
+     "STEP 03 발급 확인"
+    ]
+   ],
+   "group": "apl_h"
+  },
+  "apl13": {
+   "file": "apl13.bin",
+   "iv": "KRXrvwgtNbaxfqW0",
+   "size": 4069859,
+   "title": "경조금/휴가 신청",
+   "chapters": [
+    [
+     3,
+     "STEP 01 경조금 / 휴가 신청"
+    ],
+    [
+     34,
+     "STEP 02 담당자 확인"
+    ]
+   ],
+   "group": "apl_h"
   }
  },
  "groups": {
@@ -1815,6 +1853,19 @@
     {
      "id": "apl11",
      "name": "신청서내역조회"
+    }
+   ]
+  },
+  "apl_h": {
+   "title": "인사 / 기타 신청서",
+   "eps": [
+    {
+     "id": "apl12",
+     "name": "제증명 신청"
+    },
+    {
+     "id": "apl13",
+     "name": "경조금/휴가 신청"
     }
    ]
   }
