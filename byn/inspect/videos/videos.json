@@ -1244,6 +1244,50 @@
    ],
    "length": "0분 59초",
    "group": "dc"
+  },
+  "dc1": {
+   "file": "dc1.bin",
+   "iv": "e/TCxPi+XFL980ma",
+   "size": 5019317,
+   "title": "조건설정",
+   "chapters": [
+    [
+     3,
+     "STEP 01 조건설정 열기"
+    ],
+    [
+     11,
+     "STEP 02 급여유형 산입기준"
+    ],
+    [
+     27,
+     "STEP 03 휴직 / 휴가 산입기준"
+    ]
+   ],
+   "length": "0분 56초",
+   "group": "dc"
+  },
+  "dc2": {
+   "file": "dc2.bin",
+   "iv": "QvUkhsmmit3Ml+2T",
+   "size": 5112278,
+   "title": "신규 가입 대상자 등록",
+   "chapters": [
+    [
+     3,
+     "STEP 01 가입도래 대상자 확인"
+    ],
+    [
+     15,
+     "STEP 02 직접 추가"
+    ],
+    [
+     29,
+     "STEP 03 가입 정보 입력"
+    ]
+   ],
+   "length": "0분 50초",
+   "group": "dc"
   }
  },
  "groups": {
