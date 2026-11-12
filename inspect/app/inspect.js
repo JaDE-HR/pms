@@ -551,10 +551,12 @@
       const live = S.mods.filter(m => !m.prepare);
       const e = x => esc(String(x == null ? "" : x));
       const nl = x => e(x).replace(/\n/g, "<br>");
-      const certRows = live.map(m => {
-        const rows = modRows(m.id), c = countOf(rows);
-        return `<tr><td class="l b">${e(m.name)}</td><td>${rows.length}</td><td class="sign"></td><td class="sign"></td><td class="sign"></td></tr>`;
-      }).join("");
+      // 결재란처럼 모듈마다 세로 칸: 모듈명 / 검수확인자 / 서명 / 확인일자
+      const colW = (100 - 12) / Math.max(1, live.length);
+      const certRows = `<tr><th class="lab" style="width:12%">모듈</th>${live.map(m => `<th style="width:${colW}%">${e(m.name)}</th>`).join("")}</tr>
+        <tr><th class="lab">검수확인자</th>${live.map(() => '<td class="nm"></td>').join("")}</tr>
+        <tr><th class="lab">서명</th>${live.map(() => '<td class="sg"></td>').join("")}</tr>
+        <tr><th class="lab">확인일자</th>${live.map(() => '<td class="dt">.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.</td>').join("")}</tr>`;
       const cert = `<section class="cert">
         <h1>검 수 확 인 서</h1>
         <table class="info">
@@ -564,10 +566,7 @@
           <tr><th>검수 내용</th><td colspan="3">위 모듈에 대하여 검수용 테스트 시나리오에 따라 테스트를 진행하였으며, 테스트 결과와 검수 내역을 확인합니다.<br>
             모듈별 상세 내역은 첨부한 검수 시나리오 목록과 같습니다.</td></tr>
         </table>
-        <table class="grid">
-          <thead><tr><th style="width:18%">모듈</th><th style="width:12%">검수 항목</th><th style="width:24%">검수확인자 (성명)</th><th style="width:23%">서명</th><th style="width:23%">확인일자</th></tr></thead>
-          <tbody>${certRows}</tbody>
-        </table>
+        <table class="grid sign-t"><tbody>${certRows}</tbody></table>
         <p class="date">${now.getFullYear()}년 &nbsp;&nbsp;&nbsp;&nbsp; 월 &nbsp;&nbsp;&nbsp;&nbsp; 일</p>
       </section>`;
       const lists = live.map(m => {
@@ -602,7 +601,7 @@
         .info th,.info td{border:1px solid #9a9a9a;padding:2.2mm 3mm;vertical-align:middle}
         .grid th{background:#f2f2f2;font-weight:700}
         .grid th,.grid td{border:1px solid #9a9a9a;padding:1.4mm 1.6mm;text-align:center;vertical-align:middle;word-break:keep-all;overflow-wrap:anywhere}
-        .cert .grid{font-size:10pt}.cert .grid td{height:12mm}
+        .sign-t{font-size:10.5pt}.sign-t th{height:10mm}.sign-t th.lab{background:#f7f7f7}.sign-t td.nm{height:13mm}.sign-t td.sg{height:26mm}.sign-t td.dt{height:11mm;color:#999}
         .l{text-align:left!important}.b{font-weight:700}.g{color:#777}.red b{color:#d00}
         .exp{margin-top:1.2mm}
         .date{text-align:right;margin-top:6mm;font-size:11pt}
