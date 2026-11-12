@@ -1429,6 +1429,27 @@
     ]
    ],
    "group": "apl_t"
+  },
+  "apl10": {
+   "file": "apl10.bin",
+   "iv": "0wQKKstDLlp7Rz+R",
+   "size": 5267185,
+   "title": "반려",
+   "chapters": [
+    [
+     3,
+     "STEP 01 연차휴가 신청"
+    ],
+    [
+     20,
+     "STEP 02 반려"
+    ],
+    [
+     36,
+     "STEP 03 반려 확인"
+    ]
+   ],
+   "group": "apl_x"
   }
  },
  "groups": {
@@ -1764,6 +1785,15 @@
     {
      "id": "apl9",
      "name": "근태/휴가취소 신청서"
+    }
+   ]
+  },
+  "apl_x": {
+   "title": "반려 / 신청 현황",
+   "eps": [
+    {
+     "id": "apl10",
+     "name": "반려"
     }
    ]
   }
