@@ -68,6 +68,7 @@
     S.mods = (d.scenario.mods || []).map(m => (m.lock && !owner ? { ...m, prepare: true } : m));
     const prep = new Set(S.mods.filter(m => m.prepare).map(m => m.id));
     S.rows = (d.scenario.rows || []).filter(r => !prep.has(r.m));
+    S.cert = d.scenario.cert || {};
     S.results = Object.fromEntries(d.results.map(r => [r.item_id, r]));
     S.reviews = Object.fromEntries(d.reviews.map(r => [r.item_id, r]));
     S.history = group(d.history, "item_id");
@@ -120,6 +121,7 @@
         <a class="brand" href="#" id="homeBtn" title="처음 화면으로">${brandHtml()}</a>
         <div class="tools">
           <span class="toast" id="toast" role="alert"></span>
+          <button type="button" class="btn" id="pdfBtn">PDF 출력</button>
           <button type="button" class="btn" id="xlsBtn">엑셀 다운로드</button>
         </div>
       </div></header>
@@ -152,6 +154,7 @@
     $("#rows").addEventListener("change", onReview);
     $("#rows").addEventListener("input", e => { if (e.target.matches("textarea[data-item]")) drafts[e.target.dataset.item] = e.target.value; });
     $("#xlsBtn").addEventListener("click", exportXlsx);
+    $("#pdfBtn").addEventListener("click", exportPdf);
     $("#homeBtn").addEventListener("click", e => { e.preventDefault(); gate(); });
     renderAll();
     pollTimer = setInterval(poll, POLL_MS);
@@ -538,6 +541,85 @@
       setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch (err) { toast(err.message || "엑셀을 만들지 못했습니다."); }
     finally { btn.disabled = false; }
+  }
+
+  // ── PDF 출력 (A4 가로): 1장 검수확인서 + 모듈별 시나리오 목록. 인쇄 창에서 "PDF로 저장"을 고른다 ──
+  function exportPdf() {
+    const btn = $("#pdfBtn"); btn.disabled = true;
+    try {
+      const now = new Date(), C = S.cert || {}, client = CFG.client || CFG.key;
+      const live = S.mods.filter(m => !m.prepare);
+      const e = x => esc(String(x == null ? "" : x));
+      const nl = x => e(x).replace(/\n/g, "<br>");
+      const certRows = live.map(m => {
+        const rows = modRows(m.id), c = countOf(rows);
+        return `<tr><td class="l b">${e(m.name)}</td><td>${rows.length}</td><td>${passOf(rows)}</td><td>${(c.issue || 0) + (c.fixed || 0)}</td>
+          <td>${reviewOf(rows)}</td><td class="sign"></td><td class="sign"></td><td class="sign"></td></tr>`;
+      }).join("");
+      const cert = `<section class="cert">
+        <h1>검 수 확 인 서</h1>
+        <table class="info">
+          <tr><th>프로젝트명</th><td>${e(C.project || "")}</td><th>고객사</th><td>${e(C.client || client)}</td></tr>
+          <tr><th>프로젝트 기간</th><td>${e(C.period || "")}</td><th>수행사</th><td>${e(C.vendor || "")}</td></tr>
+          <tr><th>검수 모듈</th><td colspan="3">${live.map(m => e(m.name)).join(", ")}</td></tr>
+          <tr><th>검수 내용</th><td colspan="3">위 모듈에 대하여 검수용 테스트 시나리오에 따라 테스트를 진행하였으며, 테스트 결과와 검수 내역을 확인합니다.<br>
+            모듈별 상세 내역은 첨부한 검수 시나리오 목록과 같습니다.</td></tr>
+        </table>
+        <table class="grid">
+          <thead><tr><th style="width:15%">모듈</th><th style="width:9%">검수 항목</th><th style="width:9%">테스트 정상</th><th style="width:7%">오류</th>
+            <th style="width:9%">검수 완료</th><th style="width:17%">검수확인자 (성명)</th><th style="width:17%">서명</th><th style="width:17%">확인일자</th></tr></thead>
+          <tbody>${certRows}</tbody>
+        </table>
+        <p class="date">${now.getFullYear()}년 &nbsp;&nbsp;&nbsp;&nbsp; 월 &nbsp;&nbsp;&nbsp;&nbsp; 일</p>
+      </section>`;
+      const lists = live.map(m => {
+        const rows = modRows(m.id);
+        const body = rows.map((r, i) => {
+          const res = S.results[r.id], rv = S.reviews[r.id], st = statusOf(r);
+          const steps = r.steps.map((x, k) => `${k + 1}. ${nl(plain(x))}`).join("<br>");
+          const ops = (S.opinions[r.id] || []).map(o => `${o.role === "jade" ? "[JaDE] " : ""}${nl(o.text)}<span class="g"> - ${e(o.name)} ${e(fmt(o.at))}</span>`).join("<br>");
+          return `<tr><td>${i + 1}</td><td class="l">${e(r.g)}</td><td class="l b">${e(plain(r.n))}</td>
+            <td class="l">${r.menu.map(x => e(plain(x))).join("<br>")}</td>
+            <td class="l">${steps}<div class="exp"><b>기대 결과</b><br>${nl(plain(r.expect))}</div></td>
+            <td class="${st === "issue" ? "red" : ""}"><b>${e(ST[st].label)}</b>${res ? `<br><span class="g">${e(res.name)}<br>${e(fmt(res.at))}</span>` : ""}</td>
+            <td>${rv ? `<b>검수 완료</b><br><span class="g">${e(rv.name)}<br>${e(fmt(rv.at))}</span>` : ""}</td>
+            <td class="l">${ops}</td></tr>`;
+        }).join("");
+        return `<section class="list"><h2>검수 시나리오 - ${e(m.name)}</h2>
+          <p class="sub">테스트 정상 ${passOf(rows)}/${rows.length} &nbsp;/&nbsp; 검수 ${reviewOf(rows)}/${rows.length}</p>
+          <table class="grid list-t"><thead><tr><th style="width:3%">No</th><th style="width:10%">프로세스</th><th style="width:11%">항목</th><th style="width:13%">메뉴</th>
+            <th style="width:33%">설명</th><th style="width:8%">테스트</th><th style="width:8%">검수</th><th style="width:14%">의견</th></tr></thead>
+          <tbody>${body}</tbody></table></section>`;
+      }).join("");
+      const css = `@page{size:A4 landscape;margin:10mm 9mm 11mm}
+        *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        body{margin:0;font-family:'Noto Sans KR','맑은 고딕',sans-serif;color:#222;font-size:8.5pt;line-height:1.45}
+        .cert{page-break-after:always;padding:6mm 4mm 0}
+        h1{text-align:center;font-size:22pt;letter-spacing:4pt;margin:0 0 9mm}
+        h2{font-size:12pt;margin:0 0 1mm}
+        .sub{color:#666;margin:0 0 2mm}
+        table{width:100%;border-collapse:collapse;table-layout:fixed}
+        .info{margin-bottom:7mm;font-size:10pt}
+        .info th{width:14%;background:#f2f2f2;text-align:left}
+        .info th,.info td{border:1px solid #9a9a9a;padding:2.2mm 3mm;vertical-align:middle}
+        .grid th{background:#f2f2f2;font-weight:700}
+        .grid th,.grid td{border:1px solid #9a9a9a;padding:1.4mm 1.6mm;text-align:center;vertical-align:middle;word-break:keep-all;overflow-wrap:anywhere}
+        .cert .grid{font-size:10pt}.cert .grid td{height:15mm}
+        .l{text-align:left!important}.b{font-weight:700}.g{color:#777}.red b{color:#d00}
+        .exp{margin-top:1.2mm}
+        .date{text-align:right;margin-top:10mm;font-size:11pt}
+        .list{page-break-before:auto}.list+.list{page-break-before:always}
+        .list-t thead{display:table-header-group}.list-t tr{page-break-inside:avoid}`;
+      const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${e(client)}_검수확인서_${ymd(now, "")}</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap"><style>${css}</style></head>
+        <body>${cert}${lists}</body></html>`;
+      const f = document.createElement("iframe");
+      f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0";
+      document.body.appendChild(f);
+      f.contentDocument.open(); f.contentDocument.write(html); f.contentDocument.close();
+      const go = () => { try { f.contentWindow.focus(); f.contentWindow.print(); } finally { setTimeout(() => f.remove(), 60000); btn.disabled = false; } };
+      (f.contentDocument.fonts ? f.contentDocument.fonts.ready : Promise.resolve()).then(() => setTimeout(go, 400));
+    } catch (err) { toast(err.message || "PDF를 만들지 못했습니다."); btn.disabled = false; }
   }
 
   // ── 영상 매뉴얼 (암호화된 영상을 로그인한 비밀번호로 풀어서 재생) ──
