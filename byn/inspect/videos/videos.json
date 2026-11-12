@@ -1306,6 +1306,129 @@
    ],
    "length": "0분 36초",
    "group": "dc"
+  },
+  "apl3": {
+   "file": "apl3.bin",
+   "iv": "D1Uw2ETp3ttH70a0",
+   "size": 4172828,
+   "title": "사전근무 신청서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 사전근무 신청"
+    ],
+    [
+     31,
+     "STEP 02 반영 확인"
+    ]
+   ],
+   "group": "apl_t"
+  },
+  "apl4": {
+   "file": "apl4.bin",
+   "iv": "4/6HoQRWNs2qepJ+",
+   "size": 3606212,
+   "title": "사전근무취소 신청서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 사전근무 취소"
+    ],
+    [
+     26,
+     "STEP 02 반영 확인"
+    ]
+   ],
+   "group": "apl_t"
+  },
+  "apl5": {
+   "file": "apl5.bin",
+   "iv": "qwMiYQ9EpW+6a21b",
+   "size": 4044725,
+   "title": "사후근무신청서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 사후근무 신청"
+    ],
+    [
+     26,
+     "STEP 02 반영 확인"
+    ]
+   ],
+   "group": "apl_t"
+  },
+  "apl6": {
+   "file": "apl6.bin",
+   "iv": "zR9D5M5FRvwX37XO",
+   "size": 3614805,
+   "title": "출퇴근시각변경신청서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 출퇴근시각 변경"
+    ],
+    [
+     27,
+     "STEP 02 반영 확인"
+    ]
+   ],
+   "group": "apl_t"
+  },
+  "apl7": {
+   "file": "apl7.bin",
+   "iv": "1bLHuymp8w8o8wr2",
+   "size": 3608205,
+   "title": "출장/외근 신청서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 외근 신청"
+    ],
+    [
+     31,
+     "STEP 02 반영 확인"
+    ]
+   ],
+   "group": "apl_t"
+  },
+  "apl8": {
+   "file": "apl8.bin",
+   "iv": "ZnyDCCzCt59fQcsL",
+   "size": 7302691,
+   "title": "연차휴가 신청서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 연차휴가 신청"
+    ],
+    [
+     41,
+     "STEP 02 1차 결재"
+    ],
+    [
+     55,
+     "STEP 03 2차 결재"
+    ]
+   ],
+   "group": "apl_t"
+  },
+  "apl9": {
+   "file": "apl9.bin",
+   "iv": "RnoTtWaCdccuWiXP",
+   "size": 3484674,
+   "title": "근태/휴가취소 신청서",
+   "chapters": [
+    [
+     3,
+     "STEP 01 근태 / 휴가 취소"
+    ],
+    [
+     26,
+     "STEP 02 반영 확인"
+    ]
+   ],
+   "group": "apl_t"
   }
  },
  "groups": {
@@ -1608,6 +1731,39 @@
     {
      "id": "dc6",
      "name": "퇴직연금산정내역"
+    }
+   ]
+  },
+  "apl_t": {
+   "title": "근태 신청서",
+   "eps": [
+    {
+     "id": "apl3",
+     "name": "사전근무 신청서"
+    },
+    {
+     "id": "apl4",
+     "name": "사전근무취소 신청서"
+    },
+    {
+     "id": "apl5",
+     "name": "사후근무신청서"
+    },
+    {
+     "id": "apl6",
+     "name": "출퇴근시각변경신청서"
+    },
+    {
+     "id": "apl7",
+     "name": "출장/외근 신청서"
+    },
+    {
+     "id": "apl8",
+     "name": "연차휴가 신청서"
+    },
+    {
+     "id": "apl9",
+     "name": "근태/휴가취소 신청서"
     }
    ]
   }
