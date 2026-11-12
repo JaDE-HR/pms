@@ -593,8 +593,8 @@
   },
   "pay2": {
    "file": "pay2.bin",
-   "iv": "I0JBcmzErEYrayZo",
-   "size": 8393923,
+   "iv": "At3q8p+OvnXmMxvG",
+   "size": 13797628,
    "title": "연봉관리",
    "chapters": [
     [
@@ -616,9 +616,13 @@
     [
      52,
      "STEP 05 지급금액업데이트"
+    ],
+    [
+     67,
+     "STEP 06 잘못 넣었을 때"
     ]
    ],
-   "length": "1분 11초",
+   "length": "1분 47초",
    "group": "pay_b"
   },
   "apl1": {
