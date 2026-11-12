@@ -1394,24 +1394,33 @@
   },
   "apl8": {
    "file": "apl8.bin",
-   "iv": "ZnyDCCzCt59fQcsL",
-   "size": 7302691,
+   "iv": "uusscbddoyR42SVn",
+   "size": 6884756,
    "title": "연차휴가 신청서",
    "chapters": [
     [
      3,
-     "STEP 01 연차휴가 신청"
+     "STEP 01 연차휴가 신청서 작성"
     ],
     [
-     41,
-     "STEP 02 1차 결재"
+     21,
+     "STEP 02 확인하고 신청"
     ],
     [
-     55,
-     "STEP 03 2차 결재"
+     40,
+     "STEP 03 1차 결재"
+    ],
+    [
+     56,
+     "STEP 04 2차 결재"
+    ],
+    [
+     67,
+     "일근태 확인"
     ]
    ],
-   "group": "apl_t"
+   "group": "apl_t",
+   "length": "1분 21초"
   },
   "apl9": {
    "file": "apl9.bin",
