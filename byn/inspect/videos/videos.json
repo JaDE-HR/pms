@@ -43,8 +43,8 @@
   },
   "org1": {
    "file": "org1.bin",
-   "iv": "HNVogvj7L4tZh+G3",
-   "size": 6123772,
+   "iv": "MgBODjElnKVUtSnY",
+   "size": 8322992,
    "title": "조직 등록",
    "chapters": [
     [
@@ -52,15 +52,15 @@
      "STEP 01 기준일 조회"
     ],
     [
-     15,
+     20,
      "STEP 02 하위조직 추가"
     ],
     [
-     37,
+     55,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 50초",
+   "length": "1분 11초",
    "group": "org_m"
   },
   "tam2": {
@@ -113,8 +113,8 @@
   },
   "org2": {
    "file": "org2.bin",
-   "iv": "w49PTKfRpb/1Fa2/",
-   "size": 6212080,
+   "iv": "wDFVgnN0GbzezSp5",
+   "size": 7275323,
    "title": "조직장 등록",
    "chapters": [
     [
@@ -122,21 +122,21 @@
      "STEP 01 조직장관리 열기"
     ],
     [
-     15,
+     19,
      "STEP 02 조직장 지정"
     ],
     [
-     36,
+     48,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 50초",
+   "length": "1분 4초",
    "group": "org_m"
   },
   "org3": {
    "file": "org3.bin",
-   "iv": "wN9hbynje1wV5HTp",
-   "size": 5642765,
+   "iv": "ehsgcYDO7lvQ3GfA",
+   "size": 7826787,
    "title": "조직명 변경",
    "chapters": [
     [
@@ -144,21 +144,21 @@
      "STEP 01 이력관리 보기"
     ],
     [
-     19,
+     25,
      "STEP 02 새 명칭 추가"
     ],
     [
-     40,
+     52,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 59초",
+   "length": "1분 14초",
    "group": "org_m"
   },
   "org4": {
    "file": "org4.bin",
-   "iv": "XW0SNBe5Hk9Hvxuz",
-   "size": 4959425,
+   "iv": "0Z8r3Qi1R1+y8uc6",
+   "size": 6084339,
    "title": "조직 개편 발령",
    "chapters": [
     [
@@ -166,21 +166,21 @@
      "STEP 01 조직개편발령 열기"
     ],
     [
-     16,
+     21,
      "STEP 02 발령 대상자 추가"
     ],
     [
-     36,
+     47,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "0분 50초",
+   "length": "1분 4초",
    "group": "org_m"
   },
   "org5": {
    "file": "org5.bin",
-   "iv": "JXLUdfhl4WhnXnz8",
-   "size": 7009278,
+   "iv": "4/D/Pj4gvbDkgcFl",
+   "size": 8857330,
    "title": "조직 폐쇄",
    "chapters": [
     [
@@ -188,19 +188,19 @@
      "STEP 01 조직개편일 조회"
     ],
     [
-     11,
+     14,
      "STEP 02 소속 직원 확인"
     ],
     [
-     26,
+     38,
      "STEP 03 조직 폐쇄"
     ],
     [
-     34,
+     51,
      "STEP 04 폐쇄 확인"
     ]
    ],
-   "length": "0분 46초",
+   "length": "1분 6초",
    "group": "org_m"
   },
   "pay1": {
@@ -675,8 +675,8 @@
   },
   "hr1": {
    "file": "hr1.bin",
-   "iv": "xinGWJrICFGPDf6S",
-   "size": 6479669,
+   "iv": "JZMw+rMv2sTMI2mP",
+   "size": 7693172,
    "title": "인사정보 등록",
    "chapters": [
     [
@@ -684,21 +684,21 @@
      "STEP 01 직원 조회"
     ],
     [
-     11,
+     17,
      "STEP 02 주소 / 학력 / 가족 입력"
     ],
     [
-     47,
+     58,
      "STEP 03 인사자료에서 확인"
     ]
    ],
-   "length": "1분 6초",
+   "length": "1분 23초",
    "group": "hr_o"
   },
   "hr2": {
    "file": "hr2.bin",
-   "iv": "7K0gfAUhtdkiT6K8",
-   "size": 7040812,
+   "iv": "UqWiw037nLhFyiUH",
+   "size": 9424598,
    "title": "개인별 발령 등록",
    "chapters": [
     [
@@ -706,25 +706,25 @@
      "STEP 01 직원 조회"
     ],
     [
-     11,
+     17,
      "STEP 02 승진 발령"
     ],
     [
-     23,
+     33,
      "STEP 03 같은 날 부서이동"
     ],
     [
-     42,
+     65,
      "STEP 04 저장 / 확인"
     ]
    ],
-   "length": "1분 12초",
+   "length": "1분 49초",
    "group": "hr_o"
   },
   "hr3": {
    "file": "hr3.bin",
-   "iv": "hlMKSS6IR+JbmeWF",
-   "size": 6197348,
+   "iv": "A26WoeZCpbVm0EZ9",
+   "size": 8180392,
    "title": "발령 일괄 등록",
    "chapters": [
     [
@@ -732,25 +732,25 @@
      "STEP 01 대상자 조회"
     ],
     [
-     8,
+     11,
      "STEP 02 상세검색"
     ],
     [
-     18,
+     26,
      "STEP 03 일괄 발령 / 저장"
     ],
     [
-     35,
+     48,
      "STEP 04 사번직접추가"
     ]
    ],
-   "length": "0분 51초",
+   "length": "1분 12초",
    "group": "hr_o"
   },
   "hr4": {
    "file": "hr4.bin",
-   "iv": "W3bJ3CPVEe6qXp2U",
-   "size": 5611432,
+   "iv": "1cHhNt/wo44jFZp2",
+   "size": 6820199,
    "title": "휴직 발령",
    "chapters": [
     [
@@ -758,25 +758,25 @@
      "STEP 01 직원 조회"
     ],
     [
-     8,
+     9,
      "STEP 02 휴직 발령 만들기"
     ],
     [
-     19,
+     26,
      "STEP 03 저장 / 재직상태 확인"
     ],
     [
-     31,
+     43,
      "STEP 04 종료예정 / 휴직자 확인"
     ]
    ],
-   "length": "0분 54초",
+   "length": "1분 12초",
    "group": "hr_o"
   },
   "hr5": {
    "file": "hr5.bin",
-   "iv": "8fWpqB/8MI+m73tq",
-   "size": 6176273,
+   "iv": "G+qL0tghG+i4YzRm",
+   "size": 7951821,
    "title": "퇴직 발령",
    "chapters": [
     [
@@ -784,25 +784,25 @@
      "STEP 01 직원 조회"
     ],
     [
-     8,
+     9,
      "STEP 02 퇴직 발령 만들기"
     ],
     [
-     25,
+     37,
      "STEP 03 저장 / 확인"
     ],
     [
-     37,
+     55,
      "STEP 04 퇴직 되돌리기"
     ]
    ],
-   "length": "0분 58초",
+   "length": "1분 22초",
    "group": "hr_o"
   },
   "hr6": {
    "file": "hr6.bin",
-   "iv": "wXTJV8Xews3QzTGX",
-   "size": 3252106,
+   "iv": "rdfPQVRw7pCwkHSV",
+   "size": 4330948,
    "title": "인사카드",
    "chapters": [
     [
@@ -810,21 +810,21 @@
      "STEP 01 직원 조회"
     ],
     [
-     11,
+     15,
      "STEP 02 출력 항목"
     ],
     [
-     16,
+     22,
      "STEP 03 카드 출력"
     ]
    ],
-   "length": "0분 35초",
+   "length": "0분 48초",
    "group": "hr_o"
   },
   "hr7": {
    "file": "hr7.bin",
-   "iv": "TDN5dKwoLvbZVE3N",
-   "size": 3522118,
+   "iv": "t/HFsGjIk10uNyET",
+   "size": 4784742,
    "title": "인원명부",
    "chapters": [
     [
@@ -832,15 +832,15 @@
      "STEP 01 기본 조회"
     ],
     [
-     11,
+     14,
      "STEP 02 근속년수로 찾기"
     ],
     [
-     22,
+     33,
      "STEP 03 직급으로 찾기"
     ]
    ],
-   "length": "0분 37초",
+   "length": "0분 54초",
    "group": "hr_o"
   },
   "punch3": {
