@@ -63,7 +63,9 @@
     const d = await api("/sheet");
     if (onlyIfSeq !== undefined && onlyIfSeq !== seq) return false;
     role = d.role;
-    S.mods = d.scenario.mods || [];
+    // 잠긴 모듈(lock)은 시나리오 owners 에 있는 이름으로 들어온 사람에게만 보이고, 나머지에게는 준비중으로 보인다
+    const owner = (d.scenario.owners || []).includes((name || "").trim());
+    S.mods = (d.scenario.mods || []).map(m => (m.lock && !owner ? { ...m, prepare: true } : m));
     const prep = new Set(S.mods.filter(m => m.prepare).map(m => m.id));
     S.rows = (d.scenario.rows || []).filter(r => !prep.has(r.m));
     S.results = Object.fromEntries(d.results.map(r => [r.item_id, r]));
