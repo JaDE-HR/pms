@@ -1450,6 +1450,23 @@
     ]
    ],
    "group": "apl_x"
+  },
+  "apl11": {
+   "file": "apl11.bin",
+   "iv": "eUCn7J95lBsok3yM",
+   "size": 3686098,
+   "title": "신청서내역조회",
+   "chapters": [
+    [
+     3,
+     "STEP 01 조회"
+    ],
+    [
+     14,
+     "STEP 02 결과 보기"
+    ]
+   ],
+   "group": "apl_x"
   }
  },
  "groups": {
@@ -1794,6 +1811,10 @@
     {
      "id": "apl10",
      "name": "반려"
+    },
+    {
+     "id": "apl11",
+     "name": "신청서내역조회"
     }
    ]
   }
