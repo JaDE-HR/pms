@@ -553,8 +553,7 @@
       const nl = x => e(x).replace(/\n/g, "<br>");
       const certRows = live.map(m => {
         const rows = modRows(m.id), c = countOf(rows);
-        return `<tr><td class="l b">${e(m.name)}</td><td>${rows.length}</td><td>${passOf(rows)}</td><td>${(c.issue || 0) + (c.fixed || 0)}</td>
-          <td>${reviewOf(rows)}</td><td class="sign"></td><td class="sign"></td><td class="sign"></td></tr>`;
+        return `<tr><td class="l b">${e(m.name)}</td><td>${rows.length}</td><td class="sign"></td><td class="sign"></td><td class="sign"></td></tr>`;
       }).join("");
       const cert = `<section class="cert">
         <h1>검 수 확 인 서</h1>
@@ -566,8 +565,7 @@
             모듈별 상세 내역은 첨부한 검수 시나리오 목록과 같습니다.</td></tr>
         </table>
         <table class="grid">
-          <thead><tr><th style="width:15%">모듈</th><th style="width:9%">검수 항목</th><th style="width:9%">테스트 정상</th><th style="width:7%">오류</th>
-            <th style="width:9%">검수 완료</th><th style="width:17%">검수확인자 (성명)</th><th style="width:17%">서명</th><th style="width:17%">확인일자</th></tr></thead>
+          <thead><tr><th style="width:18%">모듈</th><th style="width:12%">검수 항목</th><th style="width:24%">검수확인자 (성명)</th><th style="width:23%">서명</th><th style="width:23%">확인일자</th></tr></thead>
           <tbody>${certRows}</tbody>
         </table>
         <p class="date">${now.getFullYear()}년 &nbsp;&nbsp;&nbsp;&nbsp; 월 &nbsp;&nbsp;&nbsp;&nbsp; 일</p>
@@ -594,7 +592,7 @@
       const css = `@page{size:A4 landscape;margin:10mm 9mm 11mm}
         *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
         body{margin:0;font-family:'Noto Sans KR','맑은 고딕',sans-serif;color:#222;font-size:8.5pt;line-height:1.45}
-        .cert{page-break-after:always;padding:2mm 4mm 0}
+        .cert{page-break-after:always;height:186mm;padding:0 4mm;display:flex;flex-direction:column;justify-content:center}
         h1{text-align:center;font-size:22pt;letter-spacing:4pt;margin:0 0 6mm}
         h2{font-size:12pt;margin:0 0 1mm}
         .sub{color:#666;margin:0 0 2mm}
