@@ -594,20 +594,20 @@
       const css = `@page{size:A4 landscape;margin:10mm 9mm 11mm}
         *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
         body{margin:0;font-family:'Noto Sans KR','맑은 고딕',sans-serif;color:#222;font-size:8.5pt;line-height:1.45}
-        .cert{page-break-after:always;padding:6mm 4mm 0}
-        h1{text-align:center;font-size:22pt;letter-spacing:4pt;margin:0 0 9mm}
+        .cert{page-break-after:always;padding:2mm 4mm 0}
+        h1{text-align:center;font-size:22pt;letter-spacing:4pt;margin:0 0 6mm}
         h2{font-size:12pt;margin:0 0 1mm}
         .sub{color:#666;margin:0 0 2mm}
         table{width:100%;border-collapse:collapse;table-layout:fixed}
-        .info{margin-bottom:7mm;font-size:10pt}
+        .info{margin-bottom:5mm;font-size:10pt}
         .info th{width:14%;background:#f2f2f2;text-align:left}
         .info th,.info td{border:1px solid #9a9a9a;padding:2.2mm 3mm;vertical-align:middle}
         .grid th{background:#f2f2f2;font-weight:700}
         .grid th,.grid td{border:1px solid #9a9a9a;padding:1.4mm 1.6mm;text-align:center;vertical-align:middle;word-break:keep-all;overflow-wrap:anywhere}
-        .cert .grid{font-size:10pt}.cert .grid td{height:15mm}
+        .cert .grid{font-size:10pt}.cert .grid td{height:12mm}
         .l{text-align:left!important}.b{font-weight:700}.g{color:#777}.red b{color:#d00}
         .exp{margin-top:1.2mm}
-        .date{text-align:right;margin-top:10mm;font-size:11pt}
+        .date{text-align:right;margin-top:6mm;font-size:11pt}
         .list{page-break-before:auto}.list+.list{page-break-before:always}
         .list-t thead{display:table-header-group}.list-t tr{page-break-inside:avoid}`;
       const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${e(client)}_검수확인서_${ymd(now, "")}</title>
