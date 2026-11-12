@@ -1432,7 +1432,7 @@
   },
   "apl10": {
    "file": "apl10.bin",
-   "iv": "0wQKKstDLlp7Rz+R",
+   "iv": "DBfCMM9elE7Fk/vk",
    "size": 5267185,
    "title": "반려",
    "chapters": [
@@ -1453,7 +1453,7 @@
   },
   "apl11": {
    "file": "apl11.bin",
-   "iv": "eUCn7J95lBsok3yM",
+   "iv": "RGp+movExcx3xBtv",
    "size": 3686098,
    "title": "신청서내역조회",
    "chapters": [
@@ -1462,7 +1462,7 @@
      "STEP 01 조회"
     ],
     [
-     14,
+     18,
      "STEP 02 결과 보기"
     ]
    ],
