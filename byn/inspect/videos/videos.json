@@ -205,8 +205,8 @@
   },
   "pay1": {
    "file": "pay1.bin",
-   "iv": "8y7mMnkiBjbmxg+z",
-   "size": 5860853,
+   "iv": "KirHTOs730DLX2Ci",
+   "size": 8242890,
    "title": "개인급여기본관리",
    "chapters": [
     [
@@ -214,19 +214,19 @@
      "STEP 01 대상자 조회"
     ],
     [
-     17,
+     27,
      "STEP 02 급여기본 확인"
     ],
     [
-     31,
+     51,
      "STEP 03 정보 수정과 저장"
     ],
     [
-     40,
+     62,
      "STEP 04 다시 조회해 확인"
     ]
    ],
-   "length": "0분 56초",
+   "length": "1분 26초",
    "group": "pay_b"
   },
   "adj1": {
@@ -549,8 +549,8 @@
   },
   "pay3": {
    "file": "pay3.bin",
-   "iv": "7M4QYqlXgcl3/ldh",
-   "size": 4525269,
+   "iv": "5vHdBbt3Tg+E+dCV",
+   "size": 7068997,
    "title": "고정급",
    "chapters": [
     [
@@ -558,43 +558,43 @@
      "STEP 01 고정급 조회"
     ],
     [
-     18,
+     28,
      "STEP 02 연봉 금액 확인"
     ],
     [
-     33,
+     55,
      "STEP 03 비어 있을 때"
     ]
    ],
-   "length": "0분 47초",
+   "length": "1분 17초",
    "group": "pay_b"
   },
   "pay4": {
    "file": "pay4.bin",
-   "iv": "XkUG4uQ3+CTKfXnX",
-   "size": 3426313,
+   "iv": "eCGndUOyCnj5Gz+Q",
+   "size": 4890382,
    "title": "예외급",
    "chapters": [
     [
-     4,
+     3,
      "STEP 01 귀속월 조회"
     ],
     [
-     17,
+     25,
      "STEP 02 행 추가와 입력"
     ],
     [
-     33,
+     47,
      "STEP 03 저장과 확인"
     ]
    ],
-   "length": "0분 53초",
+   "length": "1분 16초",
    "group": "pay_b"
   },
   "pay2": {
    "file": "pay2.bin",
-   "iv": "At3q8p+OvnXmMxvG",
-   "size": 13797628,
+   "iv": "g5qtq178DIeKNekO",
+   "size": 17701967,
    "title": "연봉관리",
    "chapters": [
     [
@@ -602,27 +602,27 @@
      "STEP 01 연봉 미입력자 확인"
     ],
     [
-     14,
+     22,
      "STEP 02 연봉 행 추가"
     ],
     [
-     21,
+     32,
      "STEP 03 연봉 입력"
     ],
     [
-     32,
+     51,
      "STEP 04 월 금액 입력과 저장"
     ],
     [
-     52,
+     81,
      "STEP 05 지급금액업데이트"
     ],
     [
-     67,
+     104,
      "STEP 06 잘못 넣었을 때"
     ]
    ],
-   "length": "1분 47초",
+   "length": "2분 34초",
    "group": "pay_b"
   },
   "apl1": {
@@ -929,8 +929,8 @@
   },
   "bill1": {
    "file": "bill1.bin",
-   "iv": "S66eLBSsVFufJ1na",
-   "size": 5933011,
+   "iv": "UDXsNE2VE9Rn+el1",
+   "size": 8263407,
    "title": "급여 전표 집계",
    "chapters": [
     [
@@ -938,21 +938,21 @@
      "STEP 01 전표대상 추가"
     ],
     [
-     28,
+     43,
      "STEP 02 전표집계"
     ],
     [
-     41,
+     61,
      "STEP 03 계정별 금액 확인"
     ]
    ],
-   "length": "1분 3초",
+   "length": "1분 40초",
    "group": "bill"
   },
   "bill2": {
    "file": "bill2.bin",
-   "iv": "U6ujIK0pcscn5hg7",
-   "size": 4562411,
+   "iv": "pxrtKi7wc7ug1XTW",
+   "size": 6400330,
    "title": "퇴직충당금 전표 집계",
    "chapters": [
     [
@@ -960,21 +960,21 @@
      "STEP 01 전표대상 추가"
     ],
     [
-     28,
+     42,
      "STEP 02 전표집계"
     ],
     [
-     40,
+     60,
      "STEP 03 계정별 금액 확인"
     ]
    ],
-   "length": "0분 55초",
+   "length": "1분 26초",
    "group": "bill"
   },
   "bill3": {
    "file": "bill3.bin",
-   "iv": "ZbrlnIoYFpanqKDP",
-   "size": 3565650,
+   "iv": "x+XEfQCQHEhIPlw8",
+   "size": 5488976,
    "title": "일용직 전표 집계",
    "chapters": [
     [
@@ -982,21 +982,21 @@
      "STEP 01 집계된 전표 조회"
     ],
     [
-     17,
+     27,
      "STEP 02 계정별 금액 확인"
     ],
     [
-     28,
+     46,
      "STEP 03 집계 전일 때만"
     ]
    ],
-   "length": "0분 44초",
+   "length": "1분 11초",
    "group": "bill"
   },
   "pay5": {
    "file": "pay5.bin",
-   "iv": "QttaWVribDhrCIpk",
-   "size": 5364382,
+   "iv": "WBNtREBegQa32tov",
+   "size": 8187293,
    "title": "급여일관리",
    "chapters": [
     [
@@ -1004,21 +1004,21 @@
      "STEP 01 급여일 조회"
     ],
     [
-     17,
+     28,
      "STEP 02 테스트 급여일 추가"
     ],
     [
-     44,
+     76,
      "STEP 03 저장과 확인"
     ]
    ],
-   "length": "1분 1초",
+   "length": "1분 42초",
    "group": "pay_c"
   },
   "pay6": {
    "file": "pay6.bin",
-   "iv": "cDR7+cIyRDrUHNHL",
-   "size": 5425026,
+   "iv": "nWmKk6Phw0NvfmUK",
+   "size": 8130206,
    "title": "급여계산",
    "chapters": [
     [
@@ -1026,21 +1026,21 @@
      "STEP 01 테스트 급여일 선택"
     ],
     [
-     25,
+     46,
      "STEP 02 테스트2 지정과 계산"
     ],
     [
-     41,
+     71,
      "STEP 03 계산 결과 확인"
     ]
    ],
-   "length": "1분 9초",
+   "length": "1분 53초",
    "group": "pay_c"
   },
   "pay7": {
    "file": "pay7.bin",
-   "iv": "ErWTQKZZ0XA8ijrs",
-   "size": 3795953,
+   "iv": "wRofI1SfaOuEETmH",
+   "size": 5884434,
    "title": "급여변동내역검증",
    "chapters": [
     [
@@ -1048,21 +1048,21 @@
      "STEP 01 변동 내역 조회"
     ],
     [
-     15,
+     26,
      "STEP 02 변동 직원 확인"
     ],
     [
-     30,
+     50,
      "STEP 03 변동 항목 확인"
     ]
    ],
-   "length": "0분 47초",
+   "length": "1분 20초",
    "group": "pay_r"
   },
   "pay8": {
    "file": "pay8.bin",
-   "iv": "YaZclbXUwWr8rlc8",
-   "size": 3190955,
+   "iv": "S3+x6UIBLTP4ZkoY",
+   "size": 4886318,
    "title": "급여대장(기간별)",
    "chapters": [
     [
@@ -1070,21 +1070,21 @@
      "STEP 01 급여대장 조회"
     ],
     [
-     15,
+     24,
      "STEP 02 지급 / 공제 항목"
     ],
     [
-     26,
+     46,
      "STEP 03 계산 결과와 비교"
     ]
    ],
-   "length": "0분 38초",
+   "length": "1분 6초",
    "group": "pay_r"
   },
   "pay9": {
    "file": "pay9.bin",
-   "iv": "TqW+mgwoidbThHRV",
-   "size": 2746499,
+   "iv": "JQg2RZbpkNI37fNQ",
+   "size": 4166737,
    "title": "급여명세서",
    "chapters": [
     [
@@ -1092,21 +1092,21 @@
      "STEP 01 명세서 조회"
     ],
     [
-     11,
+     18,
      "STEP 02 금액 확인"
     ],
     [
-     19,
+     34,
      "STEP 03 명세서 출력"
     ]
    ],
-   "length": "0분 39초",
+   "length": "1분 3초",
    "group": "pay_r"
   },
   "pay10": {
    "file": "pay10.bin",
-   "iv": "GH5E80PlQ/onCjOe",
-   "size": 2062413,
+   "iv": "lsPTJAjtNBBs4V/r",
+   "size": 3007996,
    "title": "급여이체내역",
    "chapters": [
     [
@@ -1114,17 +1114,17 @@
      "STEP 01 급여일 선택"
     ],
     [
-     14,
+     24,
      "STEP 02 이체 금액 확인"
     ]
    ],
-   "length": "0분 29초",
+   "length": "0분 47초",
    "group": "pay_r"
   },
   "ret1": {
    "file": "ret1.bin",
-   "iv": "jOBhtK6I5ql5Omt5",
-   "size": 5284081,
+   "iv": "Uq1Q37WSw4PDDxWC",
+   "size": 7956318,
    "title": "퇴직금계산기준",
    "chapters": [
     [
@@ -1132,17 +1132,17 @@
      "STEP 01 계산방법 설정"
     ],
     [
-     28,
+     50,
      "STEP 02 가산율 설정"
     ]
    ],
-   "length": "0분 45초",
+   "length": "1분 17초",
    "group": "ret"
   },
   "ret2": {
    "file": "ret2.bin",
-   "iv": "vd2KwwmJzb+QO3gg",
-   "size": 9471878,
+   "iv": "64B8t2LkfQ3q9aSz",
+   "size": 12145590,
    "title": "퇴직금계산",
    "chapters": [
     [
@@ -1150,25 +1150,25 @@
      "STEP 01 대상자선정"
     ],
     [
-     28,
+     35,
      "STEP 02 계산 결과 확인"
     ],
     [
-     44,
+     58,
      "STEP 03 산정서와 영수증"
     ],
     [
-     60,
+     84,
      "STEP 04 퇴직금재계산"
     ]
    ],
-   "length": "1분 22초",
+   "length": "2분 2초",
    "group": "ret"
   },
   "ret3": {
    "file": "ret3.bin",
-   "iv": "U5Ou7CwJSrvvIR3C",
-   "size": 1889399,
+   "iv": "w9cZq2Yq31YmdzvO",
+   "size": 2654231,
    "title": "퇴직금계산결과조회",
    "chapters": [
     [
@@ -1176,17 +1176,17 @@
      "STEP 01 테스트3 조회"
     ],
     [
-     14,
+     20,
      "STEP 02 금액 확인"
     ]
    ],
-   "length": "0분 28초",
+   "length": "0분 44초",
    "group": "ret"
   },
   "dc3": {
    "file": "dc3.bin",
-   "iv": "KlIvYBYvtqHQooRm",
-   "size": 8013476,
+   "iv": "63Hx+5HPiXRckh1Y",
+   "size": 11834961,
    "title": "납입금액산정",
    "chapters": [
     [
@@ -1194,21 +1194,21 @@
      "STEP 01 정산일 추가"
     ],
     [
-     31,
+     50,
      "STEP 02 정산생성"
     ],
     [
-     50,
+     84,
      "STEP 03 상세 확인"
     ]
    ],
-   "length": "1분 15초",
+   "length": "2분 4초",
    "group": "dc"
   },
   "dc4": {
    "file": "dc4.bin",
-   "iv": "sT7Gvq3JmAz6Who2",
-   "size": 3633532,
+   "iv": "IzLY6oeFAMP4haDg",
+   "size": 5967761,
    "title": "중도정산",
    "chapters": [
     [
@@ -1216,17 +1216,17 @@
      "STEP 01 중도정산 열기"
     ],
     [
-     16,
+     27,
      "STEP 02 대상과 귀속월 선택"
     ]
    ],
-   "length": "0분 44초",
+   "length": "1분 6초",
    "group": "dc"
   },
   "dc5": {
    "file": "dc5.bin",
-   "iv": "wouqjitf9/kl2Tfy",
-   "size": 7697725,
+   "iv": "S3zxCXbYMkMI6lIX",
+   "size": 10142317,
    "title": "재계산과 마감",
    "chapters": [
     [
@@ -1234,21 +1234,21 @@
      "STEP 01 급여 금액 바꾸기"
     ],
     [
-     21,
+     31,
      "STEP 02 재계산"
     ],
     [
-     37,
+     57,
      "STEP 03 마감과 마감취소"
     ]
    ],
-   "length": "1분 0초",
+   "length": "1분 29초",
    "group": "dc"
   },
   "dc1": {
    "file": "dc1.bin",
-   "iv": "e/TCxPi+XFL980ma",
-   "size": 5019317,
+   "iv": "zCMB2YySkhU+YaMa",
+   "size": 7575568,
    "title": "조건설정",
    "chapters": [
     [
@@ -1256,21 +1256,21 @@
      "STEP 01 조건설정 열기"
     ],
     [
-     11,
+     15,
      "STEP 02 급여유형 산입기준"
     ],
     [
-     27,
+     39,
      "STEP 03 휴직 / 휴가 산입기준"
     ]
    ],
-   "length": "0분 56초",
+   "length": "1분 24초",
    "group": "dc"
   },
   "dc2": {
    "file": "dc2.bin",
-   "iv": "QvUkhsmmit3Ml+2T",
-   "size": 5112278,
+   "iv": "RMq9tTSnub8vLLPx",
+   "size": 7071684,
    "title": "신규 가입 대상자 등록",
    "chapters": [
     [
@@ -1278,21 +1278,21 @@
      "STEP 01 가입도래 대상자 확인"
     ],
     [
-     15,
+     20,
      "STEP 02 직접 추가"
     ],
     [
-     29,
+     41,
      "STEP 03 가입 정보 입력"
     ]
    ],
-   "length": "0분 50초",
+   "length": "1분 13초",
    "group": "dc"
   },
   "dc6": {
    "file": "dc6.bin",
-   "iv": "icBvU+CNSezj47Ym",
-   "size": 2861396,
+   "iv": "P5/oDMPdfpUd1ELe",
+   "size": 4694480,
    "title": "퇴직연금산정내역",
    "chapters": [
     [
@@ -1300,11 +1300,11 @@
      "STEP 01 산정내역 조회"
     ],
     [
-     18,
+     33,
      "STEP 02 누계관리"
     ]
    ],
-   "length": "0분 36초",
+   "length": "1분 3초",
    "group": "dc"
   },
   "apl3": {
