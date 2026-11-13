@@ -349,8 +349,8 @@
   },
   "punch1": {
    "file": "punch1.bin",
-   "iv": "C2MJDJRHUahlP+vq",
-   "size": 10861329,
+   "iv": "QCi2CJBXzhs3XH4u",
+   "size": 15928820,
    "title": "정시 출근 / 정시 퇴근",
    "chapters": [
     [
@@ -358,15 +358,15 @@
      "STEP 01 출근 기록"
     ],
     [
-     37,
+     58,
      "STEP 02 퇴근 기록"
     ],
     [
-     58,
+     89,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 42초",
+   "length": "2분 54초",
    "group": "tam_punch"
   },
   "punch2": {
