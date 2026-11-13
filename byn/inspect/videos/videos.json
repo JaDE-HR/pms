@@ -261,8 +261,8 @@
   },
   "adj2": {
    "file": "adj2.bin",
-   "iv": "ts7PNhWT6GTQXg+q",
-   "size": 5809206,
+   "iv": "muZxGLTfpx5H9qGr",
+   "size": 8112467,
    "title": "출퇴근기록 조정 (계획)",
    "chapters": [
     [
@@ -270,21 +270,21 @@
      "STEP 01 출근 전 계획 조회"
     ],
     [
-     21,
+     33,
      "STEP 02 계획 시각 조정"
     ],
     [
-     40,
+     54,
      "STEP 03 일근태 확인"
     ]
    ],
-   "length": "1분 12초",
+   "length": "1분 48초",
    "group": "tam_adj"
   },
   "adj3": {
    "file": "adj3.bin",
-   "iv": "rrqhTYxKU7qKySUu",
-   "size": 5002149,
+   "iv": "5EnkwKgMAB4kKyX3",
+   "size": 6415369,
    "title": "출퇴근기록 조정 (확정 강제)",
    "chapters": [
     [
@@ -292,21 +292,21 @@
      "STEP 01 출퇴근 기록 조회"
     ],
     [
-     17,
+     26,
      "STEP 02 확정 출근 강제 조정"
     ],
     [
-     29,
+     40,
      "STEP 03 근로시간 계산"
     ]
    ],
-   "length": "0분 54초",
+   "length": "1분 13초",
    "group": "tam_adj"
   },
   "adj4": {
    "file": "adj4.bin",
-   "iv": "d7sgwrFtOrh5vAxO",
-   "size": 4905629,
+   "iv": "ntgG+jioc0ID+GzO",
+   "size": 7417645,
    "title": "근태코드관리",
    "chapters": [
     [
@@ -314,21 +314,21 @@
      "STEP 01 대상자 조회와 행 추가"
     ],
     [
-     24,
+     34,
      "STEP 02 시간연차 등록"
     ],
     [
-     44,
+     61,
      "STEP 03 휴가현황 확인"
     ]
    ],
-   "length": "1분 6초",
+   "length": "1분 38초",
    "group": "tam_adj"
   },
   "adj5": {
    "file": "adj5.bin",
-   "iv": "NO/FIAf8dmaSS8vQ",
-   "size": 5192506,
+   "iv": "jeflobeOVEm62FRM",
+   "size": 7268335,
    "title": "사전근무 신청내역",
    "chapters": [
     [
@@ -336,15 +336,15 @@
      "STEP 01 승인된 신청 조회"
     ],
     [
-     21,
+     35,
      "STEP 02 담당자 직접 추가"
     ],
     [
-     47,
+     70,
      "STEP 03 일근태 확인"
     ]
    ],
-   "length": "1분 8초",
+   "length": "1분 39초",
    "group": "tam_adj"
   },
   "punch1": {
@@ -371,8 +371,8 @@
   },
   "punch2": {
    "file": "punch2.bin",
-   "iv": "fHezwwaEo2sMCF6L",
-   "size": 10167471,
+   "iv": "I9G8likTodfA2jU0",
+   "size": 14927091,
    "title": "일찍 출근",
    "chapters": [
     [
@@ -380,21 +380,21 @@
      "STEP 01 출근 기록"
     ],
     [
-     28,
+     43,
      "STEP 02 퇴근 기록"
     ],
     [
-     48,
+     75,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 35초",
+   "length": "2분 44초",
    "group": "tam_punch"
   },
   "month1": {
    "file": "month1.bin",
-   "iv": "jxWz6535GucttESk",
-   "size": 9802002,
+   "iv": "48PXlVnkdccqzf4B",
+   "size": 15584962,
    "title": "월근태집계 기준과 실행",
    "chapters": [
     [
@@ -402,11 +402,11 @@
      "STEP 01 월근태집계 기준"
     ],
     [
-     50,
+     90,
      "STEP 02 월근태집계 실행"
     ]
    ],
-   "length": "1분 38초",
+   "length": "2분 53초",
    "group": "tam_month"
   },
   "month2": {
@@ -845,68 +845,68 @@
   },
   "punch3": {
    "file": "punch3.bin",
-   "iv": "plVebckDpTfynh1P",
-   "size": 10360642,
+   "iv": "wkwie9+Dv1ykVyzB",
+   "size": 15191811,
    "title": "일찍 퇴근",
    "chapters": [
     [
-     3,
+     5,
      "STEP 01 출근 기록"
     ],
     [
-     27,
+     43,
      "STEP 02 퇴근 기록"
     ],
     [
-     48,
+     76,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 36초",
+   "length": "2분 47초",
    "group": "tam_punch"
   },
   "punch4": {
    "file": "punch4.bin",
-   "iv": "77xfY5adw/cxziRW",
-   "size": 10289733,
+   "iv": "SfX8u6qNkcd+G6vV",
+   "size": 15705135,
    "title": "늦게 출근",
    "chapters": [
     [
-     3,
+     5,
      "STEP 01 출근 기록"
     ],
     [
-     27,
+     45,
      "STEP 02 퇴근 기록"
     ],
     [
-     48,
+     80,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 36초",
+   "length": "2분 56초",
    "group": "tam_punch"
   },
   "punch5": {
    "file": "punch5.bin",
-   "iv": "yBPEWiYodvzRL3jU",
-   "size": 10864153,
+   "iv": "dMruLbtCdRDm8tHr",
+   "size": 16422372,
    "title": "늦게 퇴근",
    "chapters": [
     [
-     3,
+     5,
      "STEP 01 출근 기록"
     ],
     [
-     27,
+     42,
      "STEP 02 퇴근 기록"
     ],
     [
-     48,
+     74,
      "STEP 03 근로시간 산정 확인"
     ]
    ],
-   "length": "1분 46초",
+   "length": "3분 5초",
    "group": "tam_punch"
   },
   "shift6": {
