@@ -17,7 +17,7 @@
  "videos": {
   "tam1": {
    "file": "tam1.bin",
-   "iv": "xFCVSgIQ5csvnnQd",
+   "iv": "Yp55DOIor8gyRhKO",
    "title": "휴일관리",
    "chapters": [
     [
@@ -25,20 +25,20 @@
      "STEP 01 전년도 자료 복사"
     ],
     [
-     23,
+     37,
      "STEP 02 음력 휴일 확인"
     ],
     [
-     35,
+     57,
      "STEP 03 맞지 않는 행 삭제"
     ],
     [
-     53,
+     80,
      "STEP 04 2027년 휴일 추가"
     ]
    ],
-   "size": 10651166,
-   "length": "1분 20초",
+   "size": 14068789,
+   "length": "1분 55초",
    "group": "tam_y"
   },
   "org1": {
@@ -65,8 +65,8 @@
   },
   "tam2": {
    "file": "tam2.bin",
-   "iv": "sHFnKpGumhJrVUPp",
-   "size": 9065891,
+   "iv": "3O6VLenf0Kk3f4pi",
+   "size": 13540675,
    "title": "근무스케쥴생성",
    "chapters": [
     [
@@ -74,25 +74,25 @@
      "STEP 01 2027년 조회"
     ],
     [
-     15,
+     27,
      "STEP 02 근무조 전체 생성"
     ],
     [
-     35,
+     56,
      "STEP 03 근무 일정 확인"
     ],
     [
-     51,
+     86,
      "STEP 04 정산구간 확인"
     ]
    ],
-   "length": "1분 7초",
+   "length": "1분 48초",
    "group": "tam_y"
   },
   "tam3": {
    "file": "tam3.bin",
-   "iv": "Vi+umZyfn9sDdp0F",
-   "size": 8247272,
+   "iv": "Br4cGzErjuwlhzzd",
+   "size": 12097598,
    "title": "일근태생성",
    "chapters": [
     [
@@ -100,15 +100,15 @@
      "STEP 01 전 직원 일근태 생성"
     ],
     [
-     32,
+     51,
      "STEP 02 중도입사자 일근태 생성"
     ],
     [
-     62,
+     104,
      "STEP 03 생성이력 확인"
     ]
    ],
-   "length": "1분 19초",
+   "length": "2분 7초",
    "group": "tam_y"
   },
   "org2": {
@@ -231,8 +231,8 @@
   },
   "adj1": {
    "file": "adj1.bin",
-   "iv": "ls9ywGc95t9bPFuT",
-   "size": 11344391,
+   "iv": "e+xmE8U7fb/3fcGf",
+   "size": 15890077,
    "title": "개인별 근무조 변경",
    "chapters": [
     [
@@ -240,23 +240,23 @@
      "STEP 01 현재 근무조 확인"
     ],
     [
-     15,
+     28,
      "STEP 02 근무조 나누기"
     ],
     [
-     45,
+     81,
      "STEP 03 일근태 다시 생성"
     ],
     [
-     69,
+     120,
      "STEP 04 일근태 확인"
     ],
     [
-     83,
+     141,
      "STEP 05 원래대로 되돌리기"
     ]
    ],
-   "length": "1분 52초",
+   "length": "3분 0초",
    "group": "tam_adj"
   },
   "adj2": {
@@ -411,8 +411,8 @@
   },
   "month2": {
    "file": "month2.bin",
-   "iv": "JxfbTC/jwotQxNbB",
-   "size": 5334138,
+   "iv": "OkyM6oTcMfBXFvyf",
+   "size": 8530466,
    "title": "월근태집계 결과 확인",
    "chapters": [
     [
@@ -420,13 +420,13 @@
      "STEP 01 근로시간 확인"
     ]
    ],
-   "length": "0분 54초",
+   "length": "1분 31초",
    "group": "tam_month"
   },
   "month3": {
    "file": "month3.bin",
-   "iv": "GgownAxt1/P8DxwP",
-   "size": 6138661,
+   "iv": "YbUfGM73bPGrDhtF",
+   "size": 10795327,
    "title": "월근태 마감",
    "chapters": [
     [
@@ -434,21 +434,21 @@
      "STEP 01 대상월 행 찾기"
     ],
     [
-     15,
+     27,
      "STEP 02 마감여부 체크 / 저장"
     ],
     [
-     39,
+     68,
      "STEP 03 마감 확인"
     ]
    ],
-   "length": "1분 2초",
+   "length": "1분 48초",
    "group": "tam_month"
   },
   "shift1": {
    "file": "shift1.bin",
-   "iv": "1uOmw8cmiK2QAAp2",
-   "size": 9420040,
+   "iv": "ve4sb8r71GlgxG0x",
+   "size": 11977188,
    "title": "관리자 / 그룹장 / 대상자 설정",
    "chapters": [
     [
@@ -456,25 +456,25 @@
      "STEP 01 역할과 권한"
     ],
     [
-     19,
+     35,
      "STEP 02 관리자 등록"
     ],
     [
-     44,
+     66,
      "STEP 03 근무그룹장 등록"
     ],
     [
-     64,
+     93,
      "STEP 04 대상자 등록"
     ]
    ],
-   "length": "1분 38초",
+   "length": "2분 15초",
    "group": "tam_shift"
   },
   "shift2": {
    "file": "shift2.bin",
-   "iv": "P870oCmUiFl0GsgW",
-   "size": 7678905,
+   "iv": "eqn83x3OznvMNYkX",
+   "size": 11462418,
    "title": "스케쥴관리",
    "chapters": [
     [
@@ -482,21 +482,21 @@
      "STEP 01 대상자 조회"
     ],
     [
-     23,
+     40,
      "STEP 02 근무유형 변경"
     ],
     [
-     52,
+     87,
      "STEP 03 엑셀 다운로드 / 업로드"
     ]
    ],
-   "length": "1분 8초",
+   "length": "1분 54초",
    "group": "tam_shift"
   },
   "shift3": {
    "file": "shift3.bin",
-   "iv": "78YFkSSFdLD7kFsw",
-   "size": 4718102,
+   "iv": "Qf3CkTtzOonjCiBf",
+   "size": 6836838,
    "title": "OT 사전 신청",
    "chapters": [
     [
@@ -504,17 +504,17 @@
      "STEP 01 연장근무 계획 입력"
     ],
     [
-     37,
+     59,
      "STEP 02 근무계획 승인신청"
     ]
    ],
-   "length": "0분 58초",
+   "length": "1분 32초",
    "group": "tam_shift"
   },
   "shift4": {
    "file": "shift4.bin",
-   "iv": "P3Wz3DiKXjAdTmB2",
-   "size": 5793205,
+   "iv": "pmmolHAKOsWPsZl9",
+   "size": 8087740,
    "title": "OT 사전 승인",
    "chapters": [
     [
@@ -522,17 +522,17 @@
      "STEP 01 OT 사전 승인"
     ],
     [
-     31,
+     45,
      "STEP 02 반영 확인"
     ]
    ],
-   "length": "1분 2초",
+   "length": "1분 38초",
    "group": "tam_shift"
   },
   "shift5": {
    "file": "shift5.bin",
-   "iv": "ZGLWHOXQUNWDinpd",
-   "size": 4973828,
+   "iv": "atIfHAAKm9dvF1Je",
+   "size": 6945167,
    "title": "OT 사후 신청",
    "chapters": [
     [
@@ -540,11 +540,11 @@
      "STEP 01 실제 근무 시각 입력"
     ],
     [
-     39,
+     60,
      "STEP 02 근무결과 승인신청"
     ]
    ],
-   "length": "1분 1초",
+   "length": "1분 35초",
    "group": "tam_shift"
   },
   "pay3": {
@@ -911,8 +911,8 @@
   },
   "shift6": {
    "file": "shift6.bin",
-   "iv": "LTzSMCPQj2Trvir3",
-   "size": 6132358,
+   "iv": "jX7sm0N64xNZj+8D",
+   "size": 8615091,
    "title": "OT 사후 승인",
    "chapters": [
     [
@@ -920,11 +920,11 @@
      "STEP 01 OT 사후 승인"
     ],
     [
-     31,
+     46,
      "STEP 02 반영 확인"
     ]
    ],
-   "length": "1분 6초",
+   "length": "1분 40초",
    "group": "tam_shift"
   },
   "bill1": {
