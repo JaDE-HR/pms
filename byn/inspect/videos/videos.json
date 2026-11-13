@@ -627,8 +627,8 @@
   },
   "apl1": {
    "file": "apl1.bin",
-   "iv": "H93YIL5SmSiXlqTc",
-   "size": 22780343,
+   "iv": "sjJQB1DI74uBojqy",
+   "size": 32219483,
    "title": "신청서 생성 및 결재선 기준",
    "chapters": [
     [
@@ -636,25 +636,25 @@
      "STEP 01 신청서 추가"
     ],
     [
-     35,
+     48,
      "STEP 02 신청서 연결"
     ],
     [
-     70,
+     115,
      "STEP 03 기본결재선"
     ],
     [
-     115,
+     198,
      "STEP 04 HR결재와 승인"
     ]
    ],
-   "length": "2분 42초",
+   "length": "4분 27초",
    "group": "apl_s"
   },
   "apl2": {
    "file": "apl2.bin",
-   "iv": "GSZrEpeitcDxMKBM",
-   "size": 12972229,
+   "iv": "FOMFCHlcVcJwt6L0",
+   "size": 16652516,
    "title": "신청서 옵션 설정",
    "chapters": [
     [
@@ -662,15 +662,15 @@
      "STEP 01 신청서 노출 / 입력 항목"
     ],
     [
-     24,
+     37,
      "STEP 02 안내 문구"
     ],
     [
-     63,
+     89,
      "STEP 03 메일참조"
     ]
    ],
-   "length": "1분 36초",
+   "length": "2분 14초",
    "group": "apl_s"
   },
   "hr1": {
@@ -1309,8 +1309,8 @@
   },
   "apl3": {
    "file": "apl3.bin",
-   "iv": "D1Uw2ETp3ttH70a0",
-   "size": 4172828,
+   "iv": "L+mZUGvRus54PlQ1",
+   "size": 5672858,
    "title": "사전근무 신청서",
    "chapters": [
     [
@@ -1318,16 +1318,17 @@
      "STEP 01 사전근무 신청"
     ],
     [
-     31,
+     48,
      "STEP 02 반영 확인"
     ]
    ],
-   "group": "apl_t"
+   "group": "apl_t",
+   "length": "1분 25초"
   },
   "apl4": {
    "file": "apl4.bin",
-   "iv": "4/6HoQRWNs2qepJ+",
-   "size": 3606212,
+   "iv": "J+RavRIb1KI/mnYS",
+   "size": 4562737,
    "title": "사전근무취소 신청서",
    "chapters": [
     [
@@ -1335,16 +1336,17 @@
      "STEP 01 사전근무 취소"
     ],
     [
-     26,
+     40,
      "STEP 02 반영 확인"
     ]
    ],
-   "group": "apl_t"
+   "group": "apl_t",
+   "length": "1분 4초"
   },
   "apl5": {
    "file": "apl5.bin",
-   "iv": "qwMiYQ9EpW+6a21b",
-   "size": 4044725,
+   "iv": "AnabSmsKDTqEBqgU",
+   "size": 5404689,
    "title": "사후근무신청서",
    "chapters": [
     [
@@ -1352,16 +1354,17 @@
      "STEP 01 사후근무 신청"
     ],
     [
-     26,
+     39,
      "STEP 02 반영 확인"
     ]
    ],
-   "group": "apl_t"
+   "group": "apl_t",
+   "length": "1분 10초"
   },
   "apl6": {
    "file": "apl6.bin",
-   "iv": "zR9D5M5FRvwX37XO",
-   "size": 3614805,
+   "iv": "ZGZr3eO8kFI6ryXu",
+   "size": 4781352,
    "title": "출퇴근시각변경신청서",
    "chapters": [
     [
@@ -1369,16 +1372,17 @@
      "STEP 01 출퇴근시각 변경"
     ],
     [
-     27,
+     38,
      "STEP 02 반영 확인"
     ]
    ],
-   "group": "apl_t"
+   "group": "apl_t",
+   "length": "1분 2초"
   },
   "apl7": {
    "file": "apl7.bin",
-   "iv": "1bLHuymp8w8o8wr2",
-   "size": 3608205,
+   "iv": "6t736/ae+RZrSq9H",
+   "size": 4630139,
    "title": "출장/외근 신청서",
    "chapters": [
     [
@@ -1386,16 +1390,17 @@
      "STEP 01 외근 신청"
     ],
     [
-     31,
+     44,
      "STEP 02 반영 확인"
     ]
    ],
-   "group": "apl_t"
+   "group": "apl_t",
+   "length": "1분 6초"
   },
   "apl8": {
    "file": "apl8.bin",
-   "iv": "uusscbddoyR42SVn",
-   "size": 6884756,
+   "iv": "taIPd6kZfw53BOOH",
+   "size": 9267363,
    "title": "연차휴가 신청서",
    "chapters": [
     [
@@ -1403,29 +1408,29 @@
      "STEP 01 연차휴가 신청서 작성"
     ],
     [
-     21,
+     30,
      "STEP 02 확인하고 신청"
     ],
     [
-     40,
+     61,
      "STEP 03 1차 결재"
     ],
     [
-     56,
+     86,
      "STEP 04 2차 결재"
     ],
     [
-     67,
+     99,
      "일근태 확인"
     ]
    ],
    "group": "apl_t",
-   "length": "1분 21초"
+   "length": "1분 56초"
   },
   "apl9": {
    "file": "apl9.bin",
-   "iv": "RnoTtWaCdccuWiXP",
-   "size": 3484674,
+   "iv": "qatPlEWyobkXXOg/",
+   "size": 4583475,
    "title": "근태/휴가취소 신청서",
    "chapters": [
     [
@@ -1433,16 +1438,17 @@
      "STEP 01 근태 / 휴가 취소"
     ],
     [
-     26,
+     40,
      "STEP 02 반영 확인"
     ]
    ],
-   "group": "apl_t"
+   "group": "apl_t",
+   "length": "1분 2초"
   },
   "apl10": {
    "file": "apl10.bin",
-   "iv": "DBfCMM9elE7Fk/vk",
-   "size": 5267185,
+   "iv": "wR5R3yHxGQPGPTaE",
+   "size": 6602038,
    "title": "반려",
    "chapters": [
     [
@@ -1450,20 +1456,21 @@
      "STEP 01 연차휴가 신청"
     ],
     [
-     20,
+     24,
      "STEP 02 반려"
     ],
     [
-     36,
+     47,
      "STEP 03 반려 확인"
     ]
    ],
-   "group": "apl_x"
+   "group": "apl_x",
+   "length": "1분 17초"
   },
   "apl11": {
    "file": "apl11.bin",
-   "iv": "RGp+movExcx3xBtv",
-   "size": 3686098,
+   "iv": "XBafxsoI69Ky8u6Z",
+   "size": 5352934,
    "title": "신청서내역조회",
    "chapters": [
     [
@@ -1471,16 +1478,17 @@
      "STEP 01 조회"
     ],
     [
-     18,
+     28,
      "STEP 02 결과 보기"
     ]
    ],
-   "group": "apl_x"
+   "group": "apl_x",
+   "length": "1분 6초"
   },
   "apl12": {
    "file": "apl12.bin",
-   "iv": "VMpUx3mB34Py/yFI",
-   "size": 5252699,
+   "iv": "ndoGtG2LnFCeF5QM",
+   "size": 7409716,
    "title": "제증명 신청",
    "chapters": [
     [
@@ -1488,20 +1496,21 @@
      "STEP 01 제증명 신청"
     ],
     [
-     34,
+     53,
      "STEP 02 증명서 출력"
     ],
     [
-     45,
+     72,
      "STEP 03 발급 확인"
     ]
    ],
-   "group": "apl_h"
+   "group": "apl_h",
+   "length": "1분 39초"
   },
   "apl13": {
    "file": "apl13.bin",
-   "iv": "KRXrvwgtNbaxfqW0",
-   "size": 4069859,
+   "iv": "4XQnCIDCWFujUtbR",
+   "size": 5837848,
    "title": "경조금/휴가 신청",
    "chapters": [
     [
@@ -1509,11 +1518,12 @@
      "STEP 01 경조금 / 휴가 신청"
     ],
     [
-     34,
+     59,
      "STEP 02 담당자 확인"
     ]
    ],
-   "group": "apl_h"
+   "group": "apl_h",
+   "length": "1분 28초"
   }
  },
  "groups": {
