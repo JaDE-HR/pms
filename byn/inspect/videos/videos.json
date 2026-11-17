@@ -17,7 +17,7 @@
  "videos": {
   "tam1": {
    "file": "tam1.bin",
-   "iv": "Yp55DOIor8gyRhKO",
+   "iv": "MSJ5JyoMR8KP4v2H",
    "title": "휴일관리",
    "chapters": [
     [
@@ -25,7 +25,7 @@
      "STEP 01 전년도 자료 복사"
     ],
     [
-     37,
+     38,
      "STEP 02 음력 휴일 확인"
     ],
     [
@@ -33,12 +33,12 @@
      "STEP 03 맞지 않는 행 삭제"
     ],
     [
-     80,
+     81,
      "STEP 04 2027년 휴일 추가"
     ]
    ],
-   "size": 14068789,
-   "length": "1분 55초",
+   "size": 13920078,
+   "length": "1분 56초",
    "group": "tam_y"
   },
   "org1": {
@@ -113,8 +113,8 @@
   },
   "org2": {
    "file": "org2.bin",
-   "iv": "wDFVgnN0GbzezSp5",
-   "size": 7275323,
+   "iv": "MgjeSNh+ubi7kUk+",
+   "size": 7449123,
    "title": "조직장 등록",
    "chapters": [
     [
@@ -122,21 +122,21 @@
      "STEP 01 조직장관리 열기"
     ],
     [
-     19,
+     18,
      "STEP 02 조직장 지정"
     ],
     [
-     48,
+     47,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "1분 4초",
+   "length": "1분 3초",
    "group": "org_m"
   },
   "org3": {
    "file": "org3.bin",
-   "iv": "ehsgcYDO7lvQ3GfA",
-   "size": 7826787,
+   "iv": "53wQiV+gFVe4sIow",
+   "size": 7713079,
    "title": "조직명 변경",
    "chapters": [
     [
@@ -148,11 +148,11 @@
      "STEP 02 새 명칭 추가"
     ],
     [
-     52,
+     51,
      "STEP 03 저장 / 확인"
     ]
    ],
-   "length": "1분 14초",
+   "length": "1분 13초",
    "group": "org_m"
   },
   "org4": {
@@ -305,8 +305,8 @@
   },
   "adj4": {
    "file": "adj4.bin",
-   "iv": "ntgG+jioc0ID+GzO",
-   "size": 7417645,
+   "iv": "Nh8roXBEgObqFlD8",
+   "size": 6706321,
    "title": "근태코드관리",
    "chapters": [
     [
@@ -322,7 +322,7 @@
      "STEP 03 휴가현황 확인"
     ]
    ],
-   "length": "1분 38초",
+   "length": "1분 36초",
    "group": "tam_adj"
   },
   "adj5": {
@@ -393,8 +393,8 @@
   },
   "month1": {
    "file": "month1.bin",
-   "iv": "48PXlVnkdccqzf4B",
-   "size": 15584962,
+   "iv": "Qs+vBLMfOvfoCHkm",
+   "size": 15357203,
    "title": "월근태집계 기준과 실행",
    "chapters": [
     [
@@ -402,11 +402,11 @@
      "STEP 01 월근태집계 기준"
     ],
     [
-     90,
+     91,
      "STEP 02 월근태집계 실행"
     ]
    ],
-   "length": "2분 53초",
+   "length": "2분 55초",
    "group": "tam_month"
   },
   "month2": {
@@ -513,8 +513,8 @@
   },
   "shift4": {
    "file": "shift4.bin",
-   "iv": "pmmolHAKOsWPsZl9",
-   "size": 8087740,
+   "iv": "+/GPZcyA9TjcpcHe",
+   "size": 7960172,
    "title": "OT 사전 승인",
    "chapters": [
     [
@@ -526,7 +526,7 @@
      "STEP 02 반영 확인"
     ]
    ],
-   "length": "1분 38초",
+   "length": "1분 37초",
    "group": "tam_shift"
   },
   "shift5": {
@@ -549,8 +549,8 @@
   },
   "pay3": {
    "file": "pay3.bin",
-   "iv": "5vHdBbt3Tg+E+dCV",
-   "size": 7068997,
+   "iv": "wOrk/+1dSa61lKCM",
+   "size": 7068331,
    "title": "고정급",
    "chapters": [
     [
@@ -566,13 +566,13 @@
      "STEP 03 비어 있을 때"
     ]
    ],
-   "length": "1분 17초",
+   "length": "1분 18초",
    "group": "pay_b"
   },
   "pay4": {
    "file": "pay4.bin",
-   "iv": "eCGndUOyCnj5Gz+Q",
-   "size": 4890382,
+   "iv": "+RVYr2TYwzBTkvhH",
+   "size": 4900490,
    "title": "예외급",
    "chapters": [
     [
@@ -911,8 +911,8 @@
   },
   "shift6": {
    "file": "shift6.bin",
-   "iv": "jX7sm0N64xNZj+8D",
-   "size": 8615091,
+   "iv": "rimUxj5QPvXoA+Bu",
+   "size": 8550814,
    "title": "OT 사후 승인",
    "chapters": [
     [
@@ -924,13 +924,13 @@
      "STEP 02 반영 확인"
     ]
    ],
-   "length": "1분 40초",
+   "length": "1분 42초",
    "group": "tam_shift"
   },
   "bill1": {
    "file": "bill1.bin",
-   "iv": "UDXsNE2VE9Rn+el1",
-   "size": 8263407,
+   "iv": "legqtQhNfQcWEZup",
+   "size": 8263232,
    "title": "급여 전표 집계",
    "chapters": [
     [
@@ -938,21 +938,21 @@
      "STEP 01 전표대상 추가"
     ],
     [
-     43,
+     42,
      "STEP 02 전표집계"
     ],
     [
-     61,
+     60,
      "STEP 03 계정별 금액 확인"
     ]
    ],
-   "length": "1분 40초",
+   "length": "1분 39초",
    "group": "bill"
   },
   "bill2": {
    "file": "bill2.bin",
-   "iv": "pxrtKi7wc7ug1XTW",
-   "size": 6400330,
+   "iv": "yDjJa5SoDvga5NaG",
+   "size": 6396084,
    "title": "퇴직충당금 전표 집계",
    "chapters": [
     [
@@ -973,8 +973,8 @@
   },
   "bill3": {
    "file": "bill3.bin",
-   "iv": "x+XEfQCQHEhIPlw8",
-   "size": 5488976,
+   "iv": "SG9SaQMkuYRh4IMt",
+   "size": 5378670,
    "title": "일용직 전표 집계",
    "chapters": [
     [
@@ -990,13 +990,13 @@
      "STEP 03 집계 전일 때만"
     ]
    ],
-   "length": "1분 11초",
+   "length": "1분 12초",
    "group": "bill"
   },
   "pay5": {
    "file": "pay5.bin",
-   "iv": "WBNtREBegQa32tov",
-   "size": 8187293,
+   "iv": "UwakPCrEncEWExpv",
+   "size": 7971125,
    "title": "급여일관리",
    "chapters": [
     [
@@ -1004,7 +1004,7 @@
      "STEP 01 급여일 조회"
     ],
     [
-     28,
+     29,
      "STEP 02 테스트 급여일 추가"
     ],
     [
@@ -1083,8 +1083,8 @@
   },
   "pay9": {
    "file": "pay9.bin",
-   "iv": "JQg2RZbpkNI37fNQ",
-   "size": 4166737,
+   "iv": "+Qnu5O4Y2xFMpRgX",
+   "size": 4029872,
    "title": "급여명세서",
    "chapters": [
     [
@@ -1185,8 +1185,8 @@
   },
   "dc3": {
    "file": "dc3.bin",
-   "iv": "63Hx+5HPiXRckh1Y",
-   "size": 11834961,
+   "iv": "8R+/D88Ke7A7xIU3",
+   "size": 11574734,
    "title": "납입금액산정",
    "chapters": [
     [
@@ -1198,7 +1198,7 @@
      "STEP 02 정산생성"
     ],
     [
-     84,
+     85,
      "STEP 03 상세 확인"
     ]
    ],
@@ -1269,8 +1269,8 @@
   },
   "dc2": {
    "file": "dc2.bin",
-   "iv": "RMq9tTSnub8vLLPx",
-   "size": 7071684,
+   "iv": "0iS0iyEEbnrXckAc",
+   "size": 6914352,
    "title": "신규 가입 대상자 등록",
    "chapters": [
     [
@@ -1286,7 +1286,7 @@
      "STEP 03 가입 정보 입력"
     ]
    ],
-   "length": "1분 13초",
+   "length": "1분 14초",
    "group": "dc"
   },
   "dc6": {
