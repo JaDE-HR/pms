@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.11.1';
+var VER = '1.12.0';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -1227,7 +1227,14 @@ function render(DATA, warn){
           +'<td class="dt">'+rich(x.action)+'</td><td class="mn">'+esc(x.owner)+'</td>'
           +'<td class="mn">'+esc(x.due)+'</td></tr>'; }).join('')
       +'</tbody>';
-    if($('n-iss')) $('n-iss').textContent=DATA.issues.filter(function(i){ return i.lv==='높음'; }).length+'/'+DATA.issues.length;
+    /* 탭 배지 = 이슈 건수. 「n/n」(확인요청 = 대기/전체)과 섞이지 않게 숫자 하나로 쓰고,
+       영향도 「높음」이 하나라도 있으면 빨갛게 강조한다 — 탭을 열지 않아도 이슈가 있다는 것이 보이게. */
+    var nIss=$('n-iss');
+    if(nIss){
+      var hi=DATA.issues.filter(function(i){ return i.lv==='높음'; }).length;
+      nIss.textContent=DATA.issues.length;
+      if(hi){ nIss.className='alert'; nIss.title='영향도 높음 '+hi+'건'; }
+    }
   }
 
   /* ── 탭 ── */
@@ -1276,7 +1283,8 @@ function boot(password, onBadPw){
       {id:'p-rec',  label:'녹화본',    src:'녹화본',  on:D.recordings.length>0},
       {id:'p-doc',  label:'산출물',    src:'산출물',  on:D.docs.length>0},
       {id:'p-req',  label:'확인요청',  src:'확인요청', on:D.requests.length>0, badge:true},
-      {id:'p-iss',  label:'이슈',      src:'이슈',    on:!!D.hasIssueSheet}
+      /* 이슈가 있을 때만 배지(건수) — 높음이 있으면 빨갛게 (1.12.0 · isens PM 요청) */
+      {id:'p-iss',  label:'이슈',      src:'이슈',    on:!!D.hasIssueSheet, badge:D.issues.length>0}
     ];
     var tabs=TABDEF.filter(function(x){ return x.on && !hidden[x.src] && !hidden[x.label]; });
 

@@ -262,6 +262,8 @@ a:hover{text-decoration:underline}
 .tab b{font-size:11px;font-weight:600;margin-left:7px;background:var(--parchment);
   color:var(--muted48);padding:2px 8px;border-radius:9999px}
 .tab[aria-selected="true"] b{background:#e8f1fc;color:var(--primary)}
+/* 이슈 배지 — 영향도 「높음」이 있으면 탭을 열지 않아도 보이게 빨갛게 (1.12.0) */
+.tab b.alert,.tab[aria-selected="true"] b.alert{background:var(--over);color:#fff}
 
 /* ── 패널 ─────────────────────────────────────── */
 .panel{padding:36px 0 88px}

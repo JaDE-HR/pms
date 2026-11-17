@@ -111,7 +111,10 @@ async function run(sheets, boardCfg = {}, opts = {}) {
     dom, w, d, errs, logs,
     gateOff: d.getElementById('gate') && d.getElementById('gate').className === 'off',
     err: d.querySelector('.errbox') ? d.querySelector('.errbox').textContent.trim() : null,
-    tabs: [...d.querySelectorAll('.tab')].map(t => t.textContent.replace(/\d+\/\d+$/, '').trim()),
+    /* 탭 이름 = 배지(<b>)를 뺀 글자. 배지 모양(n/n · 숫자 하나)이 늘어도 이름 비교가 안 깨지게 요소째 뺀다 */
+    tabs: [...d.querySelectorAll('.tab')].map(t => {
+      const c = t.cloneNode(true); c.querySelectorAll('b').forEach(b => b.remove()); return c.textContent.trim();
+    }),
     rows: d.querySelectorAll('.gr').length,
     bars: d.querySelectorAll('.gb').length,
     gm: (d.getElementById('g-m') || {}).textContent || '',
@@ -591,6 +594,33 @@ const ok = (cond, label, extra) => cond
     ok(r.d.querySelectorAll('script').length === 0, 'script 노드 0개');
     ok(r.d.querySelectorAll('[onerror],[onload]').length === 0, '이벤트 핸들러 속성 0개');
     ok(/&lt;script&gt;/.test(r.html), '<script> 는 글자로 표시됨');
+  }
+
+  console.log('\n== U. 이슈 탭 배지 (1.12.0) ==');
+  {
+    /* FIX = 영향도 「높음」 1건 → 배지 「1」 · 빨강(alert) */
+    const r = await run(FIX);
+    const b = r.d.getElementById('n-iss');
+    ok(!!b, '이슈가 있으면 배지가 생긴다');
+    ok(b && b.textContent === '1', '배지 = 이슈 건수', b && b.textContent);
+    ok(b && b.className === 'alert', '높음이 있으면 alert(빨강)', b && b.className);
+    ok(r.tabs.includes('이슈'), '탭 이름은 「이슈」 그대로', r.tabs.join(','));
+  }
+  {
+    const f = { ...FIX };
+    f['이슈'] = [['영향도', '원인', '항목', '상세', '대응방안', '담당', '기한'],
+      ['보통', '일정', '가', '', '', 'PM', ''], ['낮음', '일정', '나', '', '', 'PM', '']];
+    const r = await run(f);
+    const b = r.d.getElementById('n-iss');
+    ok(b && b.textContent === '2', '높음이 없어도 건수는 보인다', b && b.textContent);
+    ok(b && b.className !== 'alert', '높음이 없으면 빨강 아님', b && b.className);
+  }
+  {
+    const f = { ...FIX };
+    f['이슈'] = [['영향도', '원인', '항목', '상세', '대응방안', '담당', '기한']];
+    const r = await run(f);
+    ok(r.tabs.includes('이슈'), '이슈 0건이어도 탭은 남는다', r.tabs.join(','));
+    ok(!r.d.getElementById('n-iss'), '이슈 0건이면 배지 없음');
   }
 
   console.log(`\n=========== 통과 ${pass} / 실패 ${fail} ===========\n`);
