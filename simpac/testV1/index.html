@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>심팩 통합테스트 시나리오</title>
+<!-- ══════════════════════════════════════════════════════════════
+     심팩 통합테스트 시나리오 — 잠금 화면 (현황판 잠금 화면과 같은 모양)
+     https://jade-hr.github.io/pms/simpac/testV1/
+
+     본문은 같은 폴더의 scenario.enc (암호문)에 있습니다.
+     비밀번호 = 이 페이지 전용 (현황판과 다름 · _passwords.local.md 의 「simpac-testV1」).
+     복호화에 성공하면 그 HTML 로 이 문서를 통째로 바꿉니다.
+     결과는 본문 안의 구글 스프레드시트(Apps Script 웹 앱)에 저장됩니다 — 주소도 암호문 안에만 있습니다.
+     본문을 고친 뒤:  python simpac/testV1/build.py   → scenario.enc 재생성
+     암호문 형식은 현황판과 같습니다 (_tools/pack.py · app/board.js decrypt()):
+       "JPMS1"(5) | iterations(4, big-endian) | salt(16) | iv(12) | ciphertext+tag
+     ══════════════════════════════════════════════════════════════ -->
+<style>
+/* 색 · 글꼴은 app/board.css 의 잠금 화면과 같게 */
+:root{--primary:#0066cc;--ink:#1d1d1f;--muted48:#7a7a7a;--hairline:#e0e0e0;--canvas:#fff;--over:#d70015;
+  --sans:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Inter',system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:15px;letter-spacing:-0.2px;
+  -webkit-font-smoothing:antialiased}
+.gate-card{width:100%;max-width:380px;text-align:center}
+.gate-logo{display:flex;align-items:center;justify-content:center;gap:13px;margin-bottom:30px}
+.gate-logo i{display:block;width:1px;height:28px;background:var(--hairline);flex-shrink:0}
+.gate-logo img{height:28px;opacity:.88;flex-shrink:0}
+.gate-logo img.cl{height:46px;opacity:1;transform:translateY(-5px)}
+h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-0.6px}
+.sub{margin:10px 0 0;font-size:14px;color:var(--muted48)}
+.gate-form{margin-top:28px;display:flex;gap:8px}
+#pw{flex:1;min-width:0;border:1px solid var(--hairline);border-radius:9999px;padding:12px 18px;
+  font-family:var(--sans);font-size:15px;color:var(--ink);background:var(--canvas);letter-spacing:0.5px}
+#pw:focus{outline:none;border-color:var(--primary)}
+#go{border:0;border-radius:9999px;background:var(--primary);color:#fff;padding:12px 22px;
+  font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer}
+#go:hover{background:#0058b0}
+#go:disabled{background:#b9c3ce;cursor:default}
+#go:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+#msg{margin-top:14px;font-size:13px;color:var(--over);min-height:19px}
+#msg.wait{color:var(--muted48)}
+@keyframes shake{10%,90%{transform:translateX(-2px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-4px)}}
+.gate-card.bad{animation:shake .4s}
+</style></head><body>
+<div class="gate-card" id="card">
+  <div class="gate-logo"><img class="cl" src="../ci.svg?v=19" alt="심팩"><i></i><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAF4AAAAhCAYAAABQphx6AAAEWElEQVR42u2aaWhVRxTHf0oU6xI/JEYS90ZMXXCrikurgrVVRFRsxbgitCIK1roEpfWD2oIo4oZSW7Gi4IaIaKRFBbV1xTUuaRWDoOBWFzTuVl8/zHkgjzfLve/e5Cbm/+U97sycOfOf5SwzUIUqvE+o9s7/XoZ6RcATB3l1gQ6asrfAMR86ZgH9RG5rIBtoANQD7gEPgfvAeeCI9PEgYJ4ygIGix4eiU4Mk9W4Dl4CzwHbgqgvx9wwd9xdhNnQE9hvKMz0MtikwC8j3QdRhYAOwI0XCuwPfAEN8tj8JrAIKEwuq+9gZfuu98qDw17J6830O+BPgF+Ac0NlH+4bAZiFsSAoT1xVYLwuguR/iXREzlNV0lDEfWAh8EIA+jYG9wAgPbboAx2WXB4XewB6ZUE/Ex8rI5owHJjvUOwacAu44yl0N5DnUawtsE/thw33gDHAFeOq4i74La8WngkbAT5Y664ScwcAA+Z8L/CBG1gSb7FpiF9ItZM8G2slEfg70BJoBw8S2mDAqisTPk8HrsAAoSLLKHwE/A0OBUkP7vjJJOswRAnUoFtuxVryXRPwlOmw0yKgNfBwl4jNEaR1OAMstMi4Bv1rq9NF8rw9MNLR7CUwA/nUYy1zgtaE8FyAtIl6NzXNY6tj/PmC6oTxH8/0roIah3UqgxFGHJ8AMMezJUOKF+FgA9UxezWeGskeW2CDRb870seO+tBC5wqO8TbYKUfHj8yxkhokaFl9/F/As6E6jcMbXdDBqYaK9hYeDYXTqetSMtRwHcWRbCC5I8j3dIvNmgOPtAXya8O0jS5tiS4A2yqMOxUChF+KDQIGPNi8CJL6nDx1KLcR7lbcdKIySH6/D83Lu/3UYQisC8Wnl3H+d95X4uuXcf/3yXE2/OUZt2RZ7sEhjdKeVEfFHk+jQQgIoHVqg0svJ8FhkJiILaOnqd5suQno7unUdDcHOK0PkWGJYWVuBKSGu6KaoLKMOa4DvPcrMl2hXZ1wnlWVa2BS5nrP42WHiOsmTXnEM8hBAVhjDFUcR+gRWa1mV1x3kpAOTLFHwgSTf9wNjDC7jAOD3ykj8bmCqoXykxj4k4guLXz1fQ/xGA/GgknQnLcdxhfRqzgJ/G8qnAk0c5Ey0lOuOtNOWcz4TlbPJqIzu5BJDWS1gi3gLplXZyVD+APgzhai6Fer+dnhlOmoAdqIuG3Tve/JkZ/whLtw11HVhrhxFtnTwYofdsBrznW8z8XIWonL/F4AbqGvHdNSrghjqGpCK4E7GkSPtswKe1OOoe9qYAx/LgNEhLrBIuZNx3BQfuDTAge4RmTHHcX4L/Bj29o5iyqAIlUU8nKKcu8BM1JMRrxO5TM7yu2ENMo1o4hbq8rsb6jHSYEeP4jnwj7iHG1LU4RDQBpVvH4d66OQVl8UuXUNdxpcCFwkjIgsROWLc4rv0rRD9Qn4fSu4kTDQUI1oH9VSjGvBG7GP8avMN6gnKf1QhevgfzpXYgLy885YAAAAASUVORK5CYII=" alt="HCG"></div>
+  <h1>심팩 통합테스트 시나리오</h1>
+  <p class="sub">담당자가 전달드린 통합테스트 비밀번호를 입력해 주세요</p>
+  <div class="gate-form">
+    <input type="password" id="pw" placeholder="비밀번호" autocomplete="off" autofocus aria-label="통합테스트 비밀번호">
+    <button id="go" type="button">확인</button>
+  </div>
+  <p id="msg" role="status"></p>
+</div>
+<script>
+(function(){
+  'use strict';
+  var $=function(id){ return document.getElementById(id); };
+  function say(t, wait){ var m=$('msg'); m.className=wait?'wait':''; m.textContent=t; }
+
+  function decrypt(buf, password){
+    var u=new Uint8Array(buf);
+    if(String.fromCharCode(u[0],u[1],u[2],u[3],u[4])!=='JPMS1') return Promise.reject(new Error('FORMAT'));
+    var iter=(u[5]<<24|u[6]<<16|u[7]<<8|u[8])>>>0;
+    var salt=u.subarray(9,25), iv=u.subarray(25,37), body=u.subarray(37);
+    return crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'])
+      .then(function(base){ return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},
+                                                          base,{name:'AES-GCM',length:256},false,['decrypt']); })
+      .then(function(key){ return crypto.subtle.decrypt({name:'AES-GCM',iv:iv}, key, body); })
+      .catch(function(){ throw new Error('BAD_PW'); });     /* 복호화 실패 = 비밀번호가 틀림 */
+  }
+
+  function open(){
+    var pw=$('pw').value;
+    if(!pw){ say('비밀번호를 입력해 주세요.'); return; }
+    if(!(window.crypto && crypto.subtle && window.TextEncoder)){
+      say('이 브라우저에서는 열 수 없습니다. 최신 Chrome · Edge 로 열어 주세요.'); return;
+    }
+    $('go').disabled=true; say('불러오는 중입니다', true);
+    fetch('./scenario.enc', {cache:'no-cache'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP'); return r.arrayBuffer(); })
+      .then(function(buf){ return decrypt(buf, pw); })
+      .then(function(plain){
+        var html=new TextDecoder('utf-8').decode(plain);
+        document.open(); document.write(html); document.close();   /* 본문으로 통째로 바꾼다 */
+      })
+      .catch(function(e){
+        $('go').disabled=false;
+        if(e && e.message==='BAD_PW'){
+          say('비밀번호가 맞지 않습니다.'); $('pw').select();
+          var c=$('card'); c.classList.remove('bad'); void c.offsetWidth; c.classList.add('bad');
+        }
+        else say('문서를 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
+      });
+  }
+  $('go').addEventListener('click', open);
+  $('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') open(); });
+})();
+</script>
+</body></html>
