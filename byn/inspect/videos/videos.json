@@ -1558,6 +1558,88 @@
    ],
    "length": "2분 57초",
    "group": "pay_b"
+  },
+  "pay12": {
+   "file": "pay12.bin",
+   "iv": "g+0sbfo7phqLQXub",
+   "size": 10441177,
+   "title": "연차수당",
+   "chapters": [
+    [
+     3,
+     "STEP 01 연차 보상 입력"
+    ],
+    [
+     51,
+     "STEP 02 급여계산"
+    ],
+    [
+     82,
+     "STEP 03 연차수당 확인"
+    ]
+   ],
+   "length": "2분 14초",
+   "group": "pay_s"
+  },
+  "pay13": {
+   "file": "pay13.bin",
+   "iv": "8rfXkj1HixcGqbhN",
+   "size": 17106368,
+   "title": "중도퇴사자",
+   "chapters": [
+    [
+     3,
+     "STEP 01 중도퇴사자 관리"
+    ],
+    [
+     19,
+     "STEP 02 퇴직발령 처리"
+    ],
+    [
+     52,
+     "STEP 03 보상연차 반영"
+    ],
+    [
+     79,
+     "STEP 04 급여계산"
+    ],
+    [
+     124,
+     "STEP 05 중도정산"
+    ],
+    [
+     176,
+     "STEP 06 최종급여계산"
+    ]
+   ],
+   "length": "3분 36초",
+   "group": "pay_s"
+  },
+  "pay14": {
+   "file": "pay14.bin",
+   "iv": "b0WtepDg8ETVdLfD",
+   "size": 11163606,
+   "title": "야크마을 OT수당",
+   "chapters": [
+    [
+     3,
+     "STEP 01 월근태 마감 확인"
+    ],
+    [
+     27,
+     "STEP 02 평일연장 확인"
+    ],
+    [
+     61,
+     "STEP 03 급여계산"
+    ],
+    [
+     80,
+     "STEP 04 OT수당 확인"
+    ]
+   ],
+   "length": "2분 9초",
+   "group": "pay_s"
   }
  },
  "groups": {
@@ -1923,6 +2005,23 @@
     {
      "id": "apl13",
      "name": "경조금/휴가 신청"
+    }
+   ]
+  },
+  "pay_s": {
+   "title": "상황별 급여계산",
+   "eps": [
+    {
+     "id": "pay12",
+     "name": "연차수당"
+    },
+    {
+     "id": "pay13",
+     "name": "중도퇴사자"
+    },
+    {
+     "id": "pay14",
+     "name": "야크마을 OT수당"
     }
    ]
   }
