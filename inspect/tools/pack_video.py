@@ -24,6 +24,29 @@ ITER = 200000
 b64 = lambda b: base64.b64encode(b).decode()
 
 
+def frame_check(mp4):
+    """녹화 중 다른 창(작업 화면 / 알림 / 탐색기)이 찍힌 영상은 올리지 않는다 (2026-11-20 사고 뒤 추가).
+    초당 2장을 192×108 회색조로 줄여 1) 밝기 60 미만이 8% 이상(어두운 화면) 2) 가장자리 띠에 밝기 205 미만이 10% 이상(다른 창)이면 이상.
+    매뉴얼 영상은 흰 바탕 목업이라 정상 영상은 둘 다 0에 가깝다. 이상한 시각 목록을 돌려준다."""
+    import subprocess
+    import numpy as np
+    try:
+        import imageio_ffmpeg
+        ff = imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        ff = 'ffmpeg'
+    W, H = 192, 108
+    out = subprocess.run([ff, '-loglevel', 'error', '-i', mp4, '-vf', 'fps=2,scale=%d:%d,format=gray' % (W, H), '-f', 'rawvideo', '-'],
+                         capture_output=True, check=True).stdout
+    n = len(out) // (W * H)
+    a = np.frombuffer(out, dtype=np.uint8)[:n * W * H].reshape(n, H, W)
+    dark = (a < 60).mean(axis=(1, 2))
+    edge = np.concatenate([a[:, :, :3].reshape(n, -1), a[:, :, W - 4:].reshape(n, -1), a[:, :1, :].reshape(n, -1)], axis=1)
+    margin = (edge < 205).mean(axis=1)
+    spread = edge.astype(float).std(axis=1)    # 팝업 딤은 가장자리가 고른 회색(편차 3 안팎), 다른 창은 12 이상
+    return ['%d:%02d' % (i // 2 // 60, i // 2 % 60) for i in range(n) if dark[i] >= 0.08 or (margin[i] >= 0.10 and spread[i] >= 8)]
+
+
 def passwords(key):
     out = []
     t = open(os.path.join(ROOT, '_passwords.local.md'), encoding='utf-8').read()
@@ -74,6 +97,9 @@ def main():
     if a.id:
         meta = man['videos'].setdefault(a.id, {})
         if a.mp4:
+            bad = frame_check(a.mp4)
+            if bad:
+                sys.exit('%s: 녹화 화면 이상 %d장 (%s ...) → 다른 창이 찍힌 영상이라 올리지 않습니다. 다시 녹화하세요.' % (a.id, len(bad), ', '.join(bad[:5])))
             iv = os.urandom(12)
             data = open(a.mp4, 'rb').read()
             open(os.path.join(vd, a.id + '.bin'), 'wb').write(AESGCM(vkey).encrypt(iv, data, a.id.encode()))
