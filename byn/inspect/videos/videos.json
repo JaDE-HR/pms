@@ -1083,8 +1083,8 @@
   },
   "pay9": {
    "file": "pay9.bin",
-   "iv": "+Qnu5O4Y2xFMpRgX",
-   "size": 4029872,
+   "iv": "57HadDgoPbep09yd",
+   "size": 11457656,
    "title": "급여명세서",
    "chapters": [
     [
@@ -1098,9 +1098,17 @@
     [
      34,
      "STEP 03 명세서 출력"
+    ],
+    [
+     65,
+     "STEP 04 명세서 공개"
+    ],
+    [
+     107,
+     "STEP 05 본인 급여명세서"
     ]
    ],
-   "length": "1분 3초",
+   "length": "2분 32초",
    "group": "pay_r"
   },
   "pay10": {
@@ -1524,6 +1532,32 @@
    ],
    "group": "apl_h",
    "length": "1분 28초"
+  },
+  "pay11": {
+   "file": "pay11.bin",
+   "iv": "fS9Duqis19l5tNZy",
+   "size": 17892260,
+   "title": "4대보험 프로세스",
+   "chapters": [
+    [
+     3,
+     "STEP 01 4대보험 프로세스"
+    ],
+    [
+     28,
+     "STEP 02 국민연금 EDI"
+    ],
+    [
+     91,
+     "STEP 03 건강보험 EDI"
+    ],
+    [
+     132,
+     "STEP 04 예외급 반영 확인"
+    ]
+   ],
+   "length": "2분 57초",
+   "group": "pay_b"
   }
  },
  "groups": {
@@ -1587,6 +1621,10 @@
     {
      "id": "pay4",
      "name": "예외급"
+    },
+    {
+     "id": "pay11",
+     "name": "4대보험 프로세스"
     }
    ]
   },
