@@ -1617,8 +1617,8 @@
   },
   "pay14": {
    "file": "pay14.bin",
-   "iv": "b0WtepDg8ETVdLfD",
-   "size": 11163606,
+   "iv": "koq38cMGtWMH0mjE",
+   "size": 13032406,
    "title": "야크마을 OT수당",
    "chapters": [
     [
@@ -1626,19 +1626,19 @@
      "STEP 01 월근태 마감 확인"
     ],
     [
-     27,
+     38,
      "STEP 02 평일연장 확인"
     ],
     [
-     61,
+     80,
      "STEP 03 급여계산"
     ],
     [
-     80,
+     100,
      "STEP 04 OT수당 확인"
     ]
    ],
-   "length": "2분 9초",
+   "length": "2분 37초",
    "group": "pay_s"
   }
  },
