@@ -1760,6 +1760,50 @@
    ],
    "length": "2분 46초",
    "group": "pem"
+  },
+  "pem3": {
+   "file": "pem3.bin",
+   "iv": "afcBrsQlHlgviwYk",
+   "size": 14974064,
+   "title": "3편 목표 수립",
+   "chapters": [
+    [
+     3,
+     "STEP 01 목표설정개시 확인"
+    ],
+    [
+     75,
+     "STEP 02 목표및계획수립"
+    ],
+    [
+     152,
+     "STEP 03 목표및계획합의"
+    ]
+   ],
+   "length": "3분 24초",
+   "group": "pem"
+  },
+  "pem4": {
+   "file": "pem4.bin",
+   "iv": "KDak6uJQfy3kG2kF",
+   "size": 17050576,
+   "title": "4편 평가 수행",
+   "chapters": [
+    [
+     3,
+     "STEP 01 평가개시 확인"
+    ],
+    [
+     78,
+     "STEP 02 본인평가수행"
+    ],
+    [
+     126,
+     "STEP 03 평가자평가수행"
+    ]
+   ],
+   "length": "3분 32초",
+   "group": "pem"
   }
  },
  "groups": {
