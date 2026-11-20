@@ -1083,8 +1083,8 @@
   },
   "pay9": {
    "file": "pay9.bin",
-   "iv": "57HadDgoPbep09yd",
-   "size": 11457656,
+   "iv": "OMdeMw9x6vccMsuz",
+   "size": 16261221,
    "title": "급여명세서",
    "chapters": [
     [
@@ -1100,15 +1100,15 @@
      "STEP 03 명세서 출력"
     ],
     [
-     65,
+     94,
      "STEP 04 명세서 공개"
     ],
     [
-     107,
+     145,
      "STEP 05 본인 급여명세서"
     ]
    ],
-   "length": "2분 32초",
+   "length": "3분 19초",
    "group": "pay_r"
   },
   "pay10": {
