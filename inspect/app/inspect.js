@@ -1,6 +1,6 @@
 // JaDE 검수 시트 표준 앱. 전 고객사가 함께 쓴다. 고객사별 값은 각 index.html 의 window.INSPECT 에만 둔다.
 //   window.INSPECT = { key: "<프로젝트키>", api: "https://<worker 주소>" }
-// 흐름: 테스트(정상 / 오류) → JaDE 조치 완료 → 재테스트 → 항목 검수 체크 → 모듈 검수 완료(자동)
+// 흐름: 테스트(정상 = 검수 자동 체크 / 오류) → JaDE 조치 완료 → 재테스트 정상 → 모듈 검수 완료(자동)
 // 시나리오와 기록은 저장 API 에서 비밀번호가 맞을 때만 받아온다. 이 파일에는 고객사 정보가 없다.
 (() => {
   const VER = "20";
@@ -128,7 +128,7 @@
       <section class="hero"><div class="wrap"><div class="hero-text">
         <div class="eyebrow">검수용 테스트 시나리오</div>
         <h1>모듈별 검수 리스트</h1>
-        <ol class="flow"><li>항목대로 실행하고 테스트 결과를 고릅니다.</li><li>오류는 HCG 프로젝트팀이 확인 후 고친 뒤 메일로 재안내하여 ${esc(CFG.client || "고객사")} 측에서 오류 항목 테스트를 재진행합니다.</li><li>테스트가 정상인 항목은 고객사와 확인 후 검수 체크 합니다.</li><li>모두 체크되면 모듈 검수 완료입니다.</li></ol>
+        <ol class="flow"><li>항목대로 실행하고 테스트 결과를 고릅니다.</li><li>오류는 HCG 프로젝트팀이 확인 후 고친 뒤 메일로 재안내하여 ${esc(CFG.client || "고객사")} 측에서 오류 항목 테스트를 재진행합니다.</li><li>정상을 누르면 검수도 같이 체크됩니다.</li><li>모두 체크되면 모듈 검수 완료입니다.</li></ol>
       </div></div></section>
       <div class="wrap"><div class="band" id="mods" role="group" aria-label="모듈별 진행"></div></div>
       <div class="bar"><div class="wrap"><div class="tablist" role="tablist" aria-label="모듈" id="tabs"></div></div></div>
@@ -351,7 +351,8 @@
     const prevRes = S.results[id], prevRv = S.reviews[id];
     if ((prevRes ? prevRes.status : "none") === status && !sendText) return;
     if (status === "none") delete S.results[id]; else S.results[id] = { item_id: id, status, name, role, at: new Date().toISOString() };
-    if (prevRv) delete S.reviews[id];
+    if (status === "ok" && role === "client") S.reviews[id] = { item_id: id, name, at: new Date().toISOString() };
+    else if (prevRv) delete S.reviews[id];
     refreshRow(id);
     busy++; seq++;
     try {
@@ -359,8 +360,9 @@
       const entry = { item_id: id, status, name, role, at: r.at };
       if (status === "none") delete S.results[id]; else S.results[id] = entry;
       (S.history[id] = S.history[id] || []).push(entry);
-      if (r.reviewCleared) S.history[id].push({ item_id: id, status: "review_off", name, role, at: r.at });
-      else if (prevRv && r.unchanged) S.reviews[id] = prevRv;
+      if (r.reviewSet) { S.reviews[id] = { item_id: id, name, at: r.at }; S.history[id].push({ item_id: id, status: "review", name, role, at: r.at }); }
+      else if (r.reviewCleared) S.history[id].push({ item_id: id, status: "review_off", name, role, at: r.at });
+      else if (r.unchanged) { if (prevRv) S.reviews[id] = prevRv; else delete S.reviews[id]; }
       if (sendText) { (S.opinions[id] = S.opinions[id] || []).push({ id: r.opinionId, item_id: id, name, text: sendText, at: r.at, role }); delete drafts[id]; }
       refreshRow(id);
     } catch (err) {

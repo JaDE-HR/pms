@@ -9,7 +9,8 @@
 // X-Inspect-Pass 헤더로 역할을 정한다. 고객사 비밀번호면 client, JaDE 비밀번호면 jade.
 //   client: 테스트 정상 / 오류 (자유롭게 바꿀 수 있음), 검수 체크
 //   jade:   조치 완료(오류 항목만), 답변
-// 검수 체크는 테스트가 정상 / 해당 없음일 때만 된다. 테스트 결과가 바뀌면 그 항목의 검수는 풀린다.
+// 검수 체크는 테스트가 정상 / 해당 없음일 때만 된다. 고객사가 정상을 누르면 검수도 자동 체크되고,
+// 다른 결과로 바뀌면 그 항목의 검수는 풀린다.
 // 시나리오는 비밀번호가 맞을 때만 내려간다.
 
 const ITER = 10000;           // PBKDF2 반복 횟수. 무료 플랜 CPU 한도 안에서 도는 값
@@ -88,7 +89,13 @@ async function route(req, env) {
           .bind(key, row.id, status, name, role, now),
       hist(row.id, status),
     ];
-    if (reviewed && (!cur || cur.status !== status)) {
+    const changed = !cur || cur.status !== status;
+    // 고객사가 정상을 누르면 검수도 같이 체크한다. 다른 결과로 바꾸면 검수는 풀린다
+    const autoReview = role === "client" && status === "ok" && changed;
+    if (autoReview) {
+      stmts.push(DB.prepare("INSERT INTO reviews (key, item_id, name, at) VALUES (?, ?, ?, ?) " +
+        "ON CONFLICT(key, item_id) DO UPDATE SET name = excluded.name, at = excluded.at").bind(key, row.id, name, now), hist(row.id, "review"));
+    } else if (reviewed && changed) {
       stmts.push(DB.prepare("DELETE FROM reviews WHERE key = ? AND item_id = ?").bind(key, row.id), hist(row.id, "review_off"));
     }
     let opinionId = null;
@@ -96,7 +103,7 @@ async function route(req, env) {
       .bind(key, row.id, name, text, now, role));
     const out = await DB.batch(stmts);
     if (text) opinionId = out[out.length - 1].meta.last_row_id;
-    return json({ ok: true, at: now, opinionId, reviewCleared: !!(reviewed && (!cur || cur.status !== status)) });
+    return json({ ok: true, at: now, opinionId, reviewSet: autoReview, reviewCleared: !autoReview && !!(reviewed && changed) });
   }
 
   if (what === "review" && req.method === "POST") {
