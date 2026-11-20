@@ -1804,6 +1804,70 @@
    ],
    "length": "3분 32초",
    "group": "pem"
+  },
+  "pem6": {
+   "file": "pem6.bin",
+   "iv": "6kzWvrPRUPKLYTQZ",
+   "size": 23021842,
+   "title": "6편 조정 / 결과 / 이의제기",
+   "chapters": [
+    [
+     3,
+     "STEP 01 조정자 확인"
+    ],
+    [
+     38,
+     "STEP 02 평가조정"
+    ],
+    [
+     117,
+     "STEP 03 평가결과관리"
+    ],
+    [
+     134,
+     "STEP 04 평가결과조회"
+    ],
+    [
+     162,
+     "STEP 05 이의제기개시"
+    ],
+    [
+     195,
+     "STEP 06 평가이의신청서"
+    ]
+   ],
+   "length": "4분 12초",
+   "group": "pem"
+  },
+  "pem7": {
+   "file": "pem7.bin",
+   "iv": "v7C3BpLHG7xz1KUM",
+   "size": 18521416,
+   "title": "7편 역량평가",
+   "chapters": [
+    [
+     3,
+     "STEP 01 역량평가 진행단계"
+    ],
+    [
+     42,
+     "STEP 02 평가개시"
+    ],
+    [
+     83,
+     "STEP 03 본인평가"
+    ],
+    [
+     117,
+     "STEP 04 평가자평가"
+    ],
+    [
+     158,
+     "STEP 05 평가결과"
+    ]
+   ],
+   "length": "3분 43초",
+   "group": "pem"
   }
  },
  "groups": {
