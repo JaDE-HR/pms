@@ -549,8 +549,8 @@
   },
   "pay3": {
    "file": "pay3.bin",
-   "iv": "wOrk/+1dSa61lKCM",
-   "size": 7068331,
+   "iv": "AvLkQjM75b7GBicg",
+   "size": 8160651,
    "title": "고정급",
    "chapters": [
     [
@@ -563,10 +563,10 @@
     ],
     [
      55,
-     "STEP 03 비어 있을 때"
+     "STEP 03 고정급 직접 입력"
     ]
    ],
-   "length": "1분 18초",
+   "length": "1분 34초",
    "group": "pay_b"
   },
   "pay4": {
@@ -593,36 +593,36 @@
   },
   "pay2": {
    "file": "pay2.bin",
-   "iv": "g5qtq178DIeKNekO",
-   "size": 17701967,
+   "iv": "L7lo2nKrpgIgVncL",
+   "size": 18154955,
    "title": "연봉관리",
    "chapters": [
     [
      3,
-     "STEP 01 연봉 미입력자 확인"
+     "STEP 01 연봉관리 화면"
     ],
     [
-     22,
-     "STEP 02 연봉 행 추가"
+     34,
+     "STEP 02 테스트2 조회와 추가"
     ],
     [
-     32,
+     56,
      "STEP 03 연봉 입력"
     ],
     [
-     51,
+     74,
      "STEP 04 월 금액 입력과 저장"
     ],
     [
-     81,
+     106,
      "STEP 05 지급금액업데이트"
     ],
     [
-     104,
+     131,
      "STEP 06 잘못 넣었을 때"
     ]
    ],
-   "length": "2분 34초",
+   "length": "3분 7초",
    "group": "pay_b"
   },
   "apl1": {
@@ -1017,8 +1017,8 @@
   },
   "pay6": {
    "file": "pay6.bin",
-   "iv": "nWmKk6Phw0NvfmUK",
-   "size": 8130206,
+   "iv": "3fPDgouoFbHNV2di",
+   "size": 10029510,
    "title": "급여계산",
    "chapters": [
     [
@@ -1026,7 +1026,7 @@
      "STEP 01 테스트 급여일 선택"
     ],
     [
-     46,
+     45,
      "STEP 02 테스트2 지정과 계산"
     ],
     [
@@ -1034,7 +1034,7 @@
      "STEP 03 계산 결과 확인"
     ]
    ],
-   "length": "1분 53초",
+   "length": "2분 21초",
    "group": "pay_c"
   },
   "pay7": {
