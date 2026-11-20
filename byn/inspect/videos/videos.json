@@ -823,8 +823,8 @@
   },
   "hr7": {
    "file": "hr7.bin",
-   "iv": "t/HFsGjIk10uNyET",
-   "size": 4784742,
+   "iv": "g0qx/DEgOZgVE6pc",
+   "size": 4572905,
    "title": "인원명부",
    "chapters": [
     [
@@ -832,15 +832,15 @@
      "STEP 01 기본 조회"
     ],
     [
-     14,
+     13,
      "STEP 02 근속년수로 찾기"
     ],
     [
-     33,
+     32,
      "STEP 03 직급으로 찾기"
     ]
    ],
-   "length": "0분 54초",
+   "length": "0분 53초",
    "group": "hr_o"
   },
   "punch3": {
