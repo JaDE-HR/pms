@@ -1535,8 +1535,8 @@
   },
   "pay11": {
    "file": "pay11.bin",
-   "iv": "fS9Duqis19l5tNZy",
-   "size": 17892260,
+   "iv": "V/cMKG7R0U6xu1Vq",
+   "size": 18992514,
    "title": "4대보험 프로세스",
    "chapters": [
     [
@@ -1548,15 +1548,15 @@
      "STEP 02 국민연금 EDI"
     ],
     [
-     91,
+     94,
      "STEP 03 건강보험 EDI"
     ],
     [
-     132,
+     148,
      "STEP 04 예외급 반영 확인"
     ]
    ],
-   "length": "2분 57초",
+   "length": "3분 13초",
    "group": "pay_b"
   },
   "pay12": {
