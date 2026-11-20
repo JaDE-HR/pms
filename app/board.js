@@ -24,7 +24,7 @@
 (function(){
 'use strict';
 
-var VER = '1.12.0';
+var VER = '1.12.1';
 var CFG = window.BOARD || {};
 var DAY = 86400000;
 var UNLOCKED = false;   /* 잠금을 통과했는가 (셸을 다시 그린 뒤 상태 복원용) */
@@ -92,9 +92,7 @@ var PANELS = {
     +'<div class="gs" id="gs"><div class="gantt" id="gantt"></div></div></div></div></section>',
 
   'p-pkg': '<section class="panel" id="p-pkg" role="tabpanel" hidden>'
-    +'<div class="ph" style="max-width:none"><h1>패키지 진척</h1>'
-    +'<p class="sub">모듈마다 업무분석·기초셋업·교육·최종셋업·테스트·검수 여섯 단계를 거칩니다. '
-    +'완료는 100%, 진행중은 50%로 계산하며, 해당없음은 그 모듈의 단계 수에서 제외됩니다.</p></div>'
+    +'<div class="ph" style="max-width:none"><h1>패키지 진척</h1></div>'
     +'<div class="card"><div class="ch"><h3>모듈별 단계 현황</h3><span class="m" id="pkg-m"></span></div>'
     +'<div class="cb"><div class="glg" style="gap:22px">'
     +'<span><i class="stp done">완료</i></span><span><i class="stp doing">진행</i></span>'
