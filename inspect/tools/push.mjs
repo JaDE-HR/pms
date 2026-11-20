@@ -38,13 +38,18 @@ const hashOf = file => {
 
 const sql = [];
 const passFile = opt("--pass-file"), adminFile = opt("--admin-pass-file");
+// D1 은 SQL 문장 하나가 100KB 를 넘으면 SQLITE_TOOBIG 으로 거절한다 (2026-11-20 byn 시나리오 100,399바이트).
+// 시나리오를 2만 자(한글 3바이트 기준 60KB 안팎)씩 나눠 첫 조각은 그대로 넣고 나머지는 || 로 이어 붙인다.
+const CH = 20000, parts = [];
+for (let i = 0; i < scenario.length; i += CH) parts.push(scenario.slice(i, i + CH));
 if (passFile) {
   const h = hashOf(passFile);
-  sql.push(`INSERT INTO projects (key, salt, pass_hash, scenario, updated_at) VALUES (${q(key)}, ${q(h.salt)}, ${q(h.hash)}, ${q(scenario)}, ${q(now)})
+  sql.push(`INSERT INTO projects (key, salt, pass_hash, scenario, updated_at) VALUES (${q(key)}, ${q(h.salt)}, ${q(h.hash)}, ${q(parts[0])}, ${q(now)})
 ON CONFLICT(key) DO UPDATE SET salt = excluded.salt, pass_hash = excluded.pass_hash, scenario = excluded.scenario, updated_at = excluded.updated_at;`);
 } else {
-  sql.push(`UPDATE projects SET scenario = ${q(scenario)}, updated_at = ${q(now)} WHERE key = ${q(key)};`);
+  sql.push(`UPDATE projects SET scenario = ${q(parts[0])}, updated_at = ${q(now)} WHERE key = ${q(key)};`);
 }
+for (const p of parts.slice(1)) sql.push(`UPDATE projects SET scenario = scenario || ${q(p)} WHERE key = ${q(key)};`);
 if (adminFile) {
   const h = hashOf(adminFile);
   sql.push(`UPDATE projects SET admin_salt = ${q(h.salt)}, admin_hash = ${q(h.hash)} WHERE key = ${q(key)};`);
