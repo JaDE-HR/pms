@@ -327,8 +327,8 @@
   },
   "adj5": {
    "file": "adj5.bin",
-   "iv": "y0cw4CA/Lml4efRa",
-   "size": 9252775,
+   "iv": "PNfSNISL5U+axeir",
+   "size": 12199224,
    "title": "사전근무 신청내역",
    "chapters": [
     [
@@ -346,9 +346,13 @@
     [
      76,
      "STEP 04 계획 시각 조정"
+    ],
+    [
+     109,
+     "STEP 05 개인 근태현황 확인"
     ]
    ],
-   "length": "1분 53초",
+   "length": "2분 24초",
    "group": "tam_adj"
   },
   "punch1": {
