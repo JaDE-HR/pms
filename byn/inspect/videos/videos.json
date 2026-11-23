@@ -327,8 +327,8 @@
   },
   "adj5": {
    "file": "adj5.bin",
-   "iv": "jeflobeOVEm62FRM",
-   "size": 7268335,
+   "iv": "HLB9pR9hINRrkQme",
+   "size": 6331114,
    "title": "사전근무 신청내역",
    "chapters": [
     [
@@ -336,15 +336,15 @@
      "STEP 01 승인된 신청 조회"
     ],
     [
-     35,
-     "STEP 02 담당자 직접 추가"
+     24,
+     "STEP 02 계획 시각 변경"
     ],
     [
-     70,
+     54,
      "STEP 03 일근태 확인"
     ]
    ],
-   "length": "1분 39초",
+   "length": "1분 22초",
    "group": "tam_adj"
   },
   "punch1": {
