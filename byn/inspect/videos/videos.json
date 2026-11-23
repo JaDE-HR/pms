@@ -1645,7 +1645,7 @@
    "file": "pem2.bin",
    "iv": "ZbIS0JN/bLNix4Gv",
    "size": 14178262,
-   "title": "2편 평가 준비",
+   "title": "평가 준비",
    "chapters": [
     [
      3,
@@ -1679,7 +1679,7 @@
    "file": "pem5.bin",
    "iv": "gwrW0ZW+B922wLuZ",
    "size": 13103515,
-   "title": "5편 성향제거와 등급산정",
+   "title": "성향제거와 등급산정",
    "chapters": [
     [
      3,
@@ -1705,7 +1705,7 @@
    "file": "pem8.bin",
    "iv": "9sXdR6sXU9Bgt34A",
    "size": 12397681,
-   "title": "8편 종합평가",
+   "title": "종합평가",
    "chapters": [
     [
      4,
@@ -1735,7 +1735,7 @@
    "file": "pem1.bin",
    "iv": "vBgEt3I64nQNX8MT",
    "size": 16036992,
-   "title": "1편 평가 기준 확인",
+   "title": "평가 기준 확인",
    "chapters": [
     [
      3,
@@ -1765,7 +1765,7 @@
    "file": "pem3.bin",
    "iv": "afcBrsQlHlgviwYk",
    "size": 14974064,
-   "title": "3편 목표 수립",
+   "title": "목표 수립",
    "chapters": [
     [
      3,
@@ -1787,7 +1787,7 @@
    "file": "pem4.bin",
    "iv": "KDak6uJQfy3kG2kF",
    "size": 17050576,
-   "title": "4편 평가 수행",
+   "title": "평가 수행",
    "chapters": [
     [
      3,
@@ -1809,7 +1809,7 @@
    "file": "pem6.bin",
    "iv": "6kzWvrPRUPKLYTQZ",
    "size": 23021842,
-   "title": "6편 조정 / 결과 / 이의제기",
+   "title": "조정 / 결과 / 이의제기",
    "chapters": [
     [
      3,
@@ -1843,7 +1843,7 @@
    "file": "pem7.bin",
    "iv": "v7C3BpLHG7xz1KUM",
    "size": 18521416,
-   "title": "7편 역량평가",
+   "title": "역량평가",
    "chapters": [
     [
      3,
@@ -2258,35 +2258,35 @@
    "eps": [
     {
      "id": "pem1",
-     "name": "1편 평가 기준 확인"
+     "name": "평가 기준 확인"
     },
     {
      "id": "pem2",
-     "name": "2편 평가 준비"
+     "name": "평가 준비"
     },
     {
      "id": "pem3",
-     "name": "3편 목표 수립"
+     "name": "목표 수립"
     },
     {
      "id": "pem4",
-     "name": "4편 평가 수행"
+     "name": "평가 수행"
     },
     {
      "id": "pem5",
-     "name": "5편 성향제거와 등급산정"
+     "name": "성향제거와 등급산정"
     },
     {
      "id": "pem6",
-     "name": "6편 조정 / 결과 / 이의제기"
+     "name": "조정 / 결과 / 이의제기"
     },
     {
      "id": "pem7",
-     "name": "7편 역량평가"
+     "name": "역량평가"
     },
     {
      "id": "pem8",
-     "name": "8편 종합평가"
+     "name": "종합평가"
     }
    ]
   }
