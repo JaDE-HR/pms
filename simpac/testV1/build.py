@@ -46,6 +46,7 @@ _VARS = ('--bg:#ffffff; --panel:#ffffff; --ink:#1d1d1f; --muted:#7a7a7a; --line:
          ' --accent:#0066cc; --accent-ink:#ffffff; --accent-soft:#e8f1fc;'
          ' --pass:#1a7f37; --pass-bg:#e9f6ec; --fail:#d70015; --fail-bg:#fdeceb;'
          ' --hold:#8a5a00; --hold-bg:#fff4d6; --na:#555555; --na-bg:#ececef; --must:#d70015;'
+         ' --fixed:#0066cc; --fixed-bg:#e8f1fc;'                  # 처리완료 = 현황판 「완료」 파랑
          " --f-body:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Inter',system-ui,sans-serif;"
          ' --f-mono:var(--f-body); color-scheme:light')
 THEME = (
